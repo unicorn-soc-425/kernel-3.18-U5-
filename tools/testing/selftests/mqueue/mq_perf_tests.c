@@ -37,10 +37,7 @@
 #include <sys/stat.h>
 #include <mqueue.h>
 #include <popt.h>
-<<<<<<< HEAD
-=======
 #include <error.h>
->>>>>>> v4.9.227
 
 static char *usage =
 "Usage:\n"
@@ -540,16 +537,9 @@ int main(int argc, char *argv[])
 {
 	struct mq_attr attr;
 	char *option, *next_option;
-<<<<<<< HEAD
-	int i, cpu;
-	struct sigaction sa;
-	poptContext popt_context;
-	char rc;
-=======
 	int i, cpu, rc;
 	struct sigaction sa;
 	poptContext popt_context;
->>>>>>> v4.9.227
 	void *retval;
 
 	main_thread = pthread_self();

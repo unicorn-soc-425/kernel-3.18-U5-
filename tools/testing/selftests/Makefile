@@ -1,22 +1,4 @@
 TARGETS = breakpoints
-<<<<<<< HEAD
-TARGETS += cpu-hotplug
-TARGETS += efivarfs
-TARGETS += kcmp
-TARGETS += memfd
-TARGETS += memory-hotplug
-TARGETS += mqueue
-TARGETS += mount
-TARGETS += net
-TARGETS += ptrace
-TARGETS += timers
-TARGETS += vm
-TARGETS += powerpc
-TARGETS += user
-TARGETS += sysctl
-TARGETS += firmware
-TARGETS += ftrace
-=======
 TARGETS += capabilities
 TARGETS += cpu-hotplug
 TARGETS += efivarfs
@@ -53,13 +35,10 @@ TARGETS += zram
 #Please keep the TARGETS list alphabetically sorted
 # Run "make quicktest=1 run_tests" or
 # "make quicktest=1 kselftest from top level Makefile
->>>>>>> v4.9.227
 
 TARGETS_HOTPLUG = cpu-hotplug
 TARGETS_HOTPLUG += memory-hotplug
 
-<<<<<<< HEAD
-=======
 # Clear LDFLAGS and MAKEFLAGS if called from main
 # Makefile to avoid test build failures when test
 # Makefile doesn't have explicit build rules.
@@ -68,7 +47,6 @@ override LDFLAGS =
 override MAKEFLAGS =
 endif
 
->>>>>>> v4.9.227
 all:
 	for TARGET in $(TARGETS); do \
 		make -C $$TARGET; \
@@ -94,8 +72,6 @@ clean_hotplug:
 		make -C $$TARGET clean; \
 	done;
 
-<<<<<<< HEAD
-=======
 run_pstore_crash:
 	make -C pstore run_crash
 
@@ -130,13 +106,9 @@ else
 	$(error Error: set INSTALL_PATH to use install)
 endif
 
->>>>>>> v4.9.227
 clean:
 	for TARGET in $(TARGETS); do \
 		make -C $$TARGET clean; \
 	done;
-<<<<<<< HEAD
-=======
 
 .PHONY: install
->>>>>>> v4.9.227

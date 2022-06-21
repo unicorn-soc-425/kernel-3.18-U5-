@@ -10,13 +10,8 @@
 #include <stdint.h>
 #include <string.h>
 #include <limits.h>
-<<<<<<< HEAD
-
-#include "helpers/sysfs.h"
-=======
 #include <cpuidle.h>
 
->>>>>>> v4.9.227
 #include "helpers/helpers.h"
 #include "idle_monitor/cpupower-monitor.h"
 
@@ -26,11 +21,7 @@ struct cpuidle_monitor cpuidle_sysfs_monitor;
 
 static unsigned long long **previous_count;
 static unsigned long long **current_count;
-<<<<<<< HEAD
-struct timespec start_time;
-=======
 static struct timespec start_time;
->>>>>>> v4.9.227
 static unsigned long long timediff;
 
 static int cpuidle_get_count_percent(unsigned int id, double *percent,
@@ -60,11 +51,7 @@ static int cpuidle_start(void)
 		for (state = 0; state < cpuidle_sysfs_monitor.hw_states_num;
 		     state++) {
 			previous_count[cpu][state] =
-<<<<<<< HEAD
-				sysfs_get_idlestate_time(cpu, state);
-=======
 				cpuidle_state_time(cpu, state);
->>>>>>> v4.9.227
 			dprint("CPU %d - State: %d - Val: %llu\n",
 			       cpu, state, previous_count[cpu][state]);
 		}
@@ -83,11 +70,7 @@ static int cpuidle_stop(void)
 		for (state = 0; state < cpuidle_sysfs_monitor.hw_states_num;
 		     state++) {
 			current_count[cpu][state] =
-<<<<<<< HEAD
-				sysfs_get_idlestate_time(cpu, state);
-=======
 				cpuidle_state_time(cpu, state);
->>>>>>> v4.9.227
 			dprint("CPU %d - State: %d - Val: %llu\n",
 			       cpu, state, previous_count[cpu][state]);
 		}
@@ -147,28 +130,18 @@ static struct cpuidle_monitor *cpuidle_register(void)
 {
 	int num;
 	char *tmp;
-<<<<<<< HEAD
-
-	/* Assume idle state count is the same for all CPUs */
-	cpuidle_sysfs_monitor.hw_states_num = sysfs_get_idlestate_count(0);
-=======
 	int this_cpu;
 
 	this_cpu = sched_getcpu();
 
 	/* Assume idle state count is the same for all CPUs */
 	cpuidle_sysfs_monitor.hw_states_num = cpuidle_state_count(this_cpu);
->>>>>>> v4.9.227
 
 	if (cpuidle_sysfs_monitor.hw_states_num <= 0)
 		return NULL;
 
 	for (num = 0; num < cpuidle_sysfs_monitor.hw_states_num; num++) {
-<<<<<<< HEAD
-		tmp = sysfs_get_idlestate_name(0, num);
-=======
 		tmp = cpuidle_state_name(this_cpu, num);
->>>>>>> v4.9.227
 		if (tmp == NULL)
 			continue;
 
@@ -176,11 +149,7 @@ static struct cpuidle_monitor *cpuidle_register(void)
 		strncpy(cpuidle_cstates[num].name, tmp, CSTATE_NAME_LEN - 1);
 		free(tmp);
 
-<<<<<<< HEAD
-		tmp = sysfs_get_idlestate_desc(0, num);
-=======
 		tmp = cpuidle_state_desc(this_cpu, num);
->>>>>>> v4.9.227
 		if (tmp == NULL)
 			continue;
 		strncpy(cpuidle_cstates[num].desc, tmp,	CSTATE_DESC_LEN - 1);

@@ -9,9 +9,6 @@ modprobe test_firmware
 
 DIR=/sys/devices/virtual/misc/test_firmware
 
-<<<<<<< HEAD
-OLD_TIMEOUT=$(cat /sys/class/firmware/timeout)
-=======
 # CONFIG_FW_LOADER_USER_HELPER has a sysfs class under /sys/class/firmware/
 # These days no one enables CONFIG_FW_LOADER_USER_HELPER so check for that
 # as an indicator for CONFIG_FW_LOADER_USER_HELPER.
@@ -23,7 +20,6 @@ else
 	echo "usermode helper disabled so ignoring test"
 	exit 0
 fi
->>>>>>> v4.9.227
 
 FWPATH=$(mktemp -d)
 FW="$FWPATH/test-firmware.bin"
@@ -68,11 +64,6 @@ trap "test_finish" EXIT
 echo "ABCD0123" >"$FW"
 NAME=$(basename "$FW")
 
-<<<<<<< HEAD
-# Test failure when doing nothing (timeout works).
-echo 1 >/sys/class/firmware/timeout
-echo -n "$NAME" >"$DIR"/trigger_request
-=======
 DEVPATH="$DIR"/"nope-$NAME"/loading
 
 # Test failure when doing nothing (timeout works).
@@ -100,7 +91,6 @@ if [ ! -f $DEVPATH ]; then
 	exit 1
 fi
 
->>>>>>> v4.9.227
 if diff -q "$FW" /dev/test_firmware >/dev/null ; then
 	echo "$0: firmware was not expected to match" >&2
 	exit 1

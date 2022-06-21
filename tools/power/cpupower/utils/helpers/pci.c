@@ -25,20 +25,13 @@
 struct pci_dev *pci_acc_init(struct pci_access **pacc, int domain, int bus,
 			     int slot, int func, int vendor, int dev)
 {
-<<<<<<< HEAD
-	struct pci_filter filter_nb_link = { domain, bus, slot, func,
-					     vendor, dev };
-=======
 	struct pci_filter filter_nb_link;
->>>>>>> v4.9.227
 	struct pci_dev *device;
 
 	*pacc = pci_alloc();
 	if (*pacc == NULL)
 		return NULL;
 
-<<<<<<< HEAD
-=======
 	pci_filter_init(*pacc, &filter_nb_link);
 	filter_nb_link.domain	= domain;
 	filter_nb_link.bus	= bus;
@@ -47,7 +40,6 @@ struct pci_dev *pci_acc_init(struct pci_access **pacc, int domain, int bus,
 	filter_nb_link.vendor	= vendor;
 	filter_nb_link.device	= dev;
 
->>>>>>> v4.9.227
 	pci_init(*pacc);
 	pci_scan_bus(*pacc);
 
