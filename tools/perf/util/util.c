@@ -3,10 +3,7 @@
 #include "debug.h"
 #include <api/fs/fs.h>
 #include <sys/mman.h>
-<<<<<<< HEAD
-=======
 #include <sys/utsname.h>
->>>>>>> v4.9.227
 #ifdef HAVE_BACKTRACE_SUPPORT
 #include <execinfo.h>
 #endif
@@ -17,16 +14,6 @@
 #include <limits.h>
 #include <byteswap.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <unistd.h>
-#include "callchain.h"
-
-struct callchain_param	callchain_param = {
-	.mode	= CHAIN_GRAPH_REL,
-	.min_percent = 0.5,
-	.order  = ORDER_CALLEE,
-	.key	= CCKEY_FUNCTION
-=======
 #include <linux/log2.h>
 #include <linux/time64.h>
 #include <unistd.h>
@@ -46,7 +33,6 @@ struct callchain_param callchain_param = {
 
 struct callchain_param callchain_param_default = {
 	CALLCHAIN_PARAM_DEFAULT
->>>>>>> v4.9.227
 };
 
 /*
@@ -55,22 +41,14 @@ struct callchain_param callchain_param_default = {
 unsigned int page_size;
 int cacheline_size;
 
-<<<<<<< HEAD
-=======
 int sysctl_perf_event_max_stack = PERF_MAX_STACK_DEPTH;
 int sysctl_perf_event_max_contexts_per_stack = PERF_MAX_CONTEXTS_PER_STACK;
 
->>>>>>> v4.9.227
 bool test_attr__enabled;
 
 bool perf_host  = true;
 bool perf_guest = false;
 
-<<<<<<< HEAD
-char tracing_events_path[PATH_MAX + 1] = "/sys/kernel/debug/tracing/events";
-
-=======
->>>>>>> v4.9.227
 void event_attr_init(struct perf_event_attr *attr)
 {
 	if (!perf_host)
@@ -107,9 +85,6 @@ int mkdir_p(char *path, mode_t mode)
 	return (stat(path, &st) && mkdir(path, mode)) ? -1 : 0;
 }
 
-<<<<<<< HEAD
-static int slow_copyfile(const char *from, const char *to, mode_t mode)
-=======
 int rm_rf(char *path)
 {
 	DIR *dir;
@@ -185,27 +160,16 @@ out:
 }
 
 static int slow_copyfile(const char *from, const char *to)
->>>>>>> v4.9.227
 {
 	int err = -1;
 	char *line = NULL;
 	size_t n;
 	FILE *from_fp = fopen(from, "r"), *to_fp;
-<<<<<<< HEAD
-	mode_t old_umask;
-=======
->>>>>>> v4.9.227
 
 	if (from_fp == NULL)
 		goto out;
 
-<<<<<<< HEAD
-	old_umask = umask(mode ^ 0777);
 	to_fp = fopen(to, "w");
-	umask(old_umask);
-=======
-	to_fp = fopen(to, "w");
->>>>>>> v4.9.227
 	if (to_fp == NULL)
 		goto out_fclose_from;
 
@@ -222,8 +186,6 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 int copyfile_offset(int ifd, loff_t off_in, int ofd, loff_t off_out, u64 size)
 {
 	void *ptr;
@@ -252,50 +214,16 @@ int copyfile_offset(int ifd, loff_t off_in, int ofd, loff_t off_out, u64 size)
 	return size ? -1 : 0;
 }
 
->>>>>>> v4.9.227
 int copyfile_mode(const char *from, const char *to, mode_t mode)
 {
 	int fromfd, tofd;
 	struct stat st;
-<<<<<<< HEAD
-	void *addr;
-	int err = -1;
-=======
 	int err = -1;
 	char *tmp = NULL, *ptr = NULL;
->>>>>>> v4.9.227
 
 	if (stat(from, &st))
 		goto out;
 
-<<<<<<< HEAD
-	if (st.st_size == 0) /* /proc? do it slowly... */
-		return slow_copyfile(from, to, mode);
-
-	fromfd = open(from, O_RDONLY);
-	if (fromfd < 0)
-		goto out;
-
-	tofd = creat(to, mode);
-	if (tofd < 0)
-		goto out_close_from;
-
-	addr = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fromfd, 0);
-	if (addr == MAP_FAILED)
-		goto out_close_to;
-
-	if (write(tofd, addr, st.st_size) == st.st_size)
-		err = 0;
-
-	munmap(addr, st.st_size);
-out_close_to:
-	close(tofd);
-	if (err)
-		unlink(to);
-out_close_from:
-	close(fromfd);
-out:
-=======
 	/* extra 'x' at the end is to reserve space for '.' */
 	if (asprintf(&tmp, "%s.XXXXXXx", to) < 0) {
 		tmp = NULL;
@@ -333,7 +261,6 @@ out_close_to:
 	unlink(tmp);
 out:
 	free(tmp);
->>>>>>> v4.9.227
 	return err;
 }
 
@@ -465,126 +392,12 @@ void dump_stack(void)
 void dump_stack(void) {}
 #endif
 
-<<<<<<< HEAD
-void get_term_dimensions(struct winsize *ws)
-{
-	char *s = getenv("LINES");
-
-	if (s != NULL) {
-		ws->ws_row = atoi(s);
-		s = getenv("COLUMNS");
-		if (s != NULL) {
-			ws->ws_col = atoi(s);
-			if (ws->ws_row && ws->ws_col)
-				return;
-		}
-	}
-#ifdef TIOCGWINSZ
-	if (ioctl(1, TIOCGWINSZ, ws) == 0 &&
-	    ws->ws_row && ws->ws_col)
-		return;
-#endif
-	ws->ws_row = 25;
-	ws->ws_col = 80;
-}
-
-void set_term_quiet_input(struct termios *old)
-{
-	struct termios tc;
-
-	tcgetattr(0, old);
-	tc = *old;
-	tc.c_lflag &= ~(ICANON | ECHO);
-	tc.c_cc[VMIN] = 0;
-	tc.c_cc[VTIME] = 0;
-	tcsetattr(0, TCSANOW, &tc);
-}
-
-static void set_tracing_events_path(const char *mountpoint)
-{
-	snprintf(tracing_events_path, sizeof(tracing_events_path), "%s/%s",
-		 mountpoint, "tracing/events");
-}
-
-const char *perf_debugfs_mount(const char *mountpoint)
-{
-	const char *mnt;
-
-	mnt = debugfs_mount(mountpoint);
-	if (!mnt)
-		return NULL;
-
-	set_tracing_events_path(mnt);
-
-	return mnt;
-}
-
-void perf_debugfs_set_path(const char *mntpt)
-{
-	snprintf(debugfs_mountpoint, strlen(debugfs_mountpoint), "%s", mntpt);
-	set_tracing_events_path(mntpt);
-}
-
-static const char *find_debugfs(void)
-{
-	const char *path = perf_debugfs_mount(NULL);
-
-	if (!path)
-		fprintf(stderr, "Your kernel does not support the debugfs filesystem");
-
-	return path;
-}
-
-/*
- * Finds the path to the debugfs/tracing
- * Allocates the string and stores it.
- */
-const char *find_tracing_dir(void)
-{
-	static char *tracing;
-	static int tracing_found;
-	const char *debugfs;
-
-	if (tracing_found)
-		return tracing;
-
-	debugfs = find_debugfs();
-	if (!debugfs)
-		return NULL;
-
-	if (asprintf(&tracing, "%s/tracing", debugfs) < 0)
-		return NULL;
-
-	tracing_found = 1;
-	return tracing;
-}
-
-char *get_tracing_file(const char *name)
-{
-	const char *tracing;
-	char *file;
-
-	tracing = find_tracing_dir();
-	if (!tracing)
-		return NULL;
-
-	if (asprintf(&file, "%s/%s", tracing, name) < 0)
-		return NULL;
-
-	return file;
-}
-
-void put_tracing_file(char *file)
-{
-	free(file);
-=======
 void sighandler_dump_stack(int sig)
 {
 	psignal(sig, "perf");
 	dump_stack();
 	signal(sig, SIG_DFL);
 	raise(sig);
->>>>>>> v4.9.227
 }
 
 int parse_nsec_time(const char *str, u64 *ptime)
@@ -647,71 +460,6 @@ unsigned long parse_tag_value(const char *str, struct parse_tag *tags)
 	return (unsigned long) -1;
 }
 
-<<<<<<< HEAD
-int filename__read_int(const char *filename, int *value)
-{
-	char line[64];
-	int fd = open(filename, O_RDONLY), err = -1;
-
-	if (fd < 0)
-		return -1;
-
-	if (read(fd, line, sizeof(line)) > 0) {
-		*value = atoi(line);
-		err = 0;
-	}
-
-	close(fd);
-	return err;
-}
-
-int filename__read_str(const char *filename, char **buf, size_t *sizep)
-{
-	size_t size = 0, alloc_size = 0;
-	void *bf = NULL, *nbf;
-	int fd, n, err = 0;
-	char sbuf[STRERR_BUFSIZE];
-
-	fd = open(filename, O_RDONLY);
-	if (fd < 0)
-		return -errno;
-
-	do {
-		if (size == alloc_size) {
-			alloc_size += BUFSIZ;
-			nbf = realloc(bf, alloc_size);
-			if (!nbf) {
-				err = -ENOMEM;
-				break;
-			}
-
-			bf = nbf;
-		}
-
-		n = read(fd, bf + size, alloc_size - size);
-		if (n < 0) {
-			if (size) {
-				pr_warning("read failed %d: %s\n", errno,
-					 strerror_r(errno, sbuf, sizeof(sbuf)));
-				err = 0;
-			} else
-				err = -errno;
-
-			break;
-		}
-
-		size += n;
-	} while (n > 0);
-
-	if (!err) {
-		*sizep = size;
-		*buf   = bf;
-	} else
-		free(bf);
-
-	close(fd);
-	return err;
-=======
 int get_stack_size(const char *str, unsigned long *_size)
 {
 	char *endptr;
@@ -798,7 +546,6 @@ int parse_callchain_record(const char *arg, struct callchain_param *param)
 
 	free(buf);
 	return ret;
->>>>>>> v4.9.227
 }
 
 const char *get_filename_for_perf_kvm(void)
@@ -817,22 +564,9 @@ const char *get_filename_for_perf_kvm(void)
 
 int perf_event_paranoid(void)
 {
-<<<<<<< HEAD
-	char path[PATH_MAX];
-	const char *procfs = procfs__mountpoint();
-	int value;
-
-	if (!procfs)
-		return INT_MAX;
-
-	scnprintf(path, PATH_MAX, "%s/sys/kernel/perf_event_paranoid", procfs);
-
-	if (filename__read_int(path, &value))
-=======
 	int value;
 
 	if (sysctl__read_int("kernel/perf_event_paranoid", &value))
->>>>>>> v4.9.227
 		return INT_MAX;
 
 	return value;
@@ -868,11 +602,7 @@ bool find_process(const char *name)
 
 	dir = opendir(procfs__mountpoint());
 	if (!dir)
-<<<<<<< HEAD
-		return -1;
-=======
 		return false;
->>>>>>> v4.9.227
 
 	/* Walk through the directory. */
 	while (ret && (d = readdir(dir)) != NULL) {
@@ -898,8 +628,6 @@ bool find_process(const char *name)
 	closedir(dir);
 	return ret ? false : true;
 }
-<<<<<<< HEAD
-=======
 
 int
 fetch_kernel_version(unsigned int *puint, char *str,
@@ -1035,4 +763,3 @@ int is_printable_array(char *p, unsigned int len)
 	}
 	return 1;
 }
->>>>>>> v4.9.227

@@ -12,11 +12,6 @@
 #include "util.h"
 #include "symbol.h"
 #include "machine.h"
-<<<<<<< HEAD
-#include "linux/string.h"
-#include "debug.h"
-
-=======
 #include "thread.h"
 #include "linux/string.h"
 #include "debug.h"
@@ -27,7 +22,6 @@
  */
 #include "find-vdso-map.c"
 
->>>>>>> v4.9.227
 #define VDSO__TEMP_FILE_NAME "/tmp/perf-vdso.so-XXXXXX"
 
 struct vdso_file {
@@ -35,21 +29,15 @@ struct vdso_file {
 	bool error;
 	char temp_file_name[sizeof(VDSO__TEMP_FILE_NAME)];
 	const char *dso_name;
-<<<<<<< HEAD
-=======
 	const char *read_prog;
->>>>>>> v4.9.227
 };
 
 struct vdso_info {
 	struct vdso_file vdso;
-<<<<<<< HEAD
-=======
 #if BITS_PER_LONG == 64
 	struct vdso_file vdso32;
 	struct vdso_file vdsox32;
 #endif
->>>>>>> v4.9.227
 };
 
 static struct vdso_info *vdso_info__new(void)
@@ -59,8 +47,6 @@ static struct vdso_info *vdso_info__new(void)
 			.temp_file_name = VDSO__TEMP_FILE_NAME,
 			.dso_name = DSO__NAME_VDSO,
 		},
-<<<<<<< HEAD
-=======
 #if BITS_PER_LONG == 64
 		.vdso32  = {
 			.temp_file_name = VDSO__TEMP_FILE_NAME,
@@ -73,46 +59,11 @@ static struct vdso_info *vdso_info__new(void)
 			.read_prog = "perf-read-vdsox32",
 		},
 #endif
->>>>>>> v4.9.227
 	};
 
 	return memdup(&vdso_info_init, sizeof(vdso_info_init));
 }
 
-<<<<<<< HEAD
-static int find_vdso_map(void **start, void **end)
-{
-	FILE *maps;
-	char line[128];
-	int found = 0;
-
-	maps = fopen("/proc/self/maps", "r");
-	if (!maps) {
-		pr_err("vdso: cannot open maps\n");
-		return -1;
-	}
-
-	while (!found && fgets(line, sizeof(line), maps)) {
-		int m = -1;
-
-		/* We care only about private r-x mappings. */
-		if (2 != sscanf(line, "%p-%p r-xp %*x %*x:%*x %*u %n",
-				start, end, &m))
-			continue;
-		if (m < 0)
-			continue;
-
-		if (!strncmp(&line[m], VDSO__MAP_NAME,
-			     sizeof(VDSO__MAP_NAME) - 1))
-			found = 1;
-	}
-
-	fclose(maps);
-	return !found;
-}
-
-=======
->>>>>>> v4.9.227
 static char *get_file(struct vdso_file *vdso_file)
 {
 	char *vdso = NULL;
@@ -150,11 +101,7 @@ static char *get_file(struct vdso_file *vdso_file)
 	return vdso;
 }
 
-<<<<<<< HEAD
-void vdso__exit(struct machine *machine)
-=======
 void machine__exit_vdso(struct machine *machine)
->>>>>>> v4.9.227
 {
 	struct vdso_info *vdso_info = machine->vdso_info;
 
@@ -163,66 +110,30 @@ void machine__exit_vdso(struct machine *machine)
 
 	if (vdso_info->vdso.found)
 		unlink(vdso_info->vdso.temp_file_name);
-<<<<<<< HEAD
-=======
 #if BITS_PER_LONG == 64
 	if (vdso_info->vdso32.found)
 		unlink(vdso_info->vdso32.temp_file_name);
 	if (vdso_info->vdsox32.found)
 		unlink(vdso_info->vdsox32.temp_file_name);
 #endif
->>>>>>> v4.9.227
 
 	zfree(&machine->vdso_info);
 }
 
-<<<<<<< HEAD
-static struct dso *vdso__new(struct machine *machine, const char *short_name,
-			     const char *long_name)
-=======
 static struct dso *__machine__addnew_vdso(struct machine *machine, const char *short_name,
 					  const char *long_name)
->>>>>>> v4.9.227
 {
 	struct dso *dso;
 
 	dso = dso__new(short_name);
 	if (dso != NULL) {
-<<<<<<< HEAD
-		dsos__add(&machine->user_dsos, dso);
-=======
 		__dsos__add(&machine->dsos, dso);
->>>>>>> v4.9.227
 		dso__set_long_name(dso, long_name, false);
 	}
 
 	return dso;
 }
 
-<<<<<<< HEAD
-struct dso *vdso__dso_findnew(struct machine *machine,
-			      struct thread *thread __maybe_unused)
-{
-	struct vdso_info *vdso_info;
-	struct dso *dso;
-
-	if (!machine->vdso_info)
-		machine->vdso_info = vdso_info__new();
-
-	vdso_info = machine->vdso_info;
-	if (!vdso_info)
-		return NULL;
-
-	dso = dsos__find(&machine->user_dsos, DSO__NAME_VDSO, true);
-	if (!dso) {
-		char *file;
-
-		file = get_file(&vdso_info->vdso);
-		if (!file)
-			return NULL;
-
-		dso = vdso__new(machine, DSO__NAME_VDSO, file);
-=======
 static enum dso_type machine__thread_dso_type(struct machine *machine,
 					      struct thread *thread)
 {
@@ -397,17 +308,11 @@ static struct dso *machine__find_vdso(struct machine *machine,
 	default:
 		dso = __dsos__find(&machine->dsos, DSO__NAME_VDSO, true);
 		break;
->>>>>>> v4.9.227
 	}
 
 	return dso;
 }
 
-<<<<<<< HEAD
-bool dso__is_vdso(struct dso *dso)
-{
-	return !strcmp(dso->short_name, DSO__NAME_VDSO);
-=======
 struct dso *machine__findnew_vdso(struct machine *machine,
 				  struct thread *thread)
 {
@@ -451,5 +356,4 @@ bool dso__is_vdso(struct dso *dso)
 	return !strcmp(dso->short_name, DSO__NAME_VDSO) ||
 	       !strcmp(dso->short_name, DSO__NAME_VDSO32) ||
 	       !strcmp(dso->short_name, DSO__NAME_VDSOX32);
->>>>>>> v4.9.227
 }

@@ -5,11 +5,7 @@
  *****************************************************************************/
 
 /*
-<<<<<<< HEAD
- * Copyright (C) 2000 - 2014, Intel Corp.
-=======
  * Copyright (C) 2000 - 2016, Intel Corp.
->>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,17 +42,11 @@
  */
 
 #include "acpidump.h"
-<<<<<<< HEAD
-#include "acapps.h"
-=======
->>>>>>> v4.9.227
 
 /* Local prototypes */
 
 static int ap_is_existing_file(char *pathname);
 
-<<<<<<< HEAD
-=======
 /******************************************************************************
  *
  * FUNCTION:    ap_is_existing_file
@@ -69,19 +59,14 @@ static int ap_is_existing_file(char *pathname);
  *
  ******************************************************************************/
 
->>>>>>> v4.9.227
 static int ap_is_existing_file(char *pathname)
 {
 #ifndef _GNU_EFI
 	struct stat stat_info;
 
 	if (!stat(pathname, &stat_info)) {
-<<<<<<< HEAD
-		acpi_log_error("Target path already exists, overwrite? [y|n] ");
-=======
 		fprintf(stderr,
 			"Target path already exists, overwrite? [y|n] ");
->>>>>>> v4.9.227
 
 		if (getchar() != 'y') {
 			return (-1);
@@ -117,15 +102,9 @@ int ap_open_output_file(char *pathname)
 
 	/* Point stdout to the file */
 
-<<<<<<< HEAD
-	file = acpi_os_open_file(pathname, ACPI_FILE_WRITING);
-	if (!file) {
-		acpi_log_error("Could not open output file: %s\n", pathname);
-=======
 	file = fopen(pathname, "w");
 	if (!file) {
 		fprintf(stderr, "Could not open output file: %s\n", pathname);
->>>>>>> v4.9.227
 		return (-1);
 	}
 
@@ -155,11 +134,7 @@ int ap_write_to_binary_file(struct acpi_table_header *table, u32 instance)
 	char filename[ACPI_NAME_SIZE + 16];
 	char instance_str[16];
 	ACPI_FILE file;
-<<<<<<< HEAD
-	size_t actual;
-=======
 	acpi_size actual;
->>>>>>> v4.9.227
 	u32 table_length;
 
 	/* Obtain table length */
@@ -173,36 +148,16 @@ int ap_write_to_binary_file(struct acpi_table_header *table, u32 instance)
 	} else {
 		ACPI_MOVE_NAME(filename, table->signature);
 	}
-<<<<<<< HEAD
-	filename[0] = (char)ACPI_TOLOWER(filename[0]);
-	filename[1] = (char)ACPI_TOLOWER(filename[1]);
-	filename[2] = (char)ACPI_TOLOWER(filename[2]);
-	filename[3] = (char)ACPI_TOLOWER(filename[3]);
-=======
 
 	filename[0] = (char)tolower((int)filename[0]);
 	filename[1] = (char)tolower((int)filename[1]);
 	filename[2] = (char)tolower((int)filename[2]);
 	filename[3] = (char)tolower((int)filename[3]);
->>>>>>> v4.9.227
 	filename[ACPI_NAME_SIZE] = 0;
 
 	/* Handle multiple SSDts - create different filenames for each */
 
 	if (instance > 0) {
-<<<<<<< HEAD
-		acpi_ut_snprintf(instance_str, sizeof(instance_str), "%u",
-				 instance);
-		ACPI_STRCAT(filename, instance_str);
-	}
-
-	ACPI_STRCAT(filename, ACPI_TABLE_FILE_SUFFIX);
-
-	if (gbl_verbose_mode) {
-		acpi_log_error
-		    ("Writing [%4.4s] to binary file: %s 0x%X (%u) bytes\n",
-		     table->signature, filename, table->length, table->length);
-=======
 		snprintf(instance_str, sizeof(instance_str), "%u", instance);
 		strcat(filename, instance_str);
 	}
@@ -214,29 +169,10 @@ int ap_write_to_binary_file(struct acpi_table_header *table, u32 instance)
 			"Writing [%4.4s] to binary file: %s 0x%X (%u) bytes\n",
 			table->signature, filename, table->length,
 			table->length);
->>>>>>> v4.9.227
 	}
 
 	/* Open the file and dump the entire table in binary mode */
 
-<<<<<<< HEAD
-	file = acpi_os_open_file(filename,
-				 ACPI_FILE_WRITING | ACPI_FILE_BINARY);
-	if (!file) {
-		acpi_log_error("Could not open output file: %s\n", filename);
-		return (-1);
-	}
-
-	actual = acpi_os_write_file(file, table, 1, table_length);
-	if (actual != table_length) {
-		acpi_log_error("Error writing binary output file: %s\n",
-			       filename);
-		acpi_os_close_file(file);
-		return (-1);
-	}
-
-	acpi_os_close_file(file);
-=======
 	file = fopen(filename, "wb");
 	if (!file) {
 		fprintf(stderr, "Could not open output file: %s\n", filename);
@@ -252,7 +188,6 @@ int ap_write_to_binary_file(struct acpi_table_header *table, u32 instance)
 	}
 
 	fclose(file);
->>>>>>> v4.9.227
 	return (0);
 }
 
@@ -275,16 +210,6 @@ struct acpi_table_header *ap_get_table_from_file(char *pathname,
 	struct acpi_table_header *buffer = NULL;
 	ACPI_FILE file;
 	u32 file_size;
-<<<<<<< HEAD
-	size_t actual;
-
-	/* Must use binary mode */
-
-	file =
-	    acpi_os_open_file(pathname, ACPI_FILE_READING | ACPI_FILE_BINARY);
-	if (!file) {
-		acpi_log_error("Could not open input file: %s\n", pathname);
-=======
 	acpi_size actual;
 
 	/* Must use binary mode */
@@ -292,7 +217,6 @@ struct acpi_table_header *ap_get_table_from_file(char *pathname,
 	file = fopen(pathname, "rb");
 	if (!file) {
 		fprintf(stderr, "Could not open input file: %s\n", pathname);
->>>>>>> v4.9.227
 		return (NULL);
 	}
 
@@ -300,12 +224,8 @@ struct acpi_table_header *ap_get_table_from_file(char *pathname,
 
 	file_size = cm_get_file_size(file);
 	if (file_size == ACPI_UINT32_MAX) {
-<<<<<<< HEAD
-		acpi_log_error("Could not get input file size: %s\n", pathname);
-=======
 		fprintf(stderr,
 			"Could not get input file size: %s\n", pathname);
->>>>>>> v4.9.227
 		goto cleanup;
 	}
 
@@ -313,28 +233,17 @@ struct acpi_table_header *ap_get_table_from_file(char *pathname,
 
 	buffer = ACPI_ALLOCATE_ZEROED(file_size);
 	if (!buffer) {
-<<<<<<< HEAD
-		acpi_log_error("Could not allocate file buffer of size: %u\n",
-			       file_size);
-=======
 		fprintf(stderr,
 			"Could not allocate file buffer of size: %u\n",
 			file_size);
->>>>>>> v4.9.227
 		goto cleanup;
 	}
 
 	/* Read the entire file */
 
-<<<<<<< HEAD
-	actual = acpi_os_read_file(file, buffer, 1, file_size);
-	if (actual != file_size) {
-		acpi_log_error("Could not read input file: %s\n", pathname);
-=======
 	actual = fread(buffer, 1, file_size, file);
 	if (actual != file_size) {
 		fprintf(stderr, "Could not read input file: %s\n", pathname);
->>>>>>> v4.9.227
 		ACPI_FREE(buffer);
 		buffer = NULL;
 		goto cleanup;
@@ -343,10 +252,6 @@ struct acpi_table_header *ap_get_table_from_file(char *pathname,
 	*out_file_size = file_size;
 
 cleanup:
-<<<<<<< HEAD
-	acpi_os_close_file(file);
-=======
 	fclose(file);
->>>>>>> v4.9.227
 	return (buffer);
 }

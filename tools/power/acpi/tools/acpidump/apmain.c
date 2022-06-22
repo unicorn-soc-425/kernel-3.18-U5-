@@ -5,11 +5,7 @@
  *****************************************************************************/
 
 /*
-<<<<<<< HEAD
- * Copyright (C) 2000 - 2014, Intel Corp.
-=======
  * Copyright (C) 2000 - 2016, Intel Corp.
->>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,10 +43,6 @@
 
 #define _DECLARE_GLOBALS
 #include "acpidump.h"
-<<<<<<< HEAD
-#include "acapps.h"
-=======
->>>>>>> v4.9.227
 
 /*
  * acpidump - A portable utility for obtaining system ACPI tables and dumping
@@ -87,11 +79,7 @@ struct ap_dump_action action_table[AP_MAX_ACTIONS];
 u32 current_action = 0;
 
 #define AP_UTILITY_NAME             "ACPI Binary Table Dump Utility"
-<<<<<<< HEAD
-#define AP_SUPPORTED_OPTIONS        "?a:bcf:hn:o:r:svxz"
-=======
 #define AP_SUPPORTED_OPTIONS        "?a:bc:f:hn:o:r:svxz"
->>>>>>> v4.9.227
 
 /******************************************************************************
  *
@@ -107,10 +95,6 @@ static void ap_display_usage(void)
 	ACPI_USAGE_HEADER("acpidump [options]");
 
 	ACPI_OPTION("-b", "Dump tables to binary files");
-<<<<<<< HEAD
-	ACPI_OPTION("-c", "Dump customized tables");
-=======
->>>>>>> v4.9.227
 	ACPI_OPTION("-h -?", "This help message");
 	ACPI_OPTION("-o <File>", "Redirect output to file");
 	ACPI_OPTION("-r <Address>", "Dump tables from specified RSDP");
@@ -121,10 +105,7 @@ static void ap_display_usage(void)
 	ACPI_USAGE_TEXT("\nTable Options:\n");
 
 	ACPI_OPTION("-a <Address>", "Get table via a physical address");
-<<<<<<< HEAD
-=======
 	ACPI_OPTION("-c <on|off>", "Turning on/off customized table dumping");
->>>>>>> v4.9.227
 	ACPI_OPTION("-f <BinaryFile>", "Get table via a binary file");
 	ACPI_OPTION("-n <Signature>", "Get table via a name/signature");
 	ACPI_OPTION("-x", "Do not use but dump XSDT");
@@ -158,13 +139,8 @@ static int ap_insert_action(char *argument, u32 to_be_done)
 
 	current_action++;
 	if (current_action > AP_MAX_ACTIONS) {
-<<<<<<< HEAD
-		acpi_log_error("Too many table options (max %u)\n",
-			       AP_MAX_ACTIONS);
-=======
 		fprintf(stderr, "Too many table options (max %d)\n",
 			AP_MAX_ACTIONS);
->>>>>>> v4.9.227
 		return (-1);
 	}
 
@@ -204,9 +180,6 @@ static int ap_do_options(int argc, char **argv)
 
 		case 'c':	/* Dump customized tables */
 
-<<<<<<< HEAD
-			gbl_dump_customized_tables = TRUE;
-=======
 			if (!strcmp(acpi_gbl_optarg, "on")) {
 				gbl_dump_customized_tables = TRUE;
 			} else if (!strcmp(acpi_gbl_optarg, "off")) {
@@ -217,7 +190,6 @@ static int ap_do_options(int argc, char **argv)
 					acpi_gbl_optarg);
 				return (-1);
 			}
->>>>>>> v4.9.227
 			continue;
 
 		case 'h':
@@ -236,14 +208,6 @@ static int ap_do_options(int argc, char **argv)
 		case 'r':	/* Dump tables from specified RSDP */
 
 			status =
-<<<<<<< HEAD
-			    acpi_ut_strtoul64(acpi_gbl_optarg, 0,
-					      &gbl_rsdp_base);
-			if (ACPI_FAILURE(status)) {
-				acpi_log_error
-				    ("%s: Could not convert to a physical address\n",
-				     acpi_gbl_optarg);
-=======
 			    acpi_ut_strtoul64(acpi_gbl_optarg,
 					      ACPI_STRTOUL_64BIT,
 					      &gbl_rsdp_base);
@@ -251,7 +215,6 @@ static int ap_do_options(int argc, char **argv)
 				fprintf(stderr,
 					"%s: Could not convert to a physical address\n",
 					acpi_gbl_optarg);
->>>>>>> v4.9.227
 				return (-1);
 			}
 			continue;
@@ -278,11 +241,7 @@ static int ap_do_options(int argc, char **argv)
 		case 'z':	/* Verbose mode */
 
 			gbl_verbose_mode = TRUE;
-<<<<<<< HEAD
-			acpi_log_error(ACPI_COMMON_SIGNON(AP_UTILITY_NAME));
-=======
 			fprintf(stderr, ACPI_COMMON_SIGNON(AP_UTILITY_NAME));
->>>>>>> v4.9.227
 			continue;
 
 			/*
@@ -355,10 +314,7 @@ int ACPI_SYSTEM_XFACE acpi_main(int argc, char *argv[])
 	ACPI_DEBUG_INITIALIZE();	/* For debug version only */
 	acpi_os_initialize();
 	gbl_output_file = ACPI_FILE_OUT;
-<<<<<<< HEAD
-=======
 	acpi_gbl_integer_byte_width = 8;
->>>>>>> v4.9.227
 
 	/* Process command line options */
 
@@ -397,14 +353,9 @@ int ACPI_SYSTEM_XFACE acpi_main(int argc, char *argv[])
 
 		default:
 
-<<<<<<< HEAD
-			acpi_log_error("Internal error, invalid action: 0x%X\n",
-				       action->to_be_done);
-=======
 			fprintf(stderr,
 				"Internal error, invalid action: 0x%X\n",
 				action->to_be_done);
->>>>>>> v4.9.227
 			return (-1);
 		}
 
@@ -419,21 +370,12 @@ int ACPI_SYSTEM_XFACE acpi_main(int argc, char *argv[])
 			/* Summary for the output file */
 
 			file_size = cm_get_file_size(gbl_output_file);
-<<<<<<< HEAD
-			acpi_log_error
-			    ("Output file %s contains 0x%X (%u) bytes\n\n",
-			     gbl_output_filename, file_size, file_size);
-		}
-
-		acpi_os_close_file(gbl_output_file);
-=======
 			fprintf(stderr,
 				"Output file %s contains 0x%X (%u) bytes\n\n",
 				gbl_output_filename, file_size, file_size);
 		}
 
 		fclose(gbl_output_file);
->>>>>>> v4.9.227
 	}
 
 	return (status);

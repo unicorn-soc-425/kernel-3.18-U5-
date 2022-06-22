@@ -5,11 +5,7 @@
  *****************************************************************************/
 
 /*
-<<<<<<< HEAD
- * Copyright (C) 2000 - 2014, Intel Corp.
-=======
  * Copyright (C) 2000 - 2016, Intel Corp.
->>>>>>> v4.9.227
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,10 +44,6 @@
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acapps.h"
-<<<<<<< HEAD
-#include <stdio.h>
-=======
->>>>>>> v4.9.227
 
 #define _COMPONENT          ACPI_TOOLS
 ACPI_MODULE_NAME("cmfsize")
@@ -76,40 +68,24 @@ u32 cm_get_file_size(ACPI_FILE file)
 
 	/* Save the current file pointer, seek to EOF to obtain file size */
 
-<<<<<<< HEAD
-	current_offset = acpi_os_get_file_offset(file);
-=======
 	current_offset = ftell(file);
->>>>>>> v4.9.227
 	if (current_offset < 0) {
 		goto offset_error;
 	}
 
-<<<<<<< HEAD
-	status = acpi_os_set_file_offset(file, 0, ACPI_FILE_END);
-=======
 	status = fseek(file, 0, SEEK_END);
->>>>>>> v4.9.227
 	if (ACPI_FAILURE(status)) {
 		goto seek_error;
 	}
 
-<<<<<<< HEAD
-	file_size = acpi_os_get_file_offset(file);
-=======
 	file_size = ftell(file);
->>>>>>> v4.9.227
 	if (file_size < 0) {
 		goto offset_error;
 	}
 
 	/* Restore original file pointer */
 
-<<<<<<< HEAD
-	status = acpi_os_set_file_offset(file, current_offset, ACPI_FILE_BEGIN);
-=======
 	status = fseek(file, current_offset, SEEK_SET);
->>>>>>> v4.9.227
 	if (ACPI_FAILURE(status)) {
 		goto seek_error;
 	}
@@ -117,18 +93,10 @@ u32 cm_get_file_size(ACPI_FILE file)
 	return ((u32)file_size);
 
 offset_error:
-<<<<<<< HEAD
-	acpi_log_error("Could not get file offset");
-	return (ACPI_UINT32_MAX);
-
-seek_error:
-	acpi_log_error("Could not set file offset");
-=======
 	fprintf(stderr, "Could not get file offset\n");
 	return (ACPI_UINT32_MAX);
 
 seek_error:
 	fprintf(stderr, "Could not set file offset\n");
->>>>>>> v4.9.227
 	return (ACPI_UINT32_MAX);
 }
