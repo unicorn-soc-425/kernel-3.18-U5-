@@ -15,11 +15,7 @@ CONFIG_RCU_CPU_STALL_TIMEOUT
 	21 seconds.
 
 	This configuration parameter may be changed at runtime via the
-<<<<<<< HEAD
-	/sys/module/rcutree/parameters/rcu_cpu_stall_timeout, however
-=======
 	/sys/module/rcupdate/parameters/rcu_cpu_stall_timeout, however
->>>>>>> v4.9.227
 	this parameter is checked only at the beginning of a cycle.
 	So if you are 10 seconds into a 40-second stall, setting this
 	sysfs parameter to (say) five will shorten the timeout for the
@@ -30,21 +26,6 @@ CONFIG_RCU_CPU_STALL_TIMEOUT
 	Stall-warning messages may be enabled and disabled completely via
 	/sys/module/rcupdate/parameters/rcu_cpu_stall_suppress.
 
-<<<<<<< HEAD
-CONFIG_RCU_CPU_STALL_VERBOSE
-
-	This kernel configuration parameter causes the stall warning to
-	also dump the stacks of any tasks that are blocking the current
-	RCU-preempt grace period.
-
-CONFIG_RCU_CPU_STALL_INFO
-
-	This kernel configuration parameter causes the stall warning to
-	print out additional per-CPU diagnostic information, including
-	information on scheduling-clock ticks and RCU's idle-CPU tracking.
-
-=======
->>>>>>> v4.9.227
 RCU_STALL_DELAY_DELTA
 
 	Although the lockdep facility is extremely useful, it does add
@@ -68,11 +49,7 @@ rcupdate.rcu_task_stall_timeout
 	This boot/sysfs parameter controls the RCU-tasks stall warning
 	interval.  A value of zero or less suppresses RCU-tasks stall
 	warnings.  A positive value sets the stall-warning interval
-<<<<<<< HEAD
-	in jiffies.  An RCU-tasks stall warning starts wtih the line:
-=======
 	in jiffies.  An RCU-tasks stall warning starts with the line:
->>>>>>> v4.9.227
 
 		INFO: rcu_tasks detected stalls on tasks:
 
@@ -88,11 +65,7 @@ This message indicates that CPU 5 detected that it was causing a stall,
 and that the stall was affecting RCU-sched.  This message will normally be
 followed by a stack dump of the offending CPU.  On TREE_RCU kernel builds,
 RCU and RCU-sched are implemented by the same underlying mechanism,
-<<<<<<< HEAD
-while on TREE_PREEMPT_RCU kernel builds, RCU is instead implemented
-=======
 while on PREEMPT_RCU kernel builds, RCU is instead implemented
->>>>>>> v4.9.227
 by rcu_preempt_state.
 
 On the other hand, if the offending CPU fails to print out a stall-warning
@@ -104,11 +77,7 @@ INFO: rcu_bh_state detected stalls on CPUs/tasks: { 3 5 } (detected by 2, 2502 j
 This message indicates that CPU 2 detected that CPUs 3 and 5 were both
 causing stalls, and that the stall was affecting RCU-bh.  This message
 will normally be followed by stack dumps for each CPU.  Please note that
-<<<<<<< HEAD
-TREE_PREEMPT_RCU builds can be stalled by tasks as well as by CPUs,
-=======
 PREEMPT_RCU builds can be stalled by tasks as well as by CPUs,
->>>>>>> v4.9.227
 and that the tasks will be indicated by PID, for example, "P3421".
 It is even possible for a rcu_preempt_state stall to be caused by both
 CPUs -and- tasks, in which case the offending CPUs and tasks will all
@@ -126,23 +95,13 @@ interact.  Please note that it is not possible to entirely eliminate this
 sort of false positive without resorting to things like stop_machine(),
 which is overkill for this sort of problem.
 
-<<<<<<< HEAD
-If the CONFIG_RCU_CPU_STALL_INFO kernel configuration parameter is set,
-more information is printed with the stall-warning message, for example:
-=======
 Recent kernels will print a long form of the stall-warning message:
->>>>>>> v4.9.227
 
 	INFO: rcu_preempt detected stall on CPU
 	0: (63959 ticks this GP) idle=241/3fffffffffffffff/0 softirq=82/543
 	   (t=65000 jiffies)
 
-<<<<<<< HEAD
-In kernels with CONFIG_RCU_FAST_NO_HZ, even more information is
-printed:
-=======
 In kernels with CONFIG_RCU_FAST_NO_HZ, more information is printed:
->>>>>>> v4.9.227
 
 	INFO: rcu_preempt detected stall on CPU
 	0: (64628 ticks this GP) idle=dd5/3fffffffffffffff/0 softirq=82/543 last_accelerate: a345/d342 nonlazy_posted: 25 .D
@@ -185,8 +144,6 @@ no non-lazy callbacks ("." is printed otherwise, as shown above) and
 "D" indicates that dyntick-idle processing is enabled ("." is printed
 otherwise, for example, if disabled via the "nohz=" kernel boot parameter).
 
-<<<<<<< HEAD
-=======
 If the relevant grace-period kthread has been unable to run prior to
 the stall warning, the following additional line is printed:
 
@@ -196,7 +153,6 @@ Starving the grace-period kthreads of CPU time can of course result in
 RCU CPU stall warnings even when all CPUs and tasks have passed through
 the required quiescent states.
 
->>>>>>> v4.9.227
 
 Multiple Warnings From One Stall
 
@@ -207,8 +163,6 @@ message will be about three times the interval between the beginning
 of the stall and the first message.
 
 
-<<<<<<< HEAD
-=======
 Stall Warnings for Expedited Grace Periods
 
 If an expedited grace period detects a stall, it will place a message
@@ -226,7 +180,6 @@ It is entirely possible to see stall warnings from normal and from
 expedited grace periods at about the same time from the same run.
 
 
->>>>>>> v4.9.227
 What Causes RCU CPU Stall Warnings?
 
 So your kernel printed an RCU CPU stall warning.  The next question is
@@ -252,8 +205,6 @@ o	For !CONFIG_PREEMPT kernels, a CPU looping anywhere in the
 	behavior, you might need to replace some of the cond_resched()
 	calls with calls to cond_resched_rcu_qs().
 
-<<<<<<< HEAD
-=======
 o	Booting Linux using a console connection that is too slow to
 	keep up with the boot-time console-message rate.  For example,
 	a 115Kbaud serial console can be -way- too slow to keep up
@@ -266,7 +217,6 @@ o	Anything that prevents RCU's grace-period kthreads from running.
 	This message will include information on when the kthread last
 	ran and how often it should be expected to run.
 
->>>>>>> v4.9.227
 o	A CPU-bound real-time task in a CONFIG_PREEMPT kernel, which might
 	happen to preempt a low-priority task in the middle of an RCU
 	read-side critical section.   This is especially damaging if
@@ -279,17 +229,10 @@ o	A CPU-bound real-time task in a CONFIG_PREEMPT kernel, which might
 o	A CPU-bound real-time task in a CONFIG_PREEMPT_RT kernel that
 	is running at a higher priority than the RCU softirq threads.
 	This will prevent RCU callbacks from ever being invoked,
-<<<<<<< HEAD
-	and in a CONFIG_TREE_PREEMPT_RCU kernel will further prevent
-	RCU grace periods from ever completing.  Either way, the
-	system will eventually run out of memory and hang.  In the
-	CONFIG_TREE_PREEMPT_RCU case, you might see stall-warning
-=======
 	and in a CONFIG_PREEMPT_RCU kernel will further prevent
 	RCU grace periods from ever completing.  Either way, the
 	system will eventually run out of memory and hang.  In the
 	CONFIG_PREEMPT_RCU case, you might see stall-warning
->>>>>>> v4.9.227
 	messages.
 
 o	A hardware or software issue shuts off the scheduler-clock

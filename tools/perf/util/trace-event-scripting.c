@@ -43,10 +43,6 @@ static int stop_script_unsupported(void)
 static void process_event_unsupported(union perf_event *event __maybe_unused,
 				      struct perf_sample *sample __maybe_unused,
 				      struct perf_evsel *evsel __maybe_unused,
-<<<<<<< HEAD
-				      struct thread *thread __maybe_unused,
-=======
->>>>>>> v4.9.227
 				      struct addr_location *al __maybe_unused)
 {
 }
@@ -99,12 +95,8 @@ static void register_python_scripting(struct scripting_ops *scripting_ops)
 	if (err)
 		die("error registering py script extension");
 
-<<<<<<< HEAD
-	scripting_context = malloc(sizeof(struct scripting_context));
-=======
 	if (scripting_context == NULL)
 		scripting_context = malloc(sizeof(*scripting_context));
->>>>>>> v4.9.227
 }
 
 #ifdef NO_LIBPYTHON
@@ -168,12 +160,8 @@ static void register_perl_scripting(struct scripting_ops *scripting_ops)
 	if (err)
 		die("error registering pl script extension");
 
-<<<<<<< HEAD
-	scripting_context = malloc(sizeof(struct scripting_context));
-=======
 	if (scripting_context == NULL)
 		scripting_context = malloc(sizeof(*scripting_context));
->>>>>>> v4.9.227
 }
 
 #ifdef NO_LIBPERL

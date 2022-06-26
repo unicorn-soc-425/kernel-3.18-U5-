@@ -162,30 +162,10 @@ out:
 static int read_proc_kallsyms(struct pevent *pevent)
 {
 	unsigned int size;
-<<<<<<< HEAD
-	char *buf;
-=======
->>>>>>> v4.9.227
 
 	size = read4(pevent);
 	if (!size)
 		return 0;
-<<<<<<< HEAD
-
-	buf = malloc(size + 1);
-	if (buf == NULL)
-		return -1;
-
-	if (do_read(buf, size) < 0) {
-		free(buf);
-		return -1;
-	}
-	buf[size] = '\0';
-
-	parse_proc_kallsyms(pevent, buf, size);
-
-	free(buf);
-=======
 	/*
 	 * Just skip it, now that we configure libtraceevent to use the
 	 * tools/perf/ symbol resolver.
@@ -199,7 +179,6 @@ static int read_proc_kallsyms(struct pevent *pevent)
 	 */
 	lseek(input_fd, size, SEEK_CUR);
 	trace_data_size += size;
->>>>>>> v4.9.227
 	return 0;
 }
 
@@ -355,18 +334,12 @@ static int read_event_files(struct pevent *pevent)
 		for (x=0; x < count; x++) {
 			size = read8(pevent);
 			ret = read_event_file(pevent, sys, size);
-<<<<<<< HEAD
-			if (ret)
-				return ret;
-		}
-=======
 			if (ret) {
 				free(sys);
 				return ret;
 			}
 		}
 		free(sys);
->>>>>>> v4.9.227
 	}
 	return 0;
 }

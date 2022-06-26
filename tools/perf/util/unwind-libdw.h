@@ -16,11 +16,8 @@ struct unwind_info {
 	unwind_entry_cb_t	cb;
 	void			*arg;
 	int			max_stack;
-<<<<<<< HEAD
-=======
 	int			idx;
 	struct unwind_entry	entries[];
->>>>>>> v4.9.227
 };
 
 #endif /* __PERF_UNWIND_LIBDW_H */

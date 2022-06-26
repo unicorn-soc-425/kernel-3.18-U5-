@@ -11,10 +11,7 @@
 #include <linux/types.h>
 #include "event.h"
 #include "perf_regs.h"
-<<<<<<< HEAD
-=======
 #include "callchain.h"
->>>>>>> v4.9.227
 
 static char *debuginfo_path;
 
@@ -30,11 +27,7 @@ static int __report_module(struct addr_location *al, u64 ip,
 	Dwfl_Module *mod;
 	struct dso *dso = NULL;
 
-<<<<<<< HEAD
-	thread__find_addr_location(ui->thread, ui->machine,
-=======
 	thread__find_addr_location(ui->thread,
->>>>>>> v4.9.227
 				   PERF_RECORD_MISC_USER,
 				   MAP__FUNCTION, ip, al);
 
@@ -49,21 +42,13 @@ static int __report_module(struct addr_location *al, u64 ip,
 		Dwarf_Addr s;
 
 		dwfl_module_info(mod, NULL, &s, NULL, NULL, NULL, NULL, NULL);
-<<<<<<< HEAD
-		if (s != al->map->start)
-=======
 		if (s != al->map->start - al->map->pgoff)
->>>>>>> v4.9.227
 			mod = 0;
 	}
 
 	if (!mod)
 		mod = dwfl_report_elf(ui->dwfl, dso->short_name,
-<<<<<<< HEAD
-				      dso->long_name, -1, al->map->start,
-=======
 				      (dso->symsrc_filename ? dso->symsrc_filename : dso->long_name), -1, al->map->start - al->map->pgoff,
->>>>>>> v4.9.227
 				      false);
 
 	return mod && dwfl_addrmodule(ui->dwfl, ip) == mod ? 0 : -1;
@@ -76,12 +61,6 @@ static int report_module(u64 ip, struct unwind_info *ui)
 	return __report_module(&al, ip, ui);
 }
 
-<<<<<<< HEAD
-static int entry(u64 ip, struct unwind_info *ui)
-
-{
-	struct unwind_entry e;
-=======
 /*
  * Store all entries within entries array,
  * we will process it after we finish unwind.
@@ -90,32 +69,20 @@ static int entry(u64 ip, struct unwind_info *ui)
 
 {
 	struct unwind_entry *e = &ui->entries[ui->idx++];
->>>>>>> v4.9.227
 	struct addr_location al;
 
 	if (__report_module(&al, ip, ui))
 		return -1;
 
-<<<<<<< HEAD
-	e.ip  = ip;
-	e.map = al.map;
-	e.sym = al.sym;
-=======
 	e->ip  = al.addr;
 	e->map = al.map;
 	e->sym = al.sym;
->>>>>>> v4.9.227
 
 	pr_debug("unwind: %s:ip = 0x%" PRIx64 " (0x%" PRIx64 ")\n",
 		 al.sym ? al.sym->name : "''",
 		 ip,
 		 al.map ? al.map->map_ip(al.map, ip) : (u64) 0);
-<<<<<<< HEAD
-
-	return ui->cb(&e, ui->arg);
-=======
 	return 0;
->>>>>>> v4.9.227
 }
 
 static pid_t next_thread(Dwfl *dwfl, void *arg, void **thread_argp)
@@ -134,11 +101,6 @@ static int access_dso_mem(struct unwind_info *ui, Dwarf_Addr addr,
 	struct addr_location al;
 	ssize_t size;
 
-<<<<<<< HEAD
-	thread__find_addr_map(ui->thread, ui->machine, PERF_RECORD_MISC_USER,
-			      MAP__FUNCTION, addr, &al);
-	if (!al.map) {
-=======
 	thread__find_addr_map(ui->thread, PERF_RECORD_MISC_USER,
 			      MAP__FUNCTION, addr, &al);
 	if (!al.map) {
@@ -152,7 +114,6 @@ static int access_dso_mem(struct unwind_info *ui, Dwarf_Addr addr,
 	}
 
 	if (!al.map) {
->>>>>>> v4.9.227
 		pr_debug("unwind: no map for %lx\n", (unsigned long)addr);
 		return -1;
 	}
@@ -214,39 +175,21 @@ frame_callback(Dwfl_Frame *state, void *arg)
 {
 	struct unwind_info *ui = arg;
 	Dwarf_Addr pc;
-<<<<<<< HEAD
-
-	if (!dwfl_frame_pc(state, &pc, NULL)) {
-=======
 	bool isactivation;
 
 	if (!dwfl_frame_pc(state, &pc, &isactivation)) {
->>>>>>> v4.9.227
 		pr_err("%s", dwfl_errmsg(-1));
 		return DWARF_CB_ABORT;
 	}
 
-<<<<<<< HEAD
-=======
 	if (!isactivation)
 		--pc;
 
->>>>>>> v4.9.227
 	return entry(pc, ui) || !(--ui->max_stack) ?
 	       DWARF_CB_ABORT : DWARF_CB_OK;
 }
 
 int unwind__get_entries(unwind_entry_cb_t cb, void *arg,
-<<<<<<< HEAD
-			struct machine *machine, struct thread *thread,
-			struct perf_sample *data,
-			int max_stack)
-{
-	struct unwind_info ui = {
-		.sample		= data,
-		.thread		= thread,
-		.machine	= machine,
-=======
 			struct thread *thread,
 			struct perf_sample *data,
 			int max_stack)
@@ -255,25 +198,16 @@ int unwind__get_entries(unwind_entry_cb_t cb, void *arg,
 		.sample		= data,
 		.thread		= thread,
 		.machine	= thread->mg->machine,
->>>>>>> v4.9.227
 		.cb		= cb,
 		.arg		= arg,
 		.max_stack	= max_stack,
 	};
 	Dwarf_Word ip;
-<<<<<<< HEAD
-	int err = -EINVAL;
-=======
 	int err = -EINVAL, i;
->>>>>>> v4.9.227
 
 	if (!data->user_regs.regs)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	ui.dwfl = dwfl_begin(&offline_callbacks);
-	if (!ui.dwfl)
-=======
 	ui = zalloc(sizeof(ui_buf) + sizeof(ui_buf.entries[0]) * max_stack);
 	if (!ui)
 		return -ENOMEM;
@@ -282,27 +216,12 @@ int unwind__get_entries(unwind_entry_cb_t cb, void *arg,
 
 	ui->dwfl = dwfl_begin(&offline_callbacks);
 	if (!ui->dwfl)
->>>>>>> v4.9.227
 		goto out;
 
 	err = perf_reg_value(&ip, &data->user_regs, PERF_REG_IP);
 	if (err)
 		goto out;
 
-<<<<<<< HEAD
-	err = report_module(ip, &ui);
-	if (err)
-		goto out;
-
-	if (!dwfl_attach_state(ui.dwfl, EM_NONE, thread->tid, &callbacks, &ui))
-		goto out;
-
-	err = dwfl_getthread_frames(ui.dwfl, thread->tid, frame_callback, &ui);
-
-	if (err && !ui.max_stack)
-		err = 0;
-
-=======
 	err = report_module(ip, ui);
 	if (err)
 		goto out;
@@ -327,16 +246,11 @@ int unwind__get_entries(unwind_entry_cb_t cb, void *arg,
 		err = ui->entries[j].ip ? ui->cb(&ui->entries[j], ui->arg) : 0;
 	}
 
->>>>>>> v4.9.227
  out:
 	if (err)
 		pr_debug("unwind: failed with '%s'\n", dwfl_errmsg(-1));
 
-<<<<<<< HEAD
-	dwfl_end(ui.dwfl);
-=======
 	dwfl_end(ui->dwfl);
 	free(ui);
->>>>>>> v4.9.227
 	return 0;
 }

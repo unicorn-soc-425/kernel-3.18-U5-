@@ -38,11 +38,7 @@
 
 #include "../perf.h"
 #include "trace-event.h"
-<<<<<<< HEAD
-#include <api/fs/debugfs.h>
-=======
 #include <api/fs/tracing_path.h>
->>>>>>> v4.9.227
 #include "evsel.h"
 #include "debug.h"
 
@@ -345,22 +341,6 @@ out:
 
 static int record_proc_kallsyms(void)
 {
-<<<<<<< HEAD
-	unsigned int size;
-	const char *path = "/proc/kallsyms";
-	struct stat st;
-	int ret, err = 0;
-
-	ret = stat(path, &st);
-	if (ret < 0) {
-		/* not found */
-		size = 0;
-		if (write(output_fd, &size, 4) != 4)
-			err = -EIO;
-		return err;
-	}
-	return record_file(path, 4);
-=======
 	unsigned long long size = 0;
 	/*
 	 * Just to keep older perf.data file parsers happy, record a zero
@@ -369,7 +349,6 @@ static int record_proc_kallsyms(void)
 	 * different path) couldn't be read.
 	 */
 	return write(output_fd, &size, 4) != 4 ? -EIO : 0;
->>>>>>> v4.9.227
 }
 
 static int record_ftrace_printk(void)
@@ -528,20 +507,14 @@ struct tracing_data *tracing_data_get(struct list_head *pattrs,
 			 "/tmp/perf-XXXXXX");
 		if (!mkstemp(tdata->temp_file)) {
 			pr_debug("Can't make temp file");
-<<<<<<< HEAD
-=======
 			free(tdata);
->>>>>>> v4.9.227
 			return NULL;
 		}
 
 		temp_fd = open(tdata->temp_file, O_RDWR);
 		if (temp_fd < 0) {
 			pr_debug("Can't read '%s'", tdata->temp_file);
-<<<<<<< HEAD
-=======
 			free(tdata);
->>>>>>> v4.9.227
 			return NULL;
 		}
 

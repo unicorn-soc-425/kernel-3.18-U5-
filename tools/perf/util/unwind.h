@@ -14,11 +14,6 @@ struct unwind_entry {
 
 typedef int (*unwind_entry_cb_t)(struct unwind_entry *entry, void *arg);
 
-<<<<<<< HEAD
-#ifdef HAVE_DWARF_UNWIND_SUPPORT
-int unwind__get_entries(unwind_entry_cb_t cb, void *arg,
-			struct machine *machine,
-=======
 struct unwind_libunwind_ops {
 	int (*prepare_access)(struct thread *thread);
 	void (*flush_access)(struct thread *thread);
@@ -30,19 +25,10 @@ struct unwind_libunwind_ops {
 
 #ifdef HAVE_DWARF_UNWIND_SUPPORT
 int unwind__get_entries(unwind_entry_cb_t cb, void *arg,
->>>>>>> v4.9.227
 			struct thread *thread,
 			struct perf_sample *data, int max_stack);
 /* libunwind specific */
 #ifdef HAVE_LIBUNWIND_SUPPORT
-<<<<<<< HEAD
-int libunwind__arch_reg_id(int regnum);
-int unwind__prepare_access(struct thread *thread);
-void unwind__flush_access(struct thread *thread);
-void unwind__finish_access(struct thread *thread);
-#else
-static inline int unwind__prepare_access(struct thread *thread __maybe_unused)
-=======
 #ifndef LIBUNWIND__ARCH_REG_ID
 #define LIBUNWIND__ARCH_REG_ID(regnum) libunwind__arch_reg_id(regnum)
 #endif
@@ -64,7 +50,6 @@ void unwind__finish_access(struct thread *thread);
 static inline int unwind__prepare_access(struct thread *thread __maybe_unused,
 					 struct map *map __maybe_unused,
 					 bool *initialized __maybe_unused)
->>>>>>> v4.9.227
 {
 	return 0;
 }
@@ -76,10 +61,6 @@ static inline void unwind__finish_access(struct thread *thread __maybe_unused) {
 static inline int
 unwind__get_entries(unwind_entry_cb_t cb __maybe_unused,
 		    void *arg __maybe_unused,
-<<<<<<< HEAD
-		    struct machine *machine __maybe_unused,
-=======
->>>>>>> v4.9.227
 		    struct thread *thread __maybe_unused,
 		    struct perf_sample *data __maybe_unused,
 		    int max_stack __maybe_unused)
@@ -87,13 +68,9 @@ unwind__get_entries(unwind_entry_cb_t cb __maybe_unused,
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline int unwind__prepare_access(struct thread *thread __maybe_unused)
-=======
 static inline int unwind__prepare_access(struct thread *thread __maybe_unused,
 					 struct map *map __maybe_unused,
 					 bool *initialized __maybe_unused)
->>>>>>> v4.9.227
 {
 	return 0;
 }

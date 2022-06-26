@@ -7,17 +7,12 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <traceevent/event-parse.h>
-#include "trace-event.h"
-=======
 #include <linux/err.h>
 #include <traceevent/event-parse.h>
 #include <api/fs/tracing_path.h>
 #include <api/fs/fs.h>
 #include "trace-event.h"
 #include "machine.h"
->>>>>>> v4.9.227
 #include "util.h"
 
 /*
@@ -28,10 +23,7 @@
  * there.
  */
 static struct trace_event tevent;
-<<<<<<< HEAD
-=======
 static bool tevent_initialized;
->>>>>>> v4.9.227
 
 int trace_event__init(struct trace_event *t)
 {
@@ -45,8 +37,6 @@ int trace_event__init(struct trace_event *t)
 	return pevent ? 0 : -1;
 }
 
-<<<<<<< HEAD
-=======
 static int trace_event__init2(void)
 {
 	int be = traceevent_host_bigendian();
@@ -72,19 +62,15 @@ int trace_event__register_resolver(struct machine *machine,
 	return pevent_set_function_resolver(tevent.pevent, func, machine);
 }
 
->>>>>>> v4.9.227
 void trace_event__cleanup(struct trace_event *t)
 {
 	traceevent_unload_plugins(t->plugin_list, t->pevent);
 	pevent_free(t->pevent);
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Returns pointer with encoded error via <linux/err.h> interface.
  */
->>>>>>> v4.9.227
 static struct event_format*
 tp_format(const char *sys, const char *name)
 {
@@ -93,22 +79,14 @@ tp_format(const char *sys, const char *name)
 	char path[PATH_MAX];
 	size_t size;
 	char *data;
-<<<<<<< HEAD
-=======
 	int err;
->>>>>>> v4.9.227
 
 	scnprintf(path, PATH_MAX, "%s/%s/%s/format",
 		  tracing_events_path, sys, name);
 
-<<<<<<< HEAD
-	if (filename__read_str(path, &data, &size))
-		return NULL;
-=======
 	err = filename__read_str(path, &data, &size);
 	if (err)
 		return ERR_PTR(err);
->>>>>>> v4.9.227
 
 	pevent_parse_format(pevent, &event, data, size, sys);
 
@@ -116,29 +94,6 @@ tp_format(const char *sys, const char *name)
 	return event;
 }
 
-<<<<<<< HEAD
-struct event_format*
-trace_event__tp_format(const char *sys, const char *name)
-{
-	static bool initialized;
-
-	if (!initialized) {
-		int be = traceevent_host_bigendian();
-		struct pevent *pevent;
-
-		if (trace_event__init(&tevent))
-			return NULL;
-
-		pevent = tevent.pevent;
-		pevent_set_flag(pevent, PEVENT_NSEC_OUTPUT);
-		pevent_set_file_bigendian(pevent, be);
-		pevent_set_host_bigendian(pevent, be);
-		initialized = true;
-	}
-
-	return tp_format(sys, name);
-}
-=======
 /*
  * Returns pointer with encoded error via <linux/err.h> interface.
  */
@@ -158,4 +113,3 @@ struct event_format *trace_event__tp_format_id(int id)
 
 	return pevent_find_event(tevent.pevent, id);
 }
->>>>>>> v4.9.227
