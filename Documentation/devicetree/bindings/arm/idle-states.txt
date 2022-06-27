@@ -317,8 +317,6 @@ follows:
 			    In such systems entry-latency-us + exit-latency-us
 			    will exceed wakeup-latency-us by this duration.
 
-<<<<<<< HEAD
-=======
 	- status:
 		Usage: Optional
 		Value type: <string>
@@ -339,7 +337,6 @@ follows:
 		Definition: A string used as a descriptive name for the idle
 			    state.
 
->>>>>>> v4.9.227
 	In addition to the properties listed above, a state node may require
 	additional properties specifics to the entry-method defined in the
 	idle-states node, please refer to the entry-method bindings
@@ -500,11 +497,7 @@ cpus {
 	};
 
 	idle-states {
-<<<<<<< HEAD
-		entry-method = "arm,psci";
-=======
 		entry-method = "psci";
->>>>>>> v4.9.227
 
 		CPU_RETENTION_0_0: cpu-retention-0-0 {
 			compatible = "arm,idle-state";

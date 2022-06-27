@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-Mediatek MT6589 Platforms Device Tree Bindings
-
-Boards with a SoC of the Mediatek MT6589 shall have the following property:
-
-Required root node property:
-
-compatible: must contain "mediatek,mt6589"
-=======
 MediaTek mt65xx, mt67xx & mt81xx Platforms Device Tree Bindings
 
 Boards with a MediaTek mt65xx/mt67xx/mt81xx SoC shall have the
@@ -25,16 +16,10 @@ compatible: Must contain one of
    "mediatek,mt8127"
    "mediatek,mt8135"
    "mediatek,mt8173"
->>>>>>> v4.9.227
 
 
 Supported boards:
 
-<<<<<<< HEAD
-- bq Aquaris5 smart phone:
-    Required root node properties:
-      - compatible = "mundoreader,bq-aquaris5", "mediatek,mt6589";
-=======
 - Evaluation board for MT2701:
     Required root node properties:
       - compatible = "mediatek,mt2701-evb", "mediatek,mt2701";
@@ -65,4 +50,3 @@ Supported boards:
 - MTK mt8173 tablet EVB:
     Required root node properties:
       - compatible = "mediatek,mt8173-evb", "mediatek,mt8173";
->>>>>>> v4.9.227

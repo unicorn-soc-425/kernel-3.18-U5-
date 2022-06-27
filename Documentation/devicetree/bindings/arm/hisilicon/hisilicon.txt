@@ -1,15 +1,9 @@
 Hisilicon Platforms Device Tree Bindings
 ----------------------------------------------------
-<<<<<<< HEAD
-
-=======
->>>>>>> v4.9.227
 Hi4511 Board
 Required root node properties:
 	- compatible = "hisilicon,hi3620-hi4511";
 
-<<<<<<< HEAD
-=======
 Hi6220 SoC
 Required root node properties:
 	- compatible = "hisilicon,hi6220";
@@ -22,13 +16,10 @@ HiP01 ca9x2 Board
 Required root node properties:
 	- compatible = "hisilicon,hip01-ca9x2";
 
->>>>>>> v4.9.227
 HiP04 D01 Board
 Required root node properties:
 	- compatible = "hisilicon,hip04-d01";
 
-<<<<<<< HEAD
-=======
 HiP05 D02 Board
 Required root node properties:
 	- compatible = "hisilicon,hip05-d02";
@@ -36,7 +27,6 @@ Required root node properties:
 HiP06 D03 Board
 Required root node properties:
 	- compatible = "hisilicon,hip06-d03";
->>>>>>> v4.9.227
 
 Hisilicon system controller
 
@@ -65,8 +55,6 @@ Example:
 	};
 
 -----------------------------------------------------------------------
-<<<<<<< HEAD
-=======
 Hisilicon Hi6220 system controller
 
 Required properties:
@@ -237,7 +225,6 @@ Example:
 	};
 
 -----------------------------------------------------------------------
->>>>>>> v4.9.227
 Hisilicon CPU controller
 
 Required properties:

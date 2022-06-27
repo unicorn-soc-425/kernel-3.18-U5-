@@ -14,17 +14,12 @@ The target is named "raid" and it accepts the following parameters:
     <#raid_devs> <metadata_dev0> <dev0> [.. <metadata_devN> <devN>]
 
 <raid_type>:
-<<<<<<< HEAD
-  raid1		RAID1 mirroring
-  raid4		RAID4 dedicated parity disk
-=======
   raid0		RAID0 striping (no resilience)
   raid1		RAID1 mirroring
   raid4		RAID4 with dedicated last parity disk
   raid5_n 	RAID5 with dedicated last parity disk suporting takeover
 		Same as raid4
 		-Transitory layout
->>>>>>> v4.9.227
   raid5_la	RAID5 left asymmetric
 		- rotating parity 0 with data continuation
   raid5_ra	RAID5 right asymmetric
@@ -39,9 +34,6 @@ The target is named "raid" and it accepts the following parameters:
 		- rotating parity N (right-to-left) with data restart
   raid6_nc	RAID6 N continue
 		- rotating parity N (right-to-left) with data continuation
-<<<<<<< HEAD
-  raid10        Various RAID10 inspired algorithms chosen by additional params
-=======
   raid6_n_6	RAID6 with dedicate parity disks
 		- parity and Q-syndrome on the last 2 disks;
 		  laylout for takeover from/to raid4/raid5_n
@@ -55,7 +47,6 @@ The target is named "raid" and it accepts the following parameters:
 		- layout for takeover from raid5_rs from/to raid6
   raid10        Various RAID10 inspired algorithms chosen by additional params
 		(see raid10_format and raid10_copies below)
->>>>>>> v4.9.227
 		- RAID10: Striped Mirrors (aka 'Striping on top of mirrors')
 		- RAID1E: Integrated Adjacent Stripe Mirroring
 		- RAID1E: Integrated Offset Stripe Mirroring
@@ -141,12 +132,6 @@ The target is named "raid" and it accepts the following parameters:
 		Here we see layouts closely akin to 'RAID1E - Integrated
 		Offset Stripe Mirroring'.
 
-<<<<<<< HEAD
-<#raid_devs>: The number of devices composing the array.
-	Each device consists of two entries.  The first is the device
-	containing the metadata (if any); the second is the one containing the
-	data.
-=======
         [delta_disks <N>]
 		The delta_disks option value (-251 < N < +251) triggers
 		device removal (negative value) or device addition (positive
@@ -182,7 +167,6 @@ The target is named "raid" and it accepts the following parameters:
 	data. A Maximum of 64 metadata/data device entries are supported
 	up to target version 1.8.0.
 	1.9.0 supports up to 253 which is enforced by the used MD kernel runtime.
->>>>>>> v4.9.227
 
 	If a drive has failed or is missing at creation time, a '-' can be
 	given for both the metadata and data drives for a given position.
@@ -270,9 +254,6 @@ include:
 	"recover"- Initiate/continue a recover process.
 	"check"  - Initiate a check (i.e. a "scrub") of the array.
 	"repair" - Initiate a repair of the array.
-<<<<<<< HEAD
-	"reshape"- Currently unsupported (-EINVAL).
-=======
 
 
 Discard Support
@@ -304,7 +285,6 @@ For trusted devices, the following dm-raid module parameter can be set
 to safely enable discard support for RAID 4/5/6:
     'devices_handle_discards_safely'
 
->>>>>>> v4.9.227
 
 Version History
 ---------------
@@ -321,8 +301,6 @@ Version History
 	New status (STATUSTYPE_INFO) fields: sync_action and mismatch_cnt.
 1.5.1   Add ability to restore transiently failed devices on resume.
 1.5.2   'mismatch_cnt' is zero unless [last_]sync_action is "check".
-<<<<<<< HEAD
-=======
 1.6.0   Add discard support (and devices_handle_discard_safely module param).
 1.7.0   Add support for MD RAID0 mappings.
 1.8.0   Explictely check for compatible flags in the superblock metadata
@@ -332,4 +310,3 @@ Version History
 1.9.0   Add support for RAID level takeover/reshape/region size
 	and set size reduction.
 1.9.1   Fix activation of existing RAID 4/10 mapped devices
->>>>>>> v4.9.227

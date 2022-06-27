@@ -157,10 +157,7 @@ nodes to be present and contain the properties described below.
 			    "arm,cortex-a17"
 			    "arm,cortex-a53"
 			    "arm,cortex-a57"
-<<<<<<< HEAD
-=======
 			    "arm,cortex-a72"
->>>>>>> v4.9.227
 			    "arm,cortex-m0"
 			    "arm,cortex-m0+"
 			    "arm,cortex-m1"
@@ -170,10 +167,7 @@ nodes to be present and contain the properties described below.
 			    "arm,cortex-r5"
 			    "arm,cortex-r7"
 			    "brcm,brahma-b15"
-<<<<<<< HEAD
-=======
 			    "brcm,vulcan"
->>>>>>> v4.9.227
 			    "cavium,thunder"
 			    "faraday,fa526"
 			    "intel,sa110"
@@ -183,16 +177,10 @@ nodes to be present and contain the properties described below.
 			    "marvell,pj4a"
 			    "marvell,pj4b"
 			    "marvell,sheeva-v5"
-<<<<<<< HEAD
-			    "qcom,krait"
-			    "qcom,scorpion"
-			    "qcom,kryo"
-=======
 			    "nvidia,tegra132-denver"
 			    "qcom,krait"
 			    "qcom,kryo"
 			    "qcom,scorpion"
->>>>>>> v4.9.227
 	- enable-method
 		Value type: <stringlist>
 		Usage and definition depend on ARM architecture version.
@@ -200,23 +188,6 @@ nodes to be present and contain the properties described below.
 			  be one of:
 			     "psci"
 			     "spin-table"
-<<<<<<< HEAD
-			     "qcom,8953-arm-cortex-acc"
-			     "qcom,8937-arm-cortex-acc"
-
-			# On ARM 32-bit systems this property is optional and
-			  can be one of:
-			    "allwinner,sun6i-a31"
-			    "arm,psci"
-			    "brcm,brahma-b15"
-			    "marvell,armada-375-smp"
-			    "marvell,armada-380-smp"
-			    "marvell,armada-xp-smp"
-			    "qcom,gcc-msm8660"
-			    "qcom,kpss-acc-v1"
-			    "qcom,kpss-acc-v2"
-			    "rockchip,rk3066-smp"
-=======
 			# On ARM 32-bit systems this property is optional and
 			  can be one of:
 			    "allwinner,sun6i-a31"
@@ -239,7 +210,6 @@ nodes to be present and contain the properties described below.
 			    "rockchip,rk3036-smp"
 			    "rockchip,rk3066-smp"
 			    "ste,dbx500-smp"
->>>>>>> v4.9.227
 
 	- cpu-release-addr
 		Usage: required for systems that have an "enable-method"
@@ -250,23 +220,6 @@ nodes to be present and contain the properties described below.
 			  property identifying a 64-bit zero-initialised
 			  memory location.
 
-<<<<<<< HEAD
-	- efficiency
-		Usage: optional.
-		Value type: <u32>
-		Definition:
-			# Specifies the CPU efficiency. The CPU efficiency is
-			a unit less number and it is intended to show relative
-			performance of CPUs when normalized for clock frequency
-			(instructions per cycle performance).
-
-			The efficiency of a CPU can vary across SoCs depending
-			on the cache size, bus interconnect frequencies etc.
-			This value overrides the default efficiency value
-			defined for the corresponding CPU architecture.
-
-=======
->>>>>>> v4.9.227
 	- qcom,saw
 		Usage: required for systems that have an "enable-method"
 		       property value of "qcom,kpss-acc-v1" or
@@ -288,8 +241,6 @@ nodes to be present and contain the properties described below.
 			# List of phandles to idle state nodes supported
 			  by this cpu [3].
 
-<<<<<<< HEAD
-=======
 	- rockchip,pmu
 		Usage: optional for systems that have an "enable-method"
 		       property value of "rockchip,rk3066-smp"
@@ -316,7 +267,6 @@ nodes to be present and contain the properties described below.
 
 			    where voltage is in uV, frequency is in MHz.
 
->>>>>>> v4.9.227
 Example 1 (dual-cluster big.LITTLE system 32-bit):
 
 	cpus {

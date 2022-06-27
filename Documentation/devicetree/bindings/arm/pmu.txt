@@ -7,15 +7,11 @@ representation in the device tree should be done as under:-
 Required properties:
 
 - compatible : should be one of
-<<<<<<< HEAD
-	"arm,armv8-pmuv3"
-=======
 	"apm,potenza-pmu"
 	"arm,armv8-pmuv3"
 	"arm,cortex-a72-pmu"
 	"arm,cortex-a57-pmu"
 	"arm,cortex-a53-pmu"
->>>>>>> v4.9.227
 	"arm,cortex-a17-pmu"
 	"arm,cortex-a15-pmu"
 	"arm,cortex-a12-pmu"
@@ -26,25 +22,16 @@ Required properties:
 	"arm,arm11mpcore-pmu"
 	"arm,arm1176-pmu"
 	"arm,arm1136-pmu"
-<<<<<<< HEAD
-	"qcom,kryo-pmuv3"
-=======
 	"brcm,vulcan-pmu"
 	"cavium,thunder-pmu"
 	"qcom,scorpion-pmu"
 	"qcom,scorpion-mp-pmu"
->>>>>>> v4.9.227
 	"qcom,krait-pmu"
 - interrupts : 1 combined interrupt or 1 per core. If the interrupt is a per-cpu
                interrupt (PPI) then 1 interrupt should be specified.
 
 Optional properties:
 
-<<<<<<< HEAD
-- qcom,no-pc-write : Indicates that this PMU doesn't support the 0xc and 0xd
-                     events.
-
-=======
 - interrupt-affinity : When using SPIs, specifies a list of phandles to CPU
                        nodes corresponding directly to the affinity of
 		       the SPIs listed in the interrupts property.
@@ -73,7 +60,6 @@ Optional properties:
 		      not valid for non-ARMv7 CPUs or ARMv7 CPUs booting Linux
 		      in Non-secure state.
 
->>>>>>> v4.9.227
 Example:
 
 pmu {

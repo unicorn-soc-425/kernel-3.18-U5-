@@ -74,8 +74,6 @@ Required root node properties:
 i.MX6q generic board
 Required root node properties:
     - compatible = "fsl,imx6q";
-<<<<<<< HEAD
-=======
 
 Freescale Vybrid Platform Device Tree Bindings
 ----------------------------------------------
@@ -153,4 +151,3 @@ LS2080A ARMv8 based RDB Board
 Required root node properties:
     - compatible = "fsl,ls2080a-rdb", "fsl,ls2080a";
 
->>>>>>> v4.9.227

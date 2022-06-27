@@ -1,19 +1,13 @@
 NVIDIA Tegra Power Management Controller (PMC)
 
-<<<<<<< HEAD
-=======
 == Power Management Controller Node ==
 
->>>>>>> v4.9.227
 The PMC block interacts with an external Power Management Unit. The PMC
 mostly controls the entry and exit of the system from different sleep
 modes. It provides power-gating controllers for SoC and CPU power-islands.
 
 Required properties:
 - name : Should be pmc
-<<<<<<< HEAD
-- compatible : Should contain "nvidia,tegra<chip>-pmc".
-=======
 - compatible : Should contain one of the following:
 	For Tegra20 must contain "nvidia,tegra20-pmc".
 	For Tegra30 must contain "nvidia,tegra30-pmc".
@@ -21,7 +15,6 @@ Required properties:
 	For Tegra124 must contain "nvidia,tegra124-pmc"
 	For Tegra132 must contain "nvidia,tegra124-pmc"
 	For Tegra210 must contain "nvidia,tegra210-pmc"
->>>>>>> v4.9.227
 - reg : Offset and length of the register set for the device
 - clocks : Must contain an entry for each entry in clock-names.
   See ../clocks/clock-bindings.txt for details.
@@ -62,8 +55,6 @@ Required properties when nvidia,suspend-mode=<0>:
   sleep mode, the warm boot code will restore some PLLs, clocks and then
   bring up CPU0 for resuming the system.
 
-<<<<<<< HEAD
-=======
 Hardware-triggered thermal reset:
 On Tegra30, Tegra114 and Tegra124, if the 'i2c-thermtrip' subnode exists,
 hardware-triggered thermal reset will be enabled.
@@ -86,7 +77,6 @@ Optional nodes:
 	       should match the powergates on the Tegra SoC. See "Powergate
 	       Nodes" below.
 
->>>>>>> v4.9.227
 Example:
 
 / SoC dts including file
@@ -109,8 +99,6 @@ pmc@7000f400 {
 / Tegra board dts file
 {
 	...
-<<<<<<< HEAD
-=======
 	pmc@7000f400 {
 		i2c-thermtrip {
 			nvidia,i2c-controller-id = <4>;
@@ -120,7 +108,6 @@ pmc@7000f400 {
 		};
 	};
 	...
->>>>>>> v4.9.227
 	clocks {
 		compatible = "simple-bus";
 		#address-cells = <1>;
@@ -135,8 +122,6 @@ pmc@7000f400 {
 	};
 	...
 };
-<<<<<<< HEAD
-=======
 
 
 == Powergate Nodes ==
@@ -210,4 +195,3 @@ Example:
 		power-domains = <&pd_audio>;
 		...
 	};
->>>>>>> v4.9.227

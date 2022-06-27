@@ -1,12 +1,6 @@
 NVIDIA Tegra AHB
 
 Required properties:
-<<<<<<< HEAD
-- compatible : "nvidia,tegra20-ahb" or "nvidia,tegra30-ahb"
-- reg : Should contain 1 register ranges(address and length)
-
-Example:
-=======
 - compatible : For Tegra20, must contain "nvidia,tegra20-ahb".  For
   Tegra30, must contain "nvidia,tegra30-ahb".  Otherwise, must contain
   '"nvidia,<chip>-ahb", "nvidia,tegra30-ahb"' where <chip> is tegra124,
@@ -17,7 +11,6 @@ Example:
   be be <0x6000c000 0x150>.
 
 Example (for a Tegra20 chip):
->>>>>>> v4.9.227
 	ahb: ahb@6000c004 {
 		compatible = "nvidia,tegra20-ahb";
 		reg = <0x6000c004 0x10c>; /* AHB Arbitration + Gizmo Controller */

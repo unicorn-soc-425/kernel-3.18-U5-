@@ -6,12 +6,8 @@ This binding uses the common clock binding[1].
 
 Required properties:
 - compatible : shall be one of the following:
-<<<<<<< HEAD
-	"atmel,at91sam9x5-sckc":
-=======
 	"atmel,at91sam9x5-sckc" or
 	"atmel,sama5d4-sckc":
->>>>>>> v4.9.227
 		at91 SCKC (Slow Clock Controller)
 		This node contains the slow clock definitions.
 
@@ -82,12 +78,9 @@ Required properties:
 	"atmel,sama5d4-clk-h32mx":
 		at91 h32mx clock
 
-<<<<<<< HEAD
-=======
 	"atmel,sama5d2-clk-generated":
 		at91 generated clock
 
->>>>>>> v4.9.227
 Required properties for SCKC node:
 - reg : defines the IO memory reserved for the SCKC.
 - #size-cells : shall be 0 (reg is used to encode clk id).
@@ -259,11 +252,7 @@ Required properties for peripheral clocks:
 - #address-cells : shall be 1 (reg is used to encode clk id).
 - clocks : shall be the master clock phandle.
 	e.g. clocks = <&mck>;
-<<<<<<< HEAD
-- name: device tree node describing a specific system clock.
-=======
 - name: device tree node describing a specific peripheral clock.
->>>>>>> v4.9.227
 	* #clock-cells : from common clock binding; shall be set to 0.
 	* reg: peripheral id. See Atmel's datasheets to get a full
 	  list of peripheral ids.
@@ -476,8 +465,6 @@ For example:
 		compatible = "atmel,sama5d4-clk-h32mx";
 		clocks = <&mck>;
 	};
-<<<<<<< HEAD
-=======
 
 Required properties for generated clocks:
 - #size-cells : shall be 0 (reg is used to encode clk id).
@@ -510,4 +497,3 @@ For example:
 			atmel,clk-output-range = <0 83000000>;
 		};
 	};
->>>>>>> v4.9.227

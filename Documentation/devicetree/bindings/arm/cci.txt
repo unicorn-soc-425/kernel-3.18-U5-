@@ -31,15 +31,10 @@ specific to ARM.
 	- compatible
 		Usage: required
 		Value type: <string>
-<<<<<<< HEAD
-		Definition: must be set to
-			    "arm,cci-400"
-=======
 		Definition: must contain one of the following:
 			    "arm,cci-400"
 			    "arm,cci-500"
 			    "arm,cci-550"
->>>>>>> v4.9.227
 
 	- reg
 		Usage: required
@@ -101,10 +96,6 @@ specific to ARM.
 		- compatible
 			Usage: required
 			Value type: <string>
-<<<<<<< HEAD
-			Definition: must be "arm,cci-400-pmu"
-
-=======
 			Definition: Must contain one of:
 				 "arm,cci-400-pmu,r0"
 				 "arm,cci-400-pmu,r1"
@@ -112,7 +103,6 @@ specific to ARM.
 						      secure access to CCI registers
 				 "arm,cci-500-pmu,r0"
 				 "arm,cci-550-pmu,r0"
->>>>>>> v4.9.227
 		- reg:
 			Usage: required
 			Value type: Integer cells. A register entry, expressed

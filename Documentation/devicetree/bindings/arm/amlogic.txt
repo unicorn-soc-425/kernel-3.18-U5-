@@ -2,12 +2,6 @@ Amlogic MesonX device tree bindings
 -------------------------------------------
 
 Boards with the Amlogic Meson6 SoC shall have the following properties:
-<<<<<<< HEAD
-
-Required root node property:
-
-compatible = "amlogic,meson6";
-=======
   Required root node property:
     compatible: "amlogic,meson6"
 
@@ -34,4 +28,3 @@ Board compatible values:
   - "hardkernel,odroid-c2" (Meson gxbb)
   - "amlogic,p200" (Meson gxbb)
   - "amlogic,p201" (Meson gxbb)
->>>>>>> v4.9.227

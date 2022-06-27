@@ -7,11 +7,6 @@ SoCs:
     compatible = "renesas,emev2"
   - RZ/A1H (R7S72100)
     compatible = "renesas,r7s72100"
-<<<<<<< HEAD
-  - SH-Mobile AP4 (R8A73720/SH7372)
-    compatible = "renesas,sh7372"
-=======
->>>>>>> v4.9.227
   - SH-Mobile AG5 (R8A73A00/SH73A0)
     compatible = "renesas,sh73a0"
   - R-Mobile APE6 (R8A73A40)
@@ -32,13 +27,10 @@ SoCs:
     compatible = "renesas,r8a7793"
   - R-Car E2 (R8A77940)
     compatible = "renesas,r8a7794"
-<<<<<<< HEAD
-=======
   - R-Car H3 (R8A77950)
     compatible = "renesas,r8a7795"
   - R-Car M3-W (R8A77960)
     compatible = "renesas,r8a7796"
->>>>>>> v4.9.227
 
 
 Boards:
@@ -47,32 +39,18 @@ Boards:
     compatible = "renesas,alt", "renesas,r8a7794"
   - APE6-EVM
     compatible = "renesas,ape6evm", "renesas,r8a73a4"
-<<<<<<< HEAD
-  - APE6-EVM - Reference Device Tree Implementation
-    compatible = "renesas,ape6evm-reference", "renesas,r8a73a4"
-  - Atmark Techno Armadillo-800 EVA
-    compatible = "renesas,armadillo800eva"
-  - BOCK-W
-    compatible = "renesas,bockw", "renesas,r8a7778"
-  - BOCK-W - Reference Device Tree Implementation
-    compatible = "renesas,bockw-reference", "renesas,r8a7778"
-=======
   - Atmark Techno Armadillo-800 EVA
     compatible = "renesas,armadillo800eva"
   - Blanche (RTP0RC7792SEB00010S)
     compatible = "renesas,blanche", "renesas,r8a7792"
   - BOCK-W
     compatible = "renesas,bockw", "renesas,r8a7778"
->>>>>>> v4.9.227
   - Genmai (RTK772100BC00000BR)
     compatible = "renesas,genmai", "renesas,r7s72100"
   - Gose
     compatible = "renesas,gose", "renesas,r8a7793"
-<<<<<<< HEAD
-=======
   - H3ULCB (RTP0RC7795SKB00010S)
     compatible = "renesas,h3ulcb", "renesas,r8a7795";
->>>>>>> v4.9.227
   - Henninger
     compatible = "renesas,henninger", "renesas,r8a7791"
   - Koelsch (RTP0RC7791SEB00010S)
@@ -81,20 +59,6 @@ Boards:
     compatible = "renesas,kzm9d", "renesas,emev2"
   - Kyoto Microcomputer Co. KZM-A9-GT
     compatible = "renesas,kzm9g", "renesas,sh73a0"
-<<<<<<< HEAD
-  - Kyoto Microcomputer Co. KZM-A9-GT - Reference Device Tree Implementation
-    compatible = "renesas,kzm9g-reference", "renesas,sh73a0"
-  - Lager (RTP0RC7790SEB00010S)
-    compatible = "renesas,lager", "renesas,r8a7790"
-  - Mackerel (R0P7372LC0016RL, AP4 EVM 2nd)
-    compatible = "renesas,mackerel"
-  - Marzen
-    compatible = "renesas,marzen", "renesas,r8a7779"
-
-Note: Reference Device Tree Implementations are temporary implementations
-      to ease the migration from platform devices to Device Tree, and are
-      intended to be removed in the future.
-=======
   - Lager (RTP0RC7790SEB00010S)
     compatible = "renesas,lager", "renesas,r8a7790"
   - Marzen
@@ -111,4 +75,3 @@ Note: Reference Device Tree Implementations are temporary implementations
     compatible = "renesas,silk", "renesas,r8a7794"
   - Wheat
     compatible = "renesas,wheat", "renesas,r8a7792"
->>>>>>> v4.9.227

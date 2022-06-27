@@ -14,13 +14,10 @@ Required properties:
 Optional properties:
 - clock-output-names : From common clock binding.
 
-<<<<<<< HEAD
-=======
 Some clocks that require special treatments are also handled by that
 driver, with the compatibles:
   - allwinner,sun4i-a10-pll3-2x-clk
 
->>>>>>> v4.9.227
 Example:
 	clock {
 		compatible = "fixed-factor-clock";

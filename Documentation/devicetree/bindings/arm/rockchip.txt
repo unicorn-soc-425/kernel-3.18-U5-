@@ -1,8 +1,6 @@
 Rockchip platforms device tree bindings
 ---------------------------------------
 
-<<<<<<< HEAD
-=======
 - Kylin RK3036 board:
     Required root node properties:
       - compatible = "rockchip,kylin-rk3036", "rockchip,rk3036";
@@ -11,16 +9,10 @@ Rockchip platforms device tree bindings
     Required root node properties:
       - compatible = "haoyu,marsboard-rk3066", "rockchip,rk3066a";
 
->>>>>>> v4.9.227
 - bq Curie 2 tablet:
     Required root node properties:
       - compatible = "mundoreader,bq-curie2", "rockchip,rk3066a";
 
-<<<<<<< HEAD
-- Radxa Rock board:
-    Required root node properties:
-      - compatible = "radxa,rock", "rockchip,rk3188";
-=======
 - ChipSPARK Rayeager PX2 board:
     Required root node properties:
       - compatible = "chipspark,rayeager-px2", "rockchip,rk3066a";
@@ -133,4 +125,3 @@ Rockchip platforms device tree bindings
 - Tronsmart Orion R68 Meta
     Required root node properties:
       - compatible = "tronsmart,orion-r68-meta", "rockchip,rk3368";
->>>>>>> v4.9.227
