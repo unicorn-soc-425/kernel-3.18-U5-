@@ -2,32 +2,14 @@
 
 The CPG generates core clocks for the R-Car Gen2 SoCs. It includes three PLLs
 and several fixed ratio dividers.
-<<<<<<< HEAD
-=======
 The CPG also provides a Clock Domain for SoC devices, in combination with the
 CPG Module Stop (MSTP) Clocks.
->>>>>>> v4.9.227
 
 Required Properties:
 
   - compatible: Must be one of
     - "renesas,r8a7790-cpg-clocks" for the r8a7790 CPG
     - "renesas,r8a7791-cpg-clocks" for the r8a7791 CPG
-<<<<<<< HEAD
-    - "renesas,r8a7794-cpg-clocks" for the r8a7794 CPG
-    - "renesas,rcar-gen2-cpg-clocks" for the generic R-Car Gen2 CPG
-
-  - reg: Base address and length of the memory resource used by the CPG
-
-  - clocks: Reference to the parent clock
-  - #clock-cells: Must be 1
-  - clock-output-names: The names of the clocks. Supported clocks are "main",
-    "pll0", "pll1", "pll3", "lb", "qspi", "sdh", "sd0", "sd1" and "z"
-
-
-Example
--------
-=======
     - "renesas,r8a7792-cpg-clocks" for the r8a7792 CPG
     - "renesas,r8a7793-cpg-clocks" for the r8a7793 CPG
     - "renesas,r8a7794-cpg-clocks" for the r8a7794 CPG
@@ -53,18 +35,11 @@ Examples
 --------
 
   - CPG device node:
->>>>>>> v4.9.227
 
 	cpg_clocks: cpg_clocks@e6150000 {
 		compatible = "renesas,r8a7790-cpg-clocks",
 			     "renesas,rcar-gen2-cpg-clocks";
 		reg = <0 0xe6150000 0 0x1000>;
-<<<<<<< HEAD
-		clocks = <&extal_clk>;
-		#clock-cells = <1>;
-		clock-output-names = "main", "pll0, "pll1", "pll3",
-				     "lb", "qspi", "sdh", "sd0", "sd1", "z";
-=======
 		clocks = <&extal_clk &usb_extal_clk>;
 		#clock-cells = <1>;
 		clock-output-names = "main", "pll0, "pll1", "pll3",
@@ -82,5 +57,4 @@ Examples
 		interrupts = <0 69 IRQ_TYPE_LEVEL_HIGH>;
 		clocks = <&mstp5_clks R8A7790_CLK_THERMAL>;
 		power-domains = <&cpg_clocks>;
->>>>>>> v4.9.227
 	};

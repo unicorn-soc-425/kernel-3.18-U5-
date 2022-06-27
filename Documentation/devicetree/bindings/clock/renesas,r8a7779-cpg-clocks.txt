@@ -1,13 +1,9 @@
 * Renesas R8A7779 Clock Pulse Generator (CPG)
 
 The CPG generates core clocks for the R8A7779. It includes one PLL and
-<<<<<<< HEAD
-several fixed ratio dividers
-=======
 several fixed ratio dividers.
 The CPG also provides a Clock Domain for SoC devices, in combination with the
 CPG Module Stop (MSTP) Clocks.
->>>>>>> v4.9.227
 
 Required Properties:
 
@@ -18,16 +14,6 @@ Required Properties:
   - #clock-cells: Must be 1
   - clock-output-names: The names of the clocks. Supported clocks are "plla",
     "z", "zs", "s", "s1", "p", "b", "out".
-<<<<<<< HEAD
-
-
-Example
--------
-
-	cpg_clocks: cpg_clocks@ffc80000 {
-		compatible = "renesas,r8a7779-cpg-clocks";
-		reg = <0 0xffc80000 0 0x30>;
-=======
   - #power-domain-cells: Must be 0
 
 SoC devices that are part of the CPG/MSTP Clock Domain and can be power-managed
@@ -44,13 +30,10 @@ Examples
 	cpg_clocks: cpg_clocks@ffc80000 {
 		compatible = "renesas,r8a7779-cpg-clocks";
 		reg = <0xffc80000 0x30>;
->>>>>>> v4.9.227
 		clocks = <&extal_clk>;
 		#clock-cells = <1>;
 		clock-output-names = "plla", "z", "zs", "s", "s1", "p",
 		                     "b", "out";
-<<<<<<< HEAD
-=======
 		#power-domain-cells = <0>;
 	};
 
@@ -63,5 +46,4 @@ Examples
 		interrupts = <0 100 IRQ_TYPE_LEVEL_HIGH>;
 		clocks = <&mstp1_clks R8A7779_CLK_SATA>;
 		power-domains = <&cpg_clocks>;
->>>>>>> v4.9.227
 	};

@@ -2,33 +2,20 @@
 
 The CPG generates core clocks for the RZ SoCs. It includes the PLL, variable
 CPU and GPU clocks, and several fixed ratio dividers.
-<<<<<<< HEAD
-=======
 The CPG also provides a Clock Domain for SoC devices, in combination with the
 CPG Module Stop (MSTP) Clocks.
->>>>>>> v4.9.227
 
 Required Properties:
 
   - compatible: Must be one of
     - "renesas,r7s72100-cpg-clocks" for the r7s72100 CPG
-<<<<<<< HEAD
-    - "renesas,rz-cpg-clocks" for the generic RZ CPG
-=======
     and "renesas,rz-cpg-clocks" as a fallback.
->>>>>>> v4.9.227
   - reg: Base address and length of the memory resource used by the CPG
   - clocks: References to possible parent clocks. Order must match clock modes
     in the datasheet. For the r7s72100, this is extal, usb_x1.
   - #clock-cells: Must be 1
   - clock-output-names: The names of the clocks. Supported clocks are "pll",
     "i", and "g"
-<<<<<<< HEAD
-
-
-Example
--------
-=======
   - #power-domain-cells: Must be 0
 
 SoC devices that are part of the CPG/MSTP Clock Domain and can be power-managed
@@ -41,7 +28,6 @@ Examples
 --------
 
   - CPG device node:
->>>>>>> v4.9.227
 
 	cpg_clocks: cpg_clocks@fcfe0000 {
 		#clock-cells = <1>;
@@ -50,8 +36,6 @@ Examples
 		reg = <0xfcfe0000 0x18>;
 		clocks = <&extal_clk>, <&usb_x1_clk>;
 		clock-output-names = "pll", "i", "g";
-<<<<<<< HEAD
-=======
 		#power-domain-cells = <0>;
 	};
 
@@ -67,5 +51,4 @@ Examples
 		clock-names = "fck";
 		power-domains = <&cpg_clocks>;
 		status = "disabled";
->>>>>>> v4.9.227
 	};
