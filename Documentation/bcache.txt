@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-Say you've got a big slow raid 6, and an X-25E or three. Wouldn't it be
-=======
 Say you've got a big slow raid 6, and an ssd or three. Wouldn't it be
->>>>>>> v4.9.227
 nice if you could use them as cache... Hence bcache.
 
 Wiki and git repositories are at:
@@ -12,11 +8,7 @@ Wiki and git repositories are at:
 
 It's designed around the performance characteristics of SSDs - it only allocates
 in erase block sized buckets, and it uses a hybrid btree/log to track cached
-<<<<<<< HEAD
-extants (which can be anywhere from a single sector to the bucket size). It's
-=======
 extents (which can be anywhere from a single sector to the bucket size). It's
->>>>>>> v4.9.227
 designed to avoid random writes at all costs; it fills up an erase block
 sequentially, then issues a discard before reusing it.
 
@@ -63,14 +55,10 @@ immediately.  Without udev, you can manually register devices like this:
 Registering the backing device makes the bcache device show up in /dev; you can
 now format it and use it as normal. But the first time using a new bcache
 device, it'll be running in passthrough mode until you attach it to a cache.
-<<<<<<< HEAD
-See the section on attaching.
-=======
 If you are thinking about using bcache later, it is recommended to setup all your
 slow devices as bcache backing devices without a cache, and you can choose to add
 a caching device later.
 See 'ATTACHING' section below.
->>>>>>> v4.9.227
 
 The devices show up as:
 
@@ -87,21 +75,14 @@ To get started:
   mount /dev/bcache0 /mnt
 
 You can control bcache devices through sysfs at /sys/block/bcache<N>/bcache .
-<<<<<<< HEAD
-=======
 You can also control them through /sys/fs//bcache/<cset-uuid>/ .
->>>>>>> v4.9.227
 
 Cache devices are managed as sets; multiple caches per set isn't supported yet
 but will allow for mirroring of metadata and dirty data in the future. Your new
 cache set shows up as /sys/fs/bcache/<UUID>
 
-<<<<<<< HEAD
-ATTACHING:
-=======
 ATTACHING
 ---------
->>>>>>> v4.9.227
 
 After your cache device and backing device are registered, the backing device
 must be attached to your cache set to enable caching. Attaching a backing
@@ -129,12 +110,8 @@ but all the cached data will be invalidated. If there was dirty data in the
 cache, don't expect the filesystem to be recoverable - you will have massive
 filesystem corruption, though ext4's fsck does work miracles.
 
-<<<<<<< HEAD
-ERROR HANDLING:
-=======
 ERROR HANDLING
 --------------
->>>>>>> v4.9.227
 
 Bcache tries to transparently handle IO errors to/from the cache device without
 affecting normal operation; if it sees too many errors (the threshold is
@@ -156,9 +133,6 @@ the backing devices to passthrough mode.
    writeback mode). It currently doesn't do anything intelligent if it fails to
    read some of the dirty data, though.
 
-<<<<<<< HEAD
-TROUBLESHOOTING PERFORMANCE:
-=======
 
 HOWTO/COOKBOOK
 --------------
@@ -313,14 +287,11 @@ other purposes.
 
 TROUBLESHOOTING PERFORMANCE
 ---------------------------
->>>>>>> v4.9.227
 
 Bcache has a bunch of config options and tunables. The defaults are intended to
 be reasonable for typical desktop and server workloads, but they're not what you
 want for getting the best possible numbers when benchmarking.
 
-<<<<<<< HEAD
-=======
  - Backing device alignment
 
    The default metadata size in bcache is 8k.  If your backing device is
@@ -337,7 +308,6 @@ want for getting the best possible numbers when benchmarking.
    volume to the following data-spindle counts without re-aligning:
 	3,4,5,6,7,8,9,10,12,14,15,18,20,21 ...
 
->>>>>>> v4.9.227
  - Bad write performance
 
    If write performance is not what you expected, you probably wanted to be
@@ -345,11 +315,7 @@ want for getting the best possible numbers when benchmarking.
    maturity, but simply because in writeback mode you'll lose data if something
    happens to your SSD)
 
-<<<<<<< HEAD
-   # echo writeback > /sys/block/bcache0/cache_mode
-=======
    # echo writeback > /sys/block/bcache0/bcache/cache_mode
->>>>>>> v4.9.227
 
  - Bad performance, or traffic not going to the SSD that you'd expect
 
@@ -402,13 +368,9 @@ want for getting the best possible numbers when benchmarking.
    Solution: warm the cache by doing writes, or use the testing branch (there's
    a fix for the issue there).
 
-<<<<<<< HEAD
-SYSFS - BACKING DEVICE:
-=======
 
 SYSFS - BACKING DEVICE
 ----------------------
->>>>>>> v4.9.227
 
 Available at /sys/block/<bdev>/bcache, /sys/block/bcache*/bcache and
 (if attached) /sys/fs/bcache/<cset-uuid>/bdev*
@@ -453,11 +415,7 @@ sequential_merge
   against all new requests to determine which new requests are sequential
   continuations of previous requests for the purpose of determining sequential
   cutoff. This is necessary if the sequential cutoff value is greater than the
-<<<<<<< HEAD
-  maximum acceptable sequential size for any single request. 
-=======
   maximum acceptable sequential size for any single request.
->>>>>>> v4.9.227
 
 state
   The backing device can be in one of four different states:
@@ -544,11 +502,7 @@ bucket_size
   Size of buckets
 
 cache<0..n>
-<<<<<<< HEAD
-  Symlink to each of the cache devices comprising this cache set. 
-=======
   Symlink to each of the cache devices comprising this cache set.
->>>>>>> v4.9.227
 
 cache_available_percent
   Percentage of cache device which doesn't contain dirty data, and could

@@ -1,41 +1,3 @@
-<<<<<<< HEAD
-Intel P-state driver
---------------------
-
-This driver implements a scaling driver with an internal governor for
-Intel Core processors.  The driver follows the same model as the
-Transmeta scaling driver (longrun.c) and implements the setpolicy()
-instead of target().  Scaling drivers that implement setpolicy() are
-assumed to implement internal governors by the cpufreq core. All the
-logic for selecting the current P state is contained within the
-driver; no external governor is used by the cpufreq core.
-
-Intel SandyBridge+ processors are supported.
-
-New sysfs files for controlling P state selection have been added to
-/sys/devices/system/cpu/intel_pstate/
-
-      max_perf_pct: limits the maximum P state that will be requested by
-      the driver stated as a percentage of the available performance. The
-      available (P states) performance may be reduced by the no_turbo
-      setting described below.
-
-      min_perf_pct: limits the minimum P state that will be  requested by
-      the driver stated as a percentage of the max (non-turbo)
-      performance level.
-
-      no_turbo: limits the driver to selecting P states below the turbo
-      frequency range.
-
-For contemporary Intel processors, the frequency is controlled by the
-processor itself and the P-states exposed to software are related to
-performance levels.  The idea that frequency can be set to a single
-frequency is fiction for Intel Core processors. Even if the scaling
-driver selects a single P state the actual frequency the processor
-will run at is selected by the processor itself.
-
-New debugfs files have also been added to /sys/kernel/debug/pstate_snb/
-=======
 Intel P-State driver
 --------------------
 
@@ -164,7 +126,6 @@ When HWP mode is not used, debugfs files have also been added to allow the
 tuning of the internal governor algorithm. These files are located at
 /sys/kernel/debug/pstate_snb/. The algorithm uses a PID (Proportional
 Integral Derivative) controller. The PID tunable parameters are:
->>>>>>> v4.9.227
 
       deadband
       d_gain_pct
@@ -172,8 +133,6 @@ Integral Derivative) controller. The PID tunable parameters are:
       p_gain_pct
       sample_rate_ms
       setpoint
-<<<<<<< HEAD
-=======
 
 To adjust these parameters, some understanding of driver implementation is
 necessary. There are some tweeks described here, but be very careful. Adjusting
@@ -261,4 +220,3 @@ intel_pstate_cpu_init
  gnome-terminal--4510  [002] ..s.  2537.649844: intel_pstate_set_pstate <-intel_pstate_timer_func
      gnome-shell-3409  [001] ..s.  2537.650850: intel_pstate_set_pstate <-intel_pstate_timer_func
           <idle>-0     [000] ..s.  2537.654843: intel_pstate_set_pstate <-intel_pstate_timer_func
->>>>>>> v4.9.227

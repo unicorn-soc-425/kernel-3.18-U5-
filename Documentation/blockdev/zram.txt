@@ -14,44 +14,6 @@ Statistics for individual zram devices are exported through sysfs nodes at
 
 * Usage
 
-<<<<<<< HEAD
-Following shows a typical sequence of steps for using zram.
-
-1) Load Module:
-	modprobe zram num_devices=4
-	This creates 4 devices: /dev/zram{0,1,2,3}
-	(num_devices parameter is optional. Default: 1)
-
-2) Set max number of compression streams
-	Compression backend may use up to max_comp_streams compression streams,
-	thus allowing up to max_comp_streams concurrent compression operations.
-	By default, compression backend uses single compression stream.
-
-	Examples:
-	#show max compression streams number
-	cat /sys/block/zram0/max_comp_streams
-
-	#set max compression streams number to 3
-	echo 3 > /sys/block/zram0/max_comp_streams
-
-Note:
-In order to enable compression backend's multi stream support max_comp_streams
-must be initially set to desired concurrency level before ZRAM device
-initialisation. Once the device initialised as a single stream compression
-backend (max_comp_streams equals to 1), you will see error if you try to change
-the value of max_comp_streams because single stream compression backend
-implemented as a special case by lock overhead issue and does not support
-dynamic max_comp_streams. Only multi stream backend supports dynamic
-max_comp_streams adjustment.
-
-3) Select compression algorithm
-	Using comp_algorithm device attribute one can see available and
-	currently selected (shown in square brackets) compression algortithms,
-	change selected compression algorithm (once the device is initialised
-	there is no way to change compression algorithm).
-
-	Examples:
-=======
 There are several ways to configure and manage zram device(-s):
 a) using zram and zram_control sysfs attributes
 b) using zramctl utility, provided by util-linux (util-linux@vger.kernel.org).
@@ -114,7 +76,6 @@ change selected compression algorithm (once the device is initialised
 there is no way to change compression algorithm).
 
 Examples:
->>>>>>> v4.9.227
 	#show supported compression algorithms
 	cat /sys/block/zram0/comp_algorithm
 	lzo [lz4]
@@ -122,19 +83,6 @@ Examples:
 	#select lzo compression algorithm
 	echo lzo > /sys/block/zram0/comp_algorithm
 
-<<<<<<< HEAD
-4) Set Disksize
-        Set disk size by writing the value to sysfs node 'disksize'.
-        The value can be either in bytes or you can use mem suffixes.
-        Examples:
-            # Initialize /dev/zram0 with 50MB disksize
-            echo $((50*1024*1024)) > /sys/block/zram0/disksize
-
-            # Using mem suffixes
-            echo 256K > /sys/block/zram0/disksize
-            echo 512M > /sys/block/zram0/disksize
-            echo 1G > /sys/block/zram0/disksize
-=======
 For the time being, the `comp_algorithm' content does not necessarily
 show every compression algorithm supported by the kernel. We keep this
 list primarily to simplify device configuration and one can configure
@@ -156,7 +104,6 @@ Examples:
 	echo 256K > /sys/block/zram0/disksize
 	echo 512M > /sys/block/zram0/disksize
 	echo 1G > /sys/block/zram0/disksize
->>>>>>> v4.9.227
 
 Note:
 There is little point creating a zram of greater than twice the size of memory
@@ -164,22 +111,6 @@ since we expect a 2:1 compression ratio. Note that zram uses about 0.1% of the
 size of the disk when not in use so a huge zram is wasteful.
 
 5) Set memory limit: Optional
-<<<<<<< HEAD
-	Set memory limit by writing the value to sysfs node 'mem_limit'.
-	The value can be either in bytes or you can use mem suffixes.
-	In addition, you could change the value in runtime.
-	Examples:
-	    # limit /dev/zram0 with 50MB memory
-	    echo $((50*1024*1024)) > /sys/block/zram0/mem_limit
-
-	    # Using mem suffixes
-	    echo 256K > /sys/block/zram0/mem_limit
-	    echo 512M > /sys/block/zram0/mem_limit
-	    echo 1G > /sys/block/zram0/mem_limit
-
-	    # To disable memory limit
-	    echo 0 > /sys/block/zram0/mem_limit
-=======
 Set memory limit by writing the value to sysfs node 'mem_limit'.
 The value can be either in bytes or you can use mem suffixes.
 In addition, you could change the value in runtime.
@@ -194,7 +125,6 @@ Examples:
 
 	# To disable memory limit
 	echo 0 > /sys/block/zram0/mem_limit
->>>>>>> v4.9.227
 
 6) Activate:
 	mkswap /dev/zram0
@@ -203,12 +133,6 @@ Examples:
 	mkfs.ext4 /dev/zram1
 	mount /dev/zram1 /tmp
 
-<<<<<<< HEAD
-7) Stats:
-Per-device statistics are exported as various nodes under /sys/block/zram<id>/
-
-A brief description of exported device attritbutes. For more details please
-=======
 7) Add/remove zram devices
 
 zram provides a control interface, which enables dynamic (on-demand) device
@@ -230,7 +154,6 @@ execute
 Per-device statistics are exported as various nodes under /sys/block/zram<id>/
 
 A brief description of exported device attributes. For more details please
->>>>>>> v4.9.227
 read Documentation/ABI/testing/sysfs-block-zram.
 
 Name            access            description
@@ -251,14 +174,6 @@ zero_pages        RO    the number of zero filled pages written to this disk
 orig_data_size    RO    uncompressed size of data stored in this disk
 compr_data_size   RO    compressed size of data stored in this disk
 mem_used_total    RO    the amount of memory allocated for this disk
-<<<<<<< HEAD
-mem_used_max      RW    the maximum amount memory zram have consumed to
-                        store compressed data
-mem_limit         RW    the maximum amount of memory ZRAM can use to store
-                        the compressed data
-num_migrated      RO    the number of objects migrated migrated by compaction
-
-=======
 mem_used_max      RW    the maximum amount of memory zram have consumed to
                         store the data (to reset this counter to the actual
                         current value, write 1 to this attribute)
@@ -268,7 +183,6 @@ pages_compacted   RO    the number of pages freed during compaction
                         (available only via zram<id>/mm_stat node)
 compact           WO    trigger memory compaction
 debug_stat        RO    this file is used for zram debugging purposes
->>>>>>> v4.9.227
 
 WARNING
 =======
@@ -314,19 +228,11 @@ line of text and contains the following stats separated by whitespace:
 	zero_pages
 	num_migrated
 
-<<<<<<< HEAD
-8) Deactivate:
-	swapoff /dev/zram0
-	umount /dev/zram1
-
-9) Reset:
-=======
 9) Deactivate:
 	swapoff /dev/zram0
 	umount /dev/zram1
 
 10) Reset:
->>>>>>> v4.9.227
 	Write any positive value to 'reset' sysfs node
 	echo 1 > /sys/block/zram0/reset
 	echo 1 > /sys/block/zram1/reset
