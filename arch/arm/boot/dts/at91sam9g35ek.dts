@@ -8,10 +8,7 @@
  */
 /dts-v1/;
 #include "at91sam9g35.dtsi"
-<<<<<<< HEAD
-=======
 #include "at91sam9x5dm.dtsi"
->>>>>>> v4.9.227
 #include "at91sam9x5ek.dtsi"
 
 / {
@@ -24,10 +21,6 @@
 				phy-mode = "rmii";
 				status = "okay";
 			};
-<<<<<<< HEAD
-		};
-	};
-=======
 
 			hlcdc: hlcdc@f8038000 {
 				status = "okay";
@@ -50,5 +43,4 @@
 	panel_reg: panel_regulator {
 		status = "okay";
 	};
->>>>>>> v4.9.227
 };

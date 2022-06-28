@@ -10,12 +10,8 @@
 / {
 
 	chosen {
-<<<<<<< HEAD
-		bootargs = "mem=64M console=ttyS0,115200 root=/dev/mtdblock5 rw rootfstype=ubifs";
-=======
 		bootargs = "mem=64M root=/dev/mtdblock5 rw rootfstype=ubifs";
 		stdout-path = "serial0:115200n8";
->>>>>>> v4.9.227
 	};
 
 	memory {
@@ -23,18 +19,6 @@
 	};
 
 	clocks {
-<<<<<<< HEAD
-		#address-cells = <1>;
-		#size-cells = <1>;
-		ranges;
-
-		main_clock: clock@0 {
-			compatible = "atmel,osc", "fixed-clock";
-			clock-frequency = <18432000>;
-		};
-
-=======
->>>>>>> v4.9.227
 		slow_xtal {
 			clock-frequency = <32768>;
 		};
@@ -120,11 +104,6 @@
 				};
 			};
 
-<<<<<<< HEAD
-			watchdog@fffffd40 {
-				status = "okay";
-			};
-=======
 			shdwc@fffffd10 {
 				atmel,wakeup-counter = <10>;
 				atmel,wakeup-rtt-timer;
@@ -142,7 +121,6 @@
 			gpbr: syscon@fffffd50 {
 				status = "okay";
 			};
->>>>>>> v4.9.227
 		};
 
 		nand0: nand@40000000 {
@@ -192,21 +170,13 @@
 			};
 		};
 
-<<<<<<< HEAD
-		usb0: ohci@00500000 {
-=======
 		usb0: ohci@500000 {
->>>>>>> v4.9.227
 			num-ports = <2>;
 			status = "okay";
 		};
 	};
 
-<<<<<<< HEAD
-	i2c@0 {
-=======
 	i2c-gpio-0 {
->>>>>>> v4.9.227
 		status = "okay";
 
 		24c512@50 {
@@ -227,22 +197,14 @@
 			label = "Button 3";
 			gpios = <&pioA 30 GPIO_ACTIVE_LOW>;
 			linux,code = <0x103>;
-<<<<<<< HEAD
-			gpio-key,wakeup;
-=======
 			wakeup-source;
->>>>>>> v4.9.227
 		};
 
 		btn4 {
 			label = "Button 4";
 			gpios = <&pioA 31 GPIO_ACTIVE_LOW>;
 			linux,code = <0x104>;
-<<<<<<< HEAD
-			gpio-key,wakeup;
-=======
 			wakeup-source;
->>>>>>> v4.9.227
 		};
 	};
 

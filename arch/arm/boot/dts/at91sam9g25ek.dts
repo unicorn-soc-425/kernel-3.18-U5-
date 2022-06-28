@@ -16,8 +16,6 @@
 
 	ahb {
 		apb {
-<<<<<<< HEAD
-=======
 			spi0: spi@f0000000 {
 				status = "disabled";
 			};
@@ -49,13 +47,10 @@
 				};
 			};
 
->>>>>>> v4.9.227
 			macb0: ethernet@f802c000 {
 				phy-mode = "rmii";
 				status = "okay";
 			};
-<<<<<<< HEAD
-=======
 
 			isi: isi@f8048000 {
 				status = "okay";
@@ -69,7 +64,6 @@
 					};
 				};
 			};
->>>>>>> v4.9.227
 		};
 	};
 };

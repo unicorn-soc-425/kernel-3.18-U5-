@@ -62,8 +62,6 @@
 		};
 	};
 
-<<<<<<< HEAD
-=======
 	sram0: sram@00300000 {
 		compatible = "mmio-sram";
 		reg = <0x00300000 0x14000>;
@@ -74,7 +72,6 @@
 		reg = <0x00500000 0x4000>;
 	};
 
->>>>>>> v4.9.227
 	ahb {
 		compatible = "simple-bus";
 		#address-cells = <1>;
@@ -96,11 +93,7 @@
 			};
 
 			pmc: pmc@fffffc00 {
-<<<<<<< HEAD
-				compatible = "atmel,at91rm9200-pmc";
-=======
 				compatible = "atmel,at91rm9200-pmc", "syscon";
->>>>>>> v4.9.227
 				reg = <0xfffffc00 0x100>;
 				interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
 				interrupt-controller;
@@ -311,11 +304,7 @@
 						reg = <17>;
 					};
 
-<<<<<<< HEAD
-					ac91_clk: ac97_clk {
-=======
 					ac97_clk: ac97_clk {
->>>>>>> v4.9.227
 						#clock-cells = <0>;
 						reg = <18>;
 					};
@@ -388,31 +377,20 @@
 				compatible = "atmel,at91rm9200-tcb";
 				reg = <0xfff7c000 0x100>;
 				interrupts = <19 IRQ_TYPE_LEVEL_HIGH 0>;
-<<<<<<< HEAD
-				clocks = <&tcb_clk>;
-				clock-names = "t0_clk";
-=======
 				clocks = <&tcb_clk>, <&slow_xtal>;
 				clock-names = "t0_clk", "slow_clk";
->>>>>>> v4.9.227
 			};
 
 			rstc@fffffd00 {
 				compatible = "atmel,at91sam9260-rstc";
 				reg = <0xfffffd00 0x10>;
-<<<<<<< HEAD
-=======
 				clocks = <&slow_xtal>;
->>>>>>> v4.9.227
 			};
 
 			shdwc@fffffd10 {
 				compatible = "atmel,at91sam9260-shdwc";
 				reg = <0xfffffd10 0x10>;
-<<<<<<< HEAD
-=======
 				clocks = <&slow_xtal>;
->>>>>>> v4.9.227
 			};
 
 			pinctrl@fffff200 {
@@ -711,8 +689,6 @@
 					};
 				};
 
-<<<<<<< HEAD
-=======
 				can {
 					pinctrl_can_rx_tx: can_rx_tx {
 						atmel,pins =
@@ -731,7 +707,6 @@
 					};
 				};
 
->>>>>>> v4.9.227
 				pioA: gpio@fffff200 {
 					compatible = "atmel,at91rm9200-gpio";
 					reg = <0xfffff200 0x200>;
@@ -789,11 +764,7 @@
 			};
 
 			dbgu: serial@ffffee00 {
-<<<<<<< HEAD
-				compatible = "atmel,at91sam9260-usart";
-=======
 				compatible = "atmel,at91sam9260-dbgu", "atmel,at91sam9260-usart";
->>>>>>> v4.9.227
 				reg = <0xffffee00 0x200>;
 				interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
 				pinctrl-names = "default";
@@ -864,10 +835,6 @@
 				status = "disabled";
 			};
 
-<<<<<<< HEAD
-			macb0: ethernet@fffbc000 {
-				compatible = "cdns,at32ap7000-macb", "cdns,macb";
-=======
 			ac97: sound@fffa0000 {
 				compatible = "atmel,at91sam9263-ac97c";
 				reg = <0xfffa0000 0x4000>;
@@ -881,7 +848,6 @@
 
 			macb0: ethernet@fffbc000 {
 				compatible = "cdns,at91sam9260-macb", "cdns,macb";
->>>>>>> v4.9.227
 				reg = <0xfffbc000 0x100>;
 				interrupts = <21 IRQ_TYPE_LEVEL_HIGH 3>;
 				pinctrl-names = "default";
@@ -892,11 +858,7 @@
 			};
 
 			usb1: gadget@fff78000 {
-<<<<<<< HEAD
-				compatible = "atmel,at91rm9200-udc";
-=======
 				compatible = "atmel,at91sam9263-udc";
->>>>>>> v4.9.227
 				reg = <0xfff78000 0x4000>;
 				interrupts = <24 IRQ_TYPE_LEVEL_HIGH 2>;
 				clocks = <&udc_clk>, <&udpck>;
@@ -942,17 +904,10 @@
 				compatible = "atmel,at91sam9260-wdt";
 				reg = <0xfffffd40 0x10>;
 				interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
-<<<<<<< HEAD
-				atmel,watchdog-type = "hardware";
-				atmel,reset-type = "all";
-				atmel,dbg-halt;
-				atmel,idle-halt;
-=======
 				clocks = <&slow_xtal>;
 				atmel,watchdog-type = "hardware";
 				atmel,reset-type = "all";
 				atmel,dbg-halt;
->>>>>>> v4.9.227
 				status = "disabled";
 			};
 
@@ -991,8 +946,6 @@
 				clock-names = "pwm_clk";
 				status = "disabled";
 			};
-<<<<<<< HEAD
-=======
 
 			can: can@fffac000 {
 				compatible = "atmel,at91sam9263-can";
@@ -1025,7 +978,6 @@
 				reg = <0xfffffd60 0x50>;
 				status = "disabled";
 			};
->>>>>>> v4.9.227
 		};
 
 		fb0: fb@0x00700000 {
@@ -1034,11 +986,8 @@
 			interrupts = <26 IRQ_TYPE_LEVEL_HIGH 3>;
 			pinctrl-names = "default";
 			pinctrl-0 = <&pinctrl_fb>;
-<<<<<<< HEAD
-=======
 			clocks = <&lcd_clk>, <&lcd_clk>;
 			clock-names = "lcdc_clk", "hclk";
->>>>>>> v4.9.227
 			status = "disabled";
 		};
 
@@ -1064,22 +1013,13 @@
 			compatible = "atmel,at91rm9200-ohci", "usb-ohci";
 			reg = <0x00a00000 0x100000>;
 			interrupts = <29 IRQ_TYPE_LEVEL_HIGH 2>;
-<<<<<<< HEAD
-			clocks = <&usb>, <&ohci_clk>, <&ohci_clk>, <&uhpck>;
-			clock-names = "usb_clk", "ohci_clk", "hclk", "uhpck";
-=======
 			clocks = <&ohci_clk>, <&ohci_clk>, <&uhpck>;
 			clock-names = "ohci_clk", "hclk", "uhpck";
->>>>>>> v4.9.227
 			status = "disabled";
 		};
 	};
 
-<<<<<<< HEAD
-	i2c@0 {
-=======
 	i2c-gpio-0 {
->>>>>>> v4.9.227
 		compatible = "i2c-gpio";
 		gpios = <&pioB 4 GPIO_ACTIVE_HIGH /* sda */
 			 &pioB 5 GPIO_ACTIVE_HIGH /* scl */
