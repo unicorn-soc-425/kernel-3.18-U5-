@@ -65,15 +65,6 @@
 require 5;	# at least perl 5
 use strict;
 use File::Find;
-<<<<<<< HEAD
-
-my $nm = ($ENV{'NM'} || "nm") . " -p";
-my $objdump = ($ENV{'OBJDUMP'} || "objdump") . " -s -j .comment";
-my $srctree = "";
-my $objtree = "";
-$srctree = "$ENV{'srctree'}/" if (exists($ENV{'srctree'}));
-$objtree = "$ENV{'objtree'}/" if (exists($ENV{'objtree'}));
-=======
 use File::Spec;
 
 my $nm = ($ENV{'NM'} || "nm") . " -p";
@@ -82,7 +73,6 @@ my $srctree = File::Spec->curdir();
 my $objtree = File::Spec->curdir();
 $srctree = File::Spec->rel2abs($ENV{'srctree'}) if (exists($ENV{'srctree'}));
 $objtree = File::Spec->rel2abs($ENV{'objtree'}) if (exists($ENV{'objtree'}));
->>>>>>> v4.9.227
 
 if ($#ARGV != -1) {
 	print STDERR "usage: $0 takes no parameters\n";
@@ -128,11 +118,8 @@ my %nameexception = (
     'kallsyms_names'	=> 1,
     'kallsyms_num_syms'	=> 1,
     'kallsyms_addresses'=> 1,
-<<<<<<< HEAD
-=======
     'kallsyms_offsets'	=> 1,
     'kallsyms_relative_base'=> 1,
->>>>>>> v4.9.227
     '__this_module'	=> 1,
     '_etext'		=> 1,
     '_edata'		=> 1,
@@ -245,15 +232,9 @@ sub do_nm
 	}
 	($source = $basename) =~ s/\.o$//;
 	if (-e "$source.c" || -e "$source.S") {
-<<<<<<< HEAD
-		$source = "$objtree$File::Find::dir/$source";
-	} else {
-		$source = "$srctree$File::Find::dir/$source";
-=======
 		$source = File::Spec->catfile($objtree, $File::Find::dir, $source)
 	} else {
 		$source = File::Spec->catfile($srctree, $File::Find::dir, $source)
->>>>>>> v4.9.227
 	}
 	if (! -e "$source.c" && ! -e "$source.S") {
 		# No obvious source, exclude the object if it is conglomerate

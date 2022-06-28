@@ -19,8 +19,6 @@
 # Authors:
 #	 Todd Brandt <todd.e.brandt@linux.intel.com>
 #
-<<<<<<< HEAD
-=======
 # Links:
 #	 Home Page
 #	   https://01.org/suspendresume
@@ -32,7 +30,6 @@
 #	   Command List:
 #	     https://01.org/suspendresume/documentation/command-list
 #
->>>>>>> v4.9.227
 # Description:
 #	 This tool is designed to assist kernel and OS developers in optimizing
 #	 their linux stack's suspend/resume time. Using a kernel image built
@@ -49,11 +46,8 @@
 #		 CONFIG_FTRACE=y
 #		 CONFIG_FUNCTION_TRACER=y
 #		 CONFIG_FUNCTION_GRAPH_TRACER=y
-<<<<<<< HEAD
-=======
 #		 CONFIG_KPROBES=y
 #		 CONFIG_KPROBES_ON_FTRACE=y
->>>>>>> v4.9.227
 #
 #	 For kernel versions older than 3.15:
 #	 The following additional kernel parameters are required:
@@ -71,10 +65,7 @@ import re
 import platform
 from datetime import datetime
 import struct
-<<<<<<< HEAD
-=======
 import ConfigParser
->>>>>>> v4.9.227
 
 # ----------------- CLASSES --------------------
 
@@ -83,10 +74,6 @@ import ConfigParser
 #	 A global, single-instance container used to
 #	 store system values and test parameters
 class SystemValues:
-<<<<<<< HEAD
-	version = 3.0
-	verbose = False
-=======
 	ansi = False
 	version = '4.2'
 	verbose = False
@@ -96,7 +83,6 @@ class SystemValues:
 	srgap = 0
 	cgexp = False
 	outdir = ''
->>>>>>> v4.9.227
 	testdir = '.'
 	tpath = '/sys/kernel/debug/tracing/'
 	fpdtpath = '/sys/firmware/acpi/tables/FPDT'
@@ -106,32 +92,13 @@ class SystemValues:
 		'device_pm_callback_end',
 		'device_pm_callback_start'
 	]
-<<<<<<< HEAD
-	modename = {
-		'freeze': 'Suspend-To-Idle (S0)',
-		'standby': 'Power-On Suspend (S1)',
-		'mem': 'Suspend-to-RAM (S3)',
-		'disk': 'Suspend-to-disk (S4)'
-	}
-=======
 	testcommand = ''
->>>>>>> v4.9.227
 	mempath = '/dev/mem'
 	powerfile = '/sys/power/state'
 	suspendmode = 'mem'
 	hostname = 'localhost'
 	prefix = 'test'
 	teststamp = ''
-<<<<<<< HEAD
-	dmesgfile = ''
-	ftracefile = ''
-	htmlfile = ''
-	rtcwake = False
-	rtcwaketime = 10
-	rtcpath = ''
-	android = False
-	adb = 'adb'
-=======
 	dmesgstart = 0.0
 	dmesgfile = ''
 	ftracefile = ''
@@ -140,7 +107,6 @@ class SystemValues:
 	rtcwake = False
 	rtcwaketime = 10
 	rtcpath = ''
->>>>>>> v4.9.227
 	devicefilter = []
 	stamp = 0
 	execcount = 1
@@ -148,11 +114,6 @@ class SystemValues:
 	usecallgraph = False
 	usetraceevents = False
 	usetraceeventsonly = False
-<<<<<<< HEAD
-	notestrun = False
-	altdevname = dict()
-	postresumetime = 0
-=======
 	usetracemarkers = True
 	usekprobes = True
 	usedevsrc = False
@@ -160,16 +121,12 @@ class SystemValues:
 	devprops = dict()
 	postresumetime = 0
 	devpropfmt = '# Device Properties: .*'
->>>>>>> v4.9.227
 	tracertypefmt = '# tracer: (?P<t>.*)'
 	firmwarefmt = '# fwsuspend (?P<s>[0-9]*) fwresume (?P<r>[0-9]*)$'
 	postresumefmt = '# post resume time (?P<t>[0-9]*)$'
 	stampfmt = '# suspend-(?P<m>[0-9]{2})(?P<d>[0-9]{2})(?P<y>[0-9]{2})-'+\
 				'(?P<H>[0-9]{2})(?P<M>[0-9]{2})(?P<S>[0-9]{2})'+\
 				' (?P<host>.*) (?P<mode>.*) (?P<kernel>.*)$'
-<<<<<<< HEAD
-	def __init__(self):
-=======
 	kprobecolor = 'rgba(204,204,204,0.5)'
 	synccolor = 'rgba(204,204,204,0.5)'
 	debugfuncs = []
@@ -241,7 +198,6 @@ class SystemValues:
 			self.embedded = True
 			self.addlogs = True
 			self.htmlfile = os.environ['LOG_FILE']
->>>>>>> v4.9.227
 		self.hostname = platform.node()
 		if(self.hostname == ''):
 			self.hostname = 'localhost'
@@ -252,15 +208,12 @@ class SystemValues:
 		if os.path.exists(rtc) and os.path.exists(rtc+'/date') and \
 			os.path.exists(rtc+'/time') and os.path.exists(rtc+'/wakealarm'):
 			self.rtcpath = rtc
-<<<<<<< HEAD
-=======
 		if (hasattr(sys.stdout, 'isatty') and sys.stdout.isatty()):
 			self.ansi = True
 	def setPrecision(self, num):
 		if num < 0 or num > 6:
 			return
 		self.timeformat = '%.{0}f'.format(num)
->>>>>>> v4.9.227
 	def setOutputFile(self):
 		if((self.htmlfile == '') and (self.dmesgfile != '')):
 			m = re.match('(?P<name>.*)_dmesg\.txt$', self.dmesgfile)
@@ -272,24 +225,6 @@ class SystemValues:
 				self.htmlfile = m.group('name')+'.html'
 		if(self.htmlfile == ''):
 			self.htmlfile = 'output.html'
-<<<<<<< HEAD
-	def initTestOutput(self, subdir):
-		if(not self.android):
-			self.prefix = self.hostname
-			v = open('/proc/version', 'r').read().strip()
-			kver = string.split(v)[2]
-		else:
-			self.prefix = 'android'
-			v = os.popen(self.adb+' shell cat /proc/version').read().strip()
-			kver = string.split(v)[2]
-		testtime = datetime.now().strftime('suspend-%m%d%y-%H%M%S')
-		if(subdir != "."):
-			self.testdir = subdir+"/"+testtime
-		else:
-			self.testdir = testtime
-		self.teststamp = \
-			'# '+testtime+' '+self.prefix+' '+self.suspendmode+' '+kver
-=======
 	def initTestOutput(self, subdir, testpath=''):
 		self.prefix = self.hostname
 		v = open('/proc/version', 'r').read().strip()
@@ -310,25 +245,17 @@ class SystemValues:
 			self.ftracefile = \
 				'/tmp/'+testtime+'_'+self.suspendmode+'_ftrace.txt'
 			return
->>>>>>> v4.9.227
 		self.dmesgfile = \
 			self.testdir+'/'+self.prefix+'_'+self.suspendmode+'_dmesg.txt'
 		self.ftracefile = \
 			self.testdir+'/'+self.prefix+'_'+self.suspendmode+'_ftrace.txt'
 		self.htmlfile = \
 			self.testdir+'/'+self.prefix+'_'+self.suspendmode+'.html'
-<<<<<<< HEAD
-		os.mkdir(self.testdir)
-	def setDeviceFilter(self, devnames):
-		self.devicefilter = string.split(devnames)
-	def rtcWakeAlarm(self):
-=======
 		if not os.path.isdir(self.testdir):
 			os.mkdir(self.testdir)
 	def setDeviceFilter(self, devnames):
 		self.devicefilter = string.split(devnames)
 	def rtcWakeAlarmOn(self):
->>>>>>> v4.9.227
 		os.system('echo 0 > '+self.rtcpath+'/wakealarm')
 		outD = open(self.rtcpath+'/date', 'r').read().strip()
 		outT = open(self.rtcpath+'/time', 'r').read().strip()
@@ -346,11 +273,6 @@ class SystemValues:
 			nowtime = int(datetime.now().strftime('%s'))
 		alarm = nowtime + self.rtcwaketime
 		os.system('echo %d > %s/wakealarm' % (alarm, self.rtcpath))
-<<<<<<< HEAD
-
-sysvals = SystemValues()
-
-=======
 	def rtcWakeAlarmOff(self):
 		os.system('echo 0 > %s/wakealarm' % self.rtcpath)
 	def initdmesg(self):
@@ -706,7 +628,6 @@ class DevProps:
 			return ' async'
 		return ' sync'
 
->>>>>>> v4.9.227
 # Class: DeviceNode
 # Description:
 #	 A container used to create a device hierachy, with a single root node
@@ -760,10 +681,7 @@ class Data:
 	html_device_id = 0
 	stamp = 0
 	outfile = ''
-<<<<<<< HEAD
-=======
 	dev_ubiquitous = ['msleep', 'udelay']
->>>>>>> v4.9.227
 	def __init__(self, num):
 		idchar = 'abcdefghijklmnopqrstuvwxyz'
 		self.testnumber = num
@@ -793,12 +711,9 @@ class Data:
 								'row': 0, 'color': '#FFFFCC', 'order': 9}
 		}
 		self.phases = self.sortedPhases()
-<<<<<<< HEAD
-=======
 		self.devicegroups = []
 		for phase in self.phases:
 			self.devicegroups.append([phase])
->>>>>>> v4.9.227
 	def getStart(self):
 		return self.dmesg[self.phases[0]]['start']
 	def setStart(self, time):
@@ -815,53 +730,6 @@ class Data:
 			for dev in list:
 				d = list[dev]
 				if(d['pid'] == pid and time >= d['start'] and
-<<<<<<< HEAD
-					time <= d['end']):
-					return False
-		return True
-	def addIntraDevTraceEvent(self, action, name, pid, time):
-		if(action == 'mutex_lock_try'):
-			color = 'red'
-		elif(action == 'mutex_lock_pass'):
-			color = 'green'
-		elif(action == 'mutex_unlock'):
-			color = 'blue'
-		else:
-			# create separate colors based on the name
-			v1 = len(name)*10 % 256
-			v2 = string.count(name, 'e')*100 % 256
-			v3 = ord(name[0])*20 % 256
-			color = '#%06X' % ((v1*0x10000) + (v2*0x100) + v3)
-		for phase in self.phases:
-			list = self.dmesg[phase]['list']
-			for dev in list:
-				d = list[dev]
-				if(d['pid'] == pid and time >= d['start'] and
-					time <= d['end']):
-					e = TraceEvent(action, name, color, time)
-					if('traceevents' not in d):
-						d['traceevents'] = []
-					d['traceevents'].append(e)
-					return d
-					break
-		return 0
-	def capIntraDevTraceEvent(self, action, name, pid, time):
-		for phase in self.phases:
-			list = self.dmesg[phase]['list']
-			for dev in list:
-				d = list[dev]
-				if(d['pid'] == pid and time >= d['start'] and
-					time <= d['end']):
-					if('traceevents' not in d):
-						return
-					for e in d['traceevents']:
-						if(e.action == action and
-							e.name == name and not e.ready):
-							e.length = time - e.time
-							e.ready = True
-							break
-					return
-=======
 					time < d['end']):
 					return False
 		return True
@@ -917,7 +785,6 @@ class Data:
 		e = TraceEvent(title, kprobename, start, end - start)
 		tgtdev['src'].append(e)
 		return True
->>>>>>> v4.9.227
 	def trimTimeVal(self, t, t0, dT, left):
 		if left:
 			if(t > t0):
@@ -953,19 +820,11 @@ class Data:
 					cg.end = self.trimTimeVal(cg.end, t0, dT, left)
 					for line in cg.list:
 						line.time = self.trimTimeVal(line.time, t0, dT, left)
-<<<<<<< HEAD
-				if('traceevents' in d):
-					for e in d['traceevents']:
-						e.time = self.trimTimeVal(e.time, t0, dT, left)
-	def normalizeTime(self, tZero):
-		# first trim out any standby or freeze clock time
-=======
 				if('src' in d):
 					for e in d['src']:
 						e.time = self.trimTimeVal(e.time, t0, dT, left)
 	def normalizeTime(self, tZero):
 		# trim out any standby or freeze clock time
->>>>>>> v4.9.227
 		if(self.tSuspended != self.tResumed):
 			if(self.tResumed > tZero):
 				self.trimTime(self.tSuspended, \
@@ -973,32 +832,6 @@ class Data:
 			else:
 				self.trimTime(self.tSuspended, \
 					self.tResumed-self.tSuspended, False)
-<<<<<<< HEAD
-		# shift the timeline so that tZero is the new 0
-		self.tSuspended -= tZero
-		self.tResumed -= tZero
-		self.start -= tZero
-		self.end -= tZero
-		for phase in self.phases:
-			p = self.dmesg[phase]
-			p['start'] -= tZero
-			p['end'] -= tZero
-			list = p['list']
-			for name in list:
-				d = list[name]
-				d['start'] -= tZero
-				d['end'] -= tZero
-				if('ftrace' in d):
-					cg = d['ftrace']
-					cg.start -= tZero
-					cg.end -= tZero
-					for line in cg.list:
-						line.time -= tZero
-				if('traceevents' in d):
-					for e in d['traceevents']:
-						e.time -= tZero
-=======
->>>>>>> v4.9.227
 	def newPhaseWithSingleAction(self, phasename, devname, start, end, color):
 		for phase in self.phases:
 			self.dmesg[phase]['order'] += 1
@@ -1028,10 +861,7 @@ class Data:
 			{'list': list, 'start': start, 'end': end,
 			'row': 0, 'color': color, 'order': order}
 		self.phases = self.sortedPhases()
-<<<<<<< HEAD
-=======
 		self.devicegroups.append([phasename])
->>>>>>> v4.9.227
 	def setPhase(self, phase, ktime, isbegin):
 		if(isbegin):
 			self.dmesg[phase]['start'] = ktime
@@ -1057,14 +887,10 @@ class Data:
 		for devname in phaselist:
 			dev = phaselist[devname]
 			if(dev['end'] < 0):
-<<<<<<< HEAD
-				dev['end'] = end
-=======
 				for p in self.phases:
 					if self.dmesg[p]['end'] > dev['start']:
 						dev['end'] = self.dmesg[p]['end']
 						break
->>>>>>> v4.9.227
 				vprint('%s (%s): callback didnt return' % (devname, phase))
 	def deviceFilter(self, devicefilter):
 		# remove all by the relatives of the filter devnames
@@ -1094,12 +920,6 @@ class Data:
 		# if any calls never returned, clip them at system resume end
 		for phase in self.phases:
 			self.fixupInitcalls(phase, self.getEnd())
-<<<<<<< HEAD
-	def newActionGlobal(self, name, start, end):
-		# which phase is this device callback or action "in"
-		targetphase = "none"
-		overlap = 0.0
-=======
 	def isInsideTimeline(self, start, end):
 		if(self.start <= start and self.end > start):
 			return True
@@ -1131,21 +951,10 @@ class Data:
 		htmlclass = ''
 		overlap = 0.0
 		phases = []
->>>>>>> v4.9.227
 		for phase in self.phases:
 			pstart = self.dmesg[phase]['start']
 			pend = self.dmesg[phase]['end']
 			o = max(0, min(end, pend) - max(start, pstart))
-<<<<<<< HEAD
-			if(o > overlap):
-				targetphase = phase
-				overlap = o
-		if targetphase in self.phases:
-			self.newAction(targetphase, name, -1, '', start, end, '')
-			return True
-		return False
-	def newAction(self, phase, name, pid, parent, start, end, drv):
-=======
 			if o > 0:
 				phases.append(phase)
 			if o > overlap:
@@ -1163,7 +972,6 @@ class Data:
 			return (targetphase, newname)
 		return False
 	def newAction(self, phase, name, pid, parent, start, end, drv, htmlclass='', color=''):
->>>>>>> v4.9.227
 		# new device callback for a specific phase
 		self.html_device_id += 1
 		devid = '%s%d' % (self.idstr, self.html_device_id)
@@ -1171,10 +979,6 @@ class Data:
 		length = -1.0
 		if(start >= 0 and end >= 0):
 			length = end - start
-<<<<<<< HEAD
-		list[name] = {'start': start, 'end': end, 'pid': pid, 'par': parent,
-					  'length': length, 'row': 0, 'id': devid, 'drv': drv }
-=======
 		if pid == -2:
 			i = 2
 			origname = name
@@ -1188,7 +992,6 @@ class Data:
 		if color:
 			list[name]['color'] = color
 		return name
->>>>>>> v4.9.227
 	def deviceIDs(self, devlist, phase):
 		idlist = []
 		list = self.dmesg[phase]['list']
@@ -1228,12 +1031,6 @@ class Data:
 			vprint('    %16s: %f - %f (%d devices)' % (phase, \
 				self.dmesg[phase]['start'], self.dmesg[phase]['end'], dc))
 		vprint('            test end: %f' % self.end)
-<<<<<<< HEAD
-	def masterTopology(self, name, list, depth):
-		node = DeviceNode(name, depth)
-		for cname in list:
-			clist = self.deviceChildren(cname, 'resume')
-=======
 	def deviceChildrenAllPhases(self, devname):
 		devlist = []
 		for phase in self.phases:
@@ -1249,7 +1046,6 @@ class Data:
 			if name == cname:
 				continue
 			clist = self.deviceChildrenAllPhases(cname)
->>>>>>> v4.9.227
 			cnode = self.masterTopology(cname, clist, depth+1)
 			node.children.append(cnode)
 		return node
@@ -1290,12 +1086,8 @@ class Data:
 			list = self.dmesg[phase]['list']
 			for dev in list:
 				pdev = list[dev]['par']
-<<<<<<< HEAD
-				if(re.match('[0-9]*-[0-9]*\.[0-9]*[\.0-9]*\:[\.0-9]*$', pdev)):
-=======
 				pid = list[dev]['pid']
 				if(pid < 0 or re.match('[0-9]*-[0-9]*\.[0-9]*[\.0-9]*\:[\.0-9]*$', pdev)):
->>>>>>> v4.9.227
 					continue
 				if pdev and pdev not in real and pdev not in rootlist:
 					rootlist.append(pdev)
@@ -1304,8 +1096,6 @@ class Data:
 		rootlist = self.rootDeviceList()
 		master = self.masterTopology('', rootlist, 0)
 		return self.printTopology(master)
-<<<<<<< HEAD
-=======
 	def selectTimelineDevices(self, widfmt, tTotal, mindevlen):
 		# only select devices that will actually show up in html
 		self.tdevlist = dict()
@@ -1318,25 +1108,11 @@ class Data:
 				if width != '0.000000' and length >= mindevlen:
 					devlist.append(dev)
 			self.tdevlist[phase] = devlist
->>>>>>> v4.9.227
 
 # Class: TraceEvent
 # Description:
 #	 A container for trace event data found in the ftrace file
 class TraceEvent:
-<<<<<<< HEAD
-	ready = False
-	name = ''
-	time = 0.0
-	color = '#FFFFFF'
-	length = 0.0
-	action = ''
-	def __init__(self, a, n, c, t):
-		self.action = a
-		self.name = n
-		self.color = c
-		self.time = t
-=======
 	text = ''
 	time = 0.0
 	length = 0.0
@@ -1347,7 +1123,6 @@ class TraceEvent:
 		self.text = n
 		self.time = t
 		self.length = l
->>>>>>> v4.9.227
 
 # Class: FTraceLine
 # Description:
@@ -1366,13 +1141,6 @@ class FTraceLine:
 	fcall = False
 	freturn = False
 	fevent = False
-<<<<<<< HEAD
-	depth = 0
-	name = ''
-	type = ''
-	def __init__(self, t, m, d):
-		self.time = float(t)
-=======
 	fkprobe = False
 	depth = 0
 	name = ''
@@ -1381,7 +1149,6 @@ class FTraceLine:
 		self.time = float(t)
 		if not m and not d:
 			return
->>>>>>> v4.9.227
 		# is this a trace event
 		if(d == 'traceevent' or re.match('^ *\/\* *(?P<msg>.*) \*\/ *$', m)):
 			if(d == 'traceevent'):
@@ -1398,8 +1165,6 @@ class FTraceLine:
 				self.type = emm.group('call')
 			else:
 				self.name = msg
-<<<<<<< HEAD
-=======
 			km = re.match('^(?P<n>.*)_cal$', self.type)
 			if km:
 				self.fcall = True
@@ -1412,7 +1177,6 @@ class FTraceLine:
 				self.fkprobe = True
 				self.type = km.group('n')
 				return
->>>>>>> v4.9.227
 			self.fevent = True
 			return
 		# convert the duration to seconds
@@ -1431,11 +1195,7 @@ class FTraceLine:
 				# includes comment with function name
 				match = re.match('^} *\/\* *(?P<n>.*) *\*\/$', m)
 				if(match):
-<<<<<<< HEAD
-					self.name = match.group('n')
-=======
 					self.name = match.group('n').strip()
->>>>>>> v4.9.227
 		# function call
 		else:
 			self.fcall = True
@@ -1443,31 +1203,19 @@ class FTraceLine:
 			if(m[-1] == '{'):
 				match = re.match('^(?P<n>.*) *\(.*', m)
 				if(match):
-<<<<<<< HEAD
-					self.name = match.group('n')
-=======
 					self.name = match.group('n').strip()
->>>>>>> v4.9.227
 			# function call with no children (leaf)
 			elif(m[-1] == ';'):
 				self.freturn = True
 				match = re.match('^(?P<n>.*) *\(.*', m)
 				if(match):
-<<<<<<< HEAD
-					self.name = match.group('n')
-=======
 					self.name = match.group('n').strip()
->>>>>>> v4.9.227
 			# something else (possibly a trace marker)
 			else:
 				self.name = m
 	def getDepth(self, str):
 		return len(str)/2
-<<<<<<< HEAD
-	def debugPrint(self, dev):
-=======
 	def debugPrint(self, dev=''):
->>>>>>> v4.9.227
 		if(self.freturn and self.fcall):
 			print('%s -- %f (%02d): %s(); (%.3f us)' % (dev, self.time, \
 				self.depth, self.name, self.length*1000000))
@@ -1477,8 +1225,6 @@ class FTraceLine:
 		else:
 			print('%s -- %f (%02d): %s() { (%.3f us)' % (dev, self.time, \
 				self.depth, self.name, self.length*1000000))
-<<<<<<< HEAD
-=======
 	def startMarker(self):
 		global sysvals
 		# Is this the starting line of a suspend?
@@ -1506,7 +1252,6 @@ class FTraceLine:
 				re.match('thaw_processes\[.*\] end', self.name)):
 				return True
 			return False
->>>>>>> v4.9.227
 
 # Class: FTraceCallGraph
 # Description:
@@ -1520,30 +1265,12 @@ class FTraceCallGraph:
 	list = []
 	invalid = False
 	depth = 0
-<<<<<<< HEAD
-	def __init__(self):
-=======
 	pid = 0
 	def __init__(self, pid):
->>>>>>> v4.9.227
 		self.start = -1.0
 		self.end = -1.0
 		self.list = []
 		self.depth = 0
-<<<<<<< HEAD
-	def setDepth(self, line):
-		if(line.fcall and not line.freturn):
-			line.depth = self.depth
-			self.depth += 1
-		elif(line.freturn and not line.fcall):
-			self.depth -= 1
-			line.depth = self.depth
-		else:
-			line.depth = self.depth
-	def addLine(self, line, match):
-		if(not self.invalid):
-			self.setDepth(line)
-=======
 		self.pid = pid
 	def addLine(self, line, debug=False):
 		# if this is already invalid, just leave
@@ -1630,40 +1357,10 @@ class FTraceCallGraph:
 		if len(self.list) < 1:
 			self.start = line.time
 		self.list.append(line)
->>>>>>> v4.9.227
 		if(line.depth == 0 and line.freturn):
 			if(self.start < 0):
 				self.start = line.time
 			self.end = line.time
-<<<<<<< HEAD
-			self.list.append(line)
-			return True
-		if(self.invalid):
-			return False
-		if(len(self.list) >= 1000000 or self.depth < 0):
-			if(len(self.list) > 0):
-				first = self.list[0]
-				self.list = []
-				self.list.append(first)
-			self.invalid = True
-			if(not match):
-				return False
-			id = 'task %s cpu %s' % (match.group('pid'), match.group('cpu'))
-			window = '(%f - %f)' % (self.start, line.time)
-			if(self.depth < 0):
-				print('Too much data for '+id+\
-					' (buffer overflow), ignoring this callback')
-			else:
-				print('Too much data for '+id+\
-					' '+window+', ignoring this callback')
-			return False
-		self.list.append(line)
-		if(self.start < 0):
-			self.start = line.time
-		return False
-	def slice(self, t0, tN):
-		minicg = FTraceCallGraph()
-=======
 			if line.fcall:
 				self.end += line.length
 			if self.list[0].name == virtualfname:
@@ -1686,7 +1383,6 @@ class FTraceCallGraph:
 				' '+window+', ignoring this callback')
 	def slice(self, t0, tN):
 		minicg = FTraceCallGraph(0)
->>>>>>> v4.9.227
 		count = -1
 		firstdepth = 0
 		for l in self.list:
@@ -1698,19 +1394,12 @@ class FTraceCallGraph:
 				firstdepth = l.depth
 				count = 0
 			l.depth -= firstdepth
-<<<<<<< HEAD
-			minicg.addLine(l, 0)
-=======
 			minicg.addLine(l)
->>>>>>> v4.9.227
 			if((count == 0 and l.freturn and l.fcall) or
 				(count > 0 and l.depth <= 0)):
 				break
 			count += 1
 		return minicg
-<<<<<<< HEAD
-	def sanityCheck(self):
-=======
 	def repair(self, enddepth):
 		# bring the depth back to 0 with additional returns
 		fixed = False
@@ -1725,7 +1414,6 @@ class FTraceCallGraph:
 				return True
 		return False
 	def postProcess(self, debug=False):
->>>>>>> v4.9.227
 		stack = dict()
 		cnt = 0
 		for l in self.list:
@@ -1734,81 +1422,6 @@ class FTraceCallGraph:
 				cnt += 1
 			elif(l.freturn and not l.fcall):
 				if(l.depth not in stack):
-<<<<<<< HEAD
-					return False
-				stack[l.depth].length = l.length
-				stack[l.depth] = 0
-				l.length = 0
-				cnt -= 1
-		if(cnt == 0):
-			return True
-		return False
-	def debugPrint(self, filename):
-		if(filename == 'stdout'):
-			print('[%f - %f]') % (self.start, self.end)
-			for l in self.list:
-				if(l.freturn and l.fcall):
-					print('%f (%02d): %s(); (%.3f us)' % (l.time, \
-						l.depth, l.name, l.length*1000000))
-				elif(l.freturn):
-					print('%f (%02d): %s} (%.3f us)' % (l.time, \
-						l.depth, l.name, l.length*1000000))
-				else:
-					print('%f (%02d): %s() { (%.3f us)' % (l.time, \
-						l.depth, l.name, l.length*1000000))
-			print(' ')
-		else:
-			fp = open(filename, 'w')
-			print(filename)
-			for l in self.list:
-				if(l.freturn and l.fcall):
-					fp.write('%f (%02d): %s(); (%.3f us)\n' % (l.time, \
-						l.depth, l.name, l.length*1000000))
-				elif(l.freturn):
-					fp.write('%f (%02d): %s} (%.3f us)\n' % (l.time, \
-						l.depth, l.name, l.length*1000000))
-				else:
-					fp.write('%f (%02d): %s() { (%.3f us)\n' % (l.time, \
-						l.depth, l.name, l.length*1000000))
-			fp.close()
-
-# Class: Timeline
-# Description:
-#	 A container for a suspend/resume html timeline. In older versions
-#	 of the script there were multiple timelines, but in the latest
-#	 there is only one.
-class Timeline:
-	html = {}
-	scaleH = 0.0 # height of the row as a percent of the timeline height
-	rowH = 0.0 # height of each row in percent of the timeline height
-	row_height_pixels = 30
-	maxrows = 0
-	height = 0
-	def __init__(self):
-		self.html = {
-			'timeline': '',
-			'legend': '',
-			'scale': ''
-		}
-	def setRows(self, rows):
-		self.maxrows = int(rows)
-		self.scaleH = 100.0/float(self.maxrows)
-		self.height = self.maxrows*self.row_height_pixels
-		r = float(self.maxrows - 1)
-		if(r < 1.0):
-			r = 1.0
-		self.rowH = (100.0 - self.scaleH)/r
-
-# Class: TestRun
-# Description:
-#	 A container for a suspend/resume test run. This is necessary as
-#	 there could be more than one, and they need to be separate.
-class TestRun:
-	ftrace_line_fmt_fg = \
-		'^ *(?P<time>[0-9\.]*) *\| *(?P<cpu>[0-9]*)\)'+\
-		' *(?P<proc>.*)-(?P<pid>[0-9]*) *\|'+\
-		'[ +!]*(?P<dur>[0-9\.]*) .*\|  (?P<msg>.*)'
-=======
 					if debug:
 						print 'Post Process Error: Depth missing'
 						l.debugPrint()
@@ -2110,33 +1723,16 @@ class TestProps:
 		'^ *(?P<time>[0-9\.]*) *\| *(?P<cpu>[0-9]*)\)'+\
 		' *(?P<proc>.*)-(?P<pid>[0-9]*) *\|'+\
 		'[ +!#\*@$]*(?P<dur>[0-9\.]*) .*\|  (?P<msg>.*)'
->>>>>>> v4.9.227
 	ftrace_line_fmt_nop = \
 		' *(?P<proc>.*)-(?P<pid>[0-9]*) *\[(?P<cpu>[0-9]*)\] *'+\
 		'(?P<flags>.{4}) *(?P<time>[0-9\.]*): *'+\
 		'(?P<msg>.*)'
 	ftrace_line_fmt = ftrace_line_fmt_nop
 	cgformat = False
-<<<<<<< HEAD
-	ftemp = dict()
-	ttemp = dict()
-	inthepipe = False
-	tracertype = ''
-	data = 0
-	def __init__(self, dataobj):
-		self.data = dataobj
-		self.ftemp = dict()
-		self.ttemp = dict()
-	def isReady(self):
-		if(tracertype == '' or not data):
-			return False
-		return True
-=======
 	data = 0
 	ktemp = dict()
 	def __init__(self):
 		self.ktemp = dict()
->>>>>>> v4.9.227
 	def setTracerType(self, tracer):
 		self.tracertype = tracer
 		if(tracer == 'function_graph'):
@@ -2147,8 +1743,6 @@ class TestProps:
 		else:
 			doError('Invalid tracer format: [%s]' % tracer, False)
 
-<<<<<<< HEAD
-=======
 # Class: TestRun
 # Description:
 #	 A container for a suspend/resume test run. This is necessary as
@@ -2162,7 +1756,6 @@ class TestRun:
 		self.ftemp = dict()
 		self.ttemp = dict()
 
->>>>>>> v4.9.227
 # ----------------- FUNCTIONS --------------------
 
 # Function: vprint
@@ -2175,114 +1768,16 @@ def vprint(msg):
 	if(sysvals.verbose):
 		print(msg)
 
-<<<<<<< HEAD
-# Function: initFtrace
-# Description:
-#	 Configure ftrace to use trace events and/or a callgraph
-def initFtrace():
-	global sysvals
-
-	tp = sysvals.tpath
-	cf = 'dpm_run_callback'
-	if(sysvals.usetraceeventsonly):
-		cf = '-e dpm_prepare -e dpm_complete -e dpm_run_callback'
-	if(sysvals.usecallgraph or sysvals.usetraceevents):
-		print('INITIALIZING FTRACE...')
-		# turn trace off
-		os.system('echo 0 > '+tp+'tracing_on')
-		# set the trace clock to global
-		os.system('echo global > '+tp+'trace_clock')
-		# set trace buffer to a huge value
-		os.system('echo nop > '+tp+'current_tracer')
-		os.system('echo 100000 > '+tp+'buffer_size_kb')
-		# initialize the callgraph trace, unless this is an x2 run
-		if(sysvals.usecallgraph and sysvals.execcount == 1):
-			# set trace type
-			os.system('echo function_graph > '+tp+'current_tracer')
-			os.system('echo "" > '+tp+'set_ftrace_filter')
-			# set trace format options
-			os.system('echo funcgraph-abstime > '+tp+'trace_options')
-			os.system('echo funcgraph-proc > '+tp+'trace_options')
-			# focus only on device suspend and resume
-			os.system('cat '+tp+'available_filter_functions | grep '+\
-				cf+' > '+tp+'set_graph_function')
-		if(sysvals.usetraceevents):
-			# turn trace events on
-			events = iter(sysvals.traceevents)
-			for e in events:
-				os.system('echo 1 > '+sysvals.epath+e+'/enable')
-		# clear the trace buffer
-		os.system('echo "" > '+tp+'trace')
-
-# Function: initFtraceAndroid
-# Description:
-#	 Configure ftrace to capture trace events
-def initFtraceAndroid():
-	global sysvals
-
-	tp = sysvals.tpath
-	if(sysvals.usetraceevents):
-		print('INITIALIZING FTRACE...')
-		# turn trace off
-		os.system(sysvals.adb+" shell 'echo 0 > "+tp+"tracing_on'")
-		# set the trace clock to global
-		os.system(sysvals.adb+" shell 'echo global > "+tp+"trace_clock'")
-		# set trace buffer to a huge value
-		os.system(sysvals.adb+" shell 'echo nop > "+tp+"current_tracer'")
-		os.system(sysvals.adb+" shell 'echo 10000 > "+tp+"buffer_size_kb'")
-		# turn trace events on
-		events = iter(sysvals.traceevents)
-		for e in events:
-			os.system(sysvals.adb+" shell 'echo 1 > "+\
-				sysvals.epath+e+"/enable'")
-		# clear the trace buffer
-		os.system(sysvals.adb+" shell 'echo \"\" > "+tp+"trace'")
-
-# Function: verifyFtrace
-# Description:
-#	 Check that ftrace is working on the system
-# Output:
-#	 True or False
-def verifyFtrace():
-	global sysvals
-	# files needed for any trace data
-	files = ['buffer_size_kb', 'current_tracer', 'trace', 'trace_clock',
-			 'trace_marker', 'trace_options', 'tracing_on']
-	# files needed for callgraph trace data
-	tp = sysvals.tpath
-	if(sysvals.usecallgraph):
-		files += [
-			'available_filter_functions',
-			'set_ftrace_filter',
-			'set_graph_function'
-		]
-	for f in files:
-		if(sysvals.android):
-			out = os.popen(sysvals.adb+' shell ls '+tp+f).read().strip()
-			if(out != tp+f):
-				return False
-		else:
-			if(os.path.exists(tp+f) == False):
-				return False
-	return True
-
-=======
->>>>>>> v4.9.227
 # Function: parseStamp
 # Description:
 #	 Pull in the stamp comment line from the data file(s),
 #	 create the stamp, and add it to the global sysvals object
 # Arguments:
 #	 m: the valid re.match output for the stamp line
-<<<<<<< HEAD
-def parseStamp(m, data):
-	global sysvals
-=======
 def parseStamp(line, data):
 	global sysvals
 
 	m = re.match(sysvals.stampfmt, line)
->>>>>>> v4.9.227
 	data.stamp = {'time': '', 'host': '', 'mode': ''}
 	dt = datetime(int(m.group('y'))+2000, int(m.group('m')),
 		int(m.group('d')), int(m.group('H')), int(m.group('M')),
@@ -2291,10 +1786,7 @@ def parseStamp(line, data):
 	data.stamp['host'] = m.group('host')
 	data.stamp['mode'] = m.group('mode')
 	data.stamp['kernel'] = m.group('kernel')
-<<<<<<< HEAD
-=======
 	sysvals.hostname = data.stamp['host']
->>>>>>> v4.9.227
 	sysvals.suspendmode = data.stamp['mode']
 	if not sysvals.stamp:
 		sysvals.stamp = data.stamp
@@ -2327,16 +1819,6 @@ def diffStamp(stamp1, stamp2):
 def doesTraceLogHaveTraceEvents():
 	global sysvals
 
-<<<<<<< HEAD
-	sysvals.usetraceeventsonly = True
-	sysvals.usetraceevents = False
-	for e in sysvals.traceevents:
-		out = os.popen('cat '+sysvals.ftracefile+' | grep "'+e+': "').read()
-		if(not out):
-			sysvals.usetraceeventsonly = False
-		if(e == 'suspend_resume' and out):
-			sysvals.usetraceevents = True
-=======
 	# check for kprobes
 	sysvals.usekprobes = False
 	out = os.system('grep -q "_cal: (" '+sysvals.ftracefile)
@@ -2366,7 +1848,6 @@ def doesTraceLogHaveTraceEvents():
 		out = os.system('grep -q "'+e+'" '+sysvals.ftracefile)
 		if(out != 0):
 			sysvals.usetracemarkers = False
->>>>>>> v4.9.227
 
 # Function: appendIncompleteTraceLog
 # Description:
@@ -2383,34 +1864,13 @@ def appendIncompleteTraceLog(testruns):
 
 	# create TestRun vessels for ftrace parsing
 	testcnt = len(testruns)
-<<<<<<< HEAD
-	testidx = -1
-=======
 	testidx = 0
->>>>>>> v4.9.227
 	testrun = []
 	for data in testruns:
 		testrun.append(TestRun(data))
 
 	# extract the callgraph and traceevent data
 	vprint('Analyzing the ftrace data...')
-<<<<<<< HEAD
-	tf = open(sysvals.ftracefile, 'r')
-	for line in tf:
-		# remove any latent carriage returns
-		line = line.replace('\r\n', '')
-		# grab the time stamp first (signifies the start of the test run)
-		m = re.match(sysvals.stampfmt, line)
-		if(m):
-			testidx += 1
-			parseStamp(m, testrun[testidx].data)
-			continue
-		# pull out any firmware data
-		if(re.match(sysvals.firmwarefmt, line)):
-			continue
-		# if we havent found a test time stamp yet keep spinning til we do
-		if(testidx < 0):
-=======
 	tp = TestProps()
 	tf = open(sysvals.ftracefile, 'r')
 	data = 0
@@ -2421,18 +1881,10 @@ def appendIncompleteTraceLog(testruns):
 		m = re.match(sysvals.stampfmt, line)
 		if(m):
 			tp.stamp = line
->>>>>>> v4.9.227
 			continue
 		# determine the trace data type (required for further parsing)
 		m = re.match(sysvals.tracertypefmt, line)
 		if(m):
-<<<<<<< HEAD
-			tracer = m.group('t')
-			testrun[testidx].setTracerType(tracer)
-			continue
-		# parse only valid lines, if this isnt one move on
-		m = re.match(testrun[testidx].ftrace_line_fmt, line)
-=======
 			tp.setTracerType(m.group('t'))
 			continue
 		# device properties line
@@ -2441,18 +1893,13 @@ def appendIncompleteTraceLog(testruns):
 			continue
 		# parse only valid lines, if this is not one move on
 		m = re.match(tp.ftrace_line_fmt, line)
->>>>>>> v4.9.227
 		if(not m):
 			continue
 		# gather the basic message data from the line
 		m_time = m.group('time')
 		m_pid = m.group('pid')
 		m_msg = m.group('msg')
-<<<<<<< HEAD
-		if(testrun[testidx].cgformat):
-=======
 		if(tp.cgformat):
->>>>>>> v4.9.227
 			m_param3 = m.group('dur')
 		else:
 			m_param3 = 'traceevent'
@@ -2464,121 +1911,6 @@ def appendIncompleteTraceLog(testruns):
 		# the line should be a call, return, or event
 		if(not t.fcall and not t.freturn and not t.fevent):
 			continue
-<<<<<<< HEAD
-		# only parse the ftrace data during suspend/resume
-		data = testrun[testidx].data
-		if(not testrun[testidx].inthepipe):
-			# look for the suspend start marker
-			if(t.fevent):
-				if(t.name == 'SUSPEND START'):
-					testrun[testidx].inthepipe = True
-					data.setStart(t.time)
-				continue
-		else:
-			# trace event processing
-			if(t.fevent):
-				if(t.name == 'RESUME COMPLETE'):
-					testrun[testidx].inthepipe = False
-					data.setEnd(t.time)
-					if(testidx == testcnt - 1):
-						break
-					continue
-				# general trace events have two types, begin and end
-				if(re.match('(?P<name>.*) begin$', t.name)):
-					isbegin = True
-				elif(re.match('(?P<name>.*) end$', t.name)):
-					isbegin = False
-				else:
-					continue
-				m = re.match('(?P<name>.*)\[(?P<val>[0-9]*)\] .*', t.name)
-				if(m):
-					val = m.group('val')
-					if val == '0':
-						name = m.group('name')
-					else:
-						name = m.group('name')+'['+val+']'
-				else:
-					m = re.match('(?P<name>.*) .*', t.name)
-					name = m.group('name')
-				# special processing for trace events
-				if re.match('dpm_prepare\[.*', name):
-					continue
-				elif re.match('machine_suspend.*', name):
-					continue
-				elif re.match('suspend_enter\[.*', name):
-					if(not isbegin):
-						data.dmesg['suspend_prepare']['end'] = t.time
-					continue
-				elif re.match('dpm_suspend\[.*', name):
-					if(not isbegin):
-						data.dmesg['suspend']['end'] = t.time
-					continue
-				elif re.match('dpm_suspend_late\[.*', name):
-					if(isbegin):
-						data.dmesg['suspend_late']['start'] = t.time
-					else:
-						data.dmesg['suspend_late']['end'] = t.time
-					continue
-				elif re.match('dpm_suspend_noirq\[.*', name):
-					if(isbegin):
-						data.dmesg['suspend_noirq']['start'] = t.time
-					else:
-						data.dmesg['suspend_noirq']['end'] = t.time
-					continue
-				elif re.match('dpm_resume_noirq\[.*', name):
-					if(isbegin):
-						data.dmesg['resume_machine']['end'] = t.time
-						data.dmesg['resume_noirq']['start'] = t.time
-					else:
-						data.dmesg['resume_noirq']['end'] = t.time
-					continue
-				elif re.match('dpm_resume_early\[.*', name):
-					if(isbegin):
-						data.dmesg['resume_early']['start'] = t.time
-					else:
-						data.dmesg['resume_early']['end'] = t.time
-					continue
-				elif re.match('dpm_resume\[.*', name):
-					if(isbegin):
-						data.dmesg['resume']['start'] = t.time
-					else:
-						data.dmesg['resume']['end'] = t.time
-					continue
-				elif re.match('dpm_complete\[.*', name):
-					if(isbegin):
-						data.dmesg['resume_complete']['start'] = t.time
-					else:
-						data.dmesg['resume_complete']['end'] = t.time
-					continue
-				# is this trace event outside of the devices calls
-				if(data.isTraceEventOutsideDeviceCalls(pid, t.time)):
-					# global events (outside device calls) are simply graphed
-					if(isbegin):
-						# store each trace event in ttemp
-						if(name not in testrun[testidx].ttemp):
-							testrun[testidx].ttemp[name] = []
-						testrun[testidx].ttemp[name].append(\
-							{'begin': t.time, 'end': t.time})
-					else:
-						# finish off matching trace event in ttemp
-						if(name in testrun[testidx].ttemp):
-							testrun[testidx].ttemp[name][-1]['end'] = t.time
-				else:
-					if(isbegin):
-						data.addIntraDevTraceEvent('', name, pid, t.time)
-					else:
-						data.capIntraDevTraceEvent('', name, pid, t.time)
-			# call/return processing
-			elif sysvals.usecallgraph:
-				# create a callgraph object for the data
-				if(pid not in testrun[testidx].ftemp):
-					testrun[testidx].ftemp[pid] = []
-					testrun[testidx].ftemp[pid].append(FTraceCallGraph())
-				# when the call is finished, see which device matches it
-				cg = testrun[testidx].ftemp[pid][-1]
-				if(cg.addLine(t, m)):
-					testrun[testidx].ftemp[pid].append(FTraceCallGraph())
-=======
 		# look for the suspend start marker
 		if(t.startMarker()):
 			data = testrun[testidx].data
@@ -2687,7 +2019,6 @@ def appendIncompleteTraceLog(testruns):
 			cg = testrun[testidx].ftemp[pid][-1]
 			if(cg.addLine(t)):
 				testrun[testidx].ftemp[pid].append(FTraceCallGraph(pid))
->>>>>>> v4.9.227
 	tf.close()
 
 	for test in testrun:
@@ -2695,30 +2026,14 @@ def appendIncompleteTraceLog(testruns):
 		if(sysvals.usetraceevents):
 			for name in test.ttemp:
 				for event in test.ttemp[name]:
-<<<<<<< HEAD
-					begin = event['begin']
-					end = event['end']
-					# if event starts before timeline start, expand timeline
-					if(begin < test.data.start):
-						test.data.setStart(begin)
-					# if event ends after timeline end, expand the timeline
-					if(end > test.data.end):
-						test.data.setEnd(end)
-					test.data.newActionGlobal(name, begin, end)
-=======
 					test.data.newActionGlobal(name, event['begin'], event['end'])
->>>>>>> v4.9.227
 
 		# add the callgraph data to the device hierarchy
 		for pid in test.ftemp:
 			for cg in test.ftemp[pid]:
-<<<<<<< HEAD
-				if(not cg.sanityCheck()):
-=======
 				if len(cg.list) < 1 or cg.invalid:
 					continue
 				if(not cg.postProcess()):
->>>>>>> v4.9.227
 					id = 'task %s cpu %s' % (pid, m.group('cpu'))
 					vprint('Sanity check failed for '+\
 						id+', ignoring this callback')
@@ -2740,17 +2055,6 @@ def appendIncompleteTraceLog(testruns):
 		if(sysvals.verbose):
 			test.data.printDetails()
 
-<<<<<<< HEAD
-
-	# add the time in between the tests as a new phase so we can see it
-	if(len(testruns) > 1):
-		t1e = testruns[0].getEnd()
-		t2s = testruns[-1].getStart()
-		testruns[-1].newPhaseWithSingleAction('user mode', \
-			'user mode', t1e, t2s, '#FF9966')
-
-=======
->>>>>>> v4.9.227
 # Function: parseTraceLog
 # Description:
 #	 Analyze an ftrace log output file generated from this app during
@@ -2764,11 +2068,6 @@ def parseTraceLog():
 
 	vprint('Analyzing the ftrace data...')
 	if(os.path.exists(sysvals.ftracefile) == False):
-<<<<<<< HEAD
-		doError('%s doesnt exist' % sysvals.ftracefile, False)
-
-	# extract the callgraph and traceevent data
-=======
 		doError('%s does not exist' % sysvals.ftracefile, False)
 
 	sysvals.setupAllKprobes()
@@ -2779,7 +2078,6 @@ def parseTraceLog():
 
 	# extract the callgraph and traceevent data
 	tp = TestProps()
->>>>>>> v4.9.227
 	testruns = []
 	testdata = []
 	testrun = 0
@@ -2792,39 +2090,17 @@ def parseTraceLog():
 		# stamp line: each stamp means a new test run
 		m = re.match(sysvals.stampfmt, line)
 		if(m):
-<<<<<<< HEAD
-			data = Data(len(testdata))
-			testdata.append(data)
-			testrun = TestRun(data)
-			testruns.append(testrun)
-			parseStamp(m, data)
-			continue
-		if(not data):
-=======
 			tp.stamp = line
->>>>>>> v4.9.227
 			continue
 		# firmware line: pull out any firmware data
 		m = re.match(sysvals.firmwarefmt, line)
 		if(m):
-<<<<<<< HEAD
-			data.fwSuspend = int(m.group('s'))
-			data.fwResume = int(m.group('r'))
-			if(data.fwSuspend > 0 or data.fwResume > 0):
-				data.fwValid = True
-=======
 			tp.fwdata.append((int(m.group('s')), int(m.group('r'))))
->>>>>>> v4.9.227
 			continue
 		# tracer type line: determine the trace data type
 		m = re.match(sysvals.tracertypefmt, line)
 		if(m):
-<<<<<<< HEAD
-			tracer = m.group('t')
-			testrun.setTracerType(tracer)
-=======
 			tp.setTracerType(m.group('t'))
->>>>>>> v4.9.227
 			continue
 		# post resume time line: did this test run include post-resume data
 		m = re.match(sysvals.postresumefmt, line)
@@ -2833,31 +2109,20 @@ def parseTraceLog():
 			if(t > 0):
 				sysvals.postresumetime = t
 			continue
-<<<<<<< HEAD
-		# ftrace line: parse only valid lines
-		m = re.match(testrun.ftrace_line_fmt, line)
-=======
 		# device properties line
 		if(re.match(sysvals.devpropfmt, line)):
 			devProps(line)
 			continue
 		# ftrace line: parse only valid lines
 		m = re.match(tp.ftrace_line_fmt, line)
->>>>>>> v4.9.227
 		if(not m):
 			continue
 		# gather the basic message data from the line
 		m_time = m.group('time')
-<<<<<<< HEAD
-		m_pid = m.group('pid')
-		m_msg = m.group('msg')
-		if(testrun.cgformat):
-=======
 		m_proc = m.group('proc')
 		m_pid = m.group('pid')
 		m_msg = m.group('msg')
 		if(tp.cgformat):
->>>>>>> v4.9.227
 			m_param3 = m.group('dur')
 		else:
 			m_param3 = 'traceevent'
@@ -2869,26 +2134,6 @@ def parseTraceLog():
 		# the line should be a call, return, or event
 		if(not t.fcall and not t.freturn and not t.fevent):
 			continue
-<<<<<<< HEAD
-		# only parse the ftrace data during suspend/resume
-		if(not testrun.inthepipe):
-			# look for the suspend start marker
-			if(t.fevent):
-				if(t.name == 'SUSPEND START'):
-					testrun.inthepipe = True
-					data.setStart(t.time)
-			continue
-		# trace event processing
-		if(t.fevent):
-			if(t.name == 'RESUME COMPLETE'):
-				if(sysvals.postresumetime > 0):
-					phase = 'post_resume'
-					data.newPhase(phase, t.time, t.time, '#FF9966', -1)
-				else:
-					testrun.inthepipe = False
-				data.setEnd(t.time)
-				continue
-=======
 		# find the start of suspend
 		if(t.startMarker()):
 			phase = 'suspend_prepare'
@@ -2921,7 +2166,6 @@ def parseTraceLog():
 			continue
 		# trace event processing
 		if(t.fevent):
->>>>>>> v4.9.227
 			if(phase == 'post_resume'):
 				data.setEnd(t.time)
 			if(t.type == 'suspend_resume'):
@@ -2943,12 +2187,7 @@ def parseTraceLog():
 					m = re.match('(?P<name>.*) .*', t.name)
 					name = m.group('name')
 				# ignore these events
-<<<<<<< HEAD
-				if(re.match('acpi_suspend\[.*', t.name) or
-					re.match('suspend_enter\[.*', name)):
-=======
 				if(name.split('[')[0] in tracewatch):
->>>>>>> v4.9.227
 					continue
 				# -- phase changes --
 				# suspend_prepare start
@@ -2982,11 +2221,7 @@ def parseTraceLog():
 						data.dmesg[phase]['end'] = t.time
 						data.tSuspended = t.time
 					else:
-<<<<<<< HEAD
-						if(sysvals.suspendmode in ['mem', 'disk']):
-=======
 						if(sysvals.suspendmode in ['mem', 'disk'] and not tp.S0i3):
->>>>>>> v4.9.227
 							data.dmesg['suspend_machine']['end'] = t.time
 							data.tSuspended = t.time
 						phase = 'resume_machine'
@@ -2994,8 +2229,6 @@ def parseTraceLog():
 						data.tResumed = t.time
 						data.tLow = data.tResumed - data.tSuspended
 					continue
-<<<<<<< HEAD
-=======
 				# acpi_suspend
 				elif(re.match('acpi_suspend\[.*', t.name)):
 					# acpi_suspend[0] S0i3
@@ -3005,7 +2238,6 @@ def parseTraceLog():
 							data.dmesg['suspend_machine']['end'] = t.time
 							data.tSuspended = t.time
 					continue
->>>>>>> v4.9.227
 				# resume_noirq start
 				elif(re.match('dpm_resume_noirq\[.*', t.name)):
 					phase = 'resume_noirq'
@@ -3029,32 +2261,6 @@ def parseTraceLog():
 					if(isbegin):
 						data.dmesg[phase]['start'] = t.time
 					continue
-<<<<<<< HEAD
-
-				# is this trace event outside of the devices calls
-				if(data.isTraceEventOutsideDeviceCalls(pid, t.time)):
-					# global events (outside device calls) are simply graphed
-					if(name not in testrun.ttemp):
-						testrun.ttemp[name] = []
-					if(isbegin):
-						# create a new list entry
-						testrun.ttemp[name].append(\
-							{'begin': t.time, 'end': t.time})
-					else:
-						if(len(testrun.ttemp[name]) > 0):
-							# if an antry exists, assume this is its end
-							testrun.ttemp[name][-1]['end'] = t.time
-						elif(phase == 'post_resume'):
-							# post resume events can just have ends
-							testrun.ttemp[name].append({
-								'begin': data.dmesg[phase]['start'],
-								'end': t.time})
-				else:
-					if(isbegin):
-						data.addIntraDevTraceEvent('', name, pid, t.time)
-					else:
-						data.capIntraDevTraceEvent('', name, pid, t.time)
-=======
 				# skip trace events inside devices calls
 				if(not data.isTraceEventOutsideDeviceCalls(pid, t.time)):
 					continue
@@ -3074,7 +2280,6 @@ def parseTraceLog():
 						testrun.ttemp[name].append({
 							'begin': data.dmesg[phase]['start'],
 							'end': t.time})
->>>>>>> v4.9.227
 			# device callback start
 			elif(t.type == 'device_pm_callback_start'):
 				m = re.match('(?P<drv>.*) (?P<d>.*), parent: *(?P<p>.*), .*',\
@@ -3097,77 +2302,6 @@ def parseTraceLog():
 					dev = list[n]
 					dev['length'] = t.time - dev['start']
 					dev['end'] = t.time
-<<<<<<< HEAD
-		# callgraph processing
-		elif sysvals.usecallgraph:
-			# this shouldn't happen, but JIC, ignore callgraph data post-res
-			if(phase == 'post_resume'):
-				continue
-			# create a callgraph object for the data
-			if(pid not in testrun.ftemp):
-				testrun.ftemp[pid] = []
-				testrun.ftemp[pid].append(FTraceCallGraph())
-			# when the call is finished, see which device matches it
-			cg = testrun.ftemp[pid][-1]
-			if(cg.addLine(t, m)):
-				testrun.ftemp[pid].append(FTraceCallGraph())
-	tf.close()
-
-	for test in testruns:
-		# add the traceevent data to the device hierarchy
-		if(sysvals.usetraceevents):
-			for name in test.ttemp:
-				for event in test.ttemp[name]:
-					begin = event['begin']
-					end = event['end']
-					# if event starts before timeline start, expand timeline
-					if(begin < test.data.start):
-						test.data.setStart(begin)
-					# if event ends after timeline end, expand the timeline
-					if(end > test.data.end):
-						test.data.setEnd(end)
-					test.data.newActionGlobal(name, begin, end)
-
-		# add the callgraph data to the device hierarchy
-		borderphase = {
-			'dpm_prepare': 'suspend_prepare',
-			'dpm_complete': 'resume_complete'
-		}
-		for pid in test.ftemp:
-			for cg in test.ftemp[pid]:
-				if len(cg.list) < 2:
-					continue
-				if(not cg.sanityCheck()):
-					id = 'task %s cpu %s' % (pid, m.group('cpu'))
-					vprint('Sanity check failed for '+\
-						id+', ignoring this callback')
-					continue
-				callstart = cg.start
-				callend = cg.end
-				if(cg.list[0].name in borderphase):
-					p = borderphase[cg.list[0].name]
-					list = test.data.dmesg[p]['list']
-					for devname in list:
-						dev = list[devname]
-						if(pid == dev['pid'] and
-							callstart <= dev['start'] and
-							callend >= dev['end']):
-							dev['ftrace'] = cg.slice(dev['start'], dev['end'])
-					continue
-				if(cg.list[0].name != 'dpm_run_callback'):
-					continue
-				for p in test.data.phases:
-					if(test.data.dmesg[p]['start'] <= callstart and
-						callstart <= test.data.dmesg[p]['end']):
-						list = test.data.dmesg[p]['list']
-						for devname in list:
-							dev = list[devname]
-							if(pid == dev['pid'] and
-								callstart <= dev['start'] and
-								callend >= dev['end']):
-								dev['ftrace'] = cg
-						break
-=======
 		# kprobe event processing
 		elif(t.fkprobe):
 			kprobename = t.type
@@ -3289,7 +2423,6 @@ def parseTraceLog():
 			for data in testdata:
 				data.printDetails()
 		return testdata
->>>>>>> v4.9.227
 
 	# fill in any missing phases
 	for data in testdata:
@@ -3313,16 +2446,6 @@ def parseTraceLog():
 		if(sysvals.verbose):
 			data.printDetails()
 
-<<<<<<< HEAD
-	# add the time in between the tests as a new phase so we can see it
-	if(len(testdata) > 1):
-		t1e = testdata[0].getEnd()
-		t2s = testdata[-1].getStart()
-		testdata[-1].newPhaseWithSingleAction('user mode', \
-			'user mode', t1e, t2s, '#FF9966')
-	return testdata
-
-=======
 	return testdata
 
 # Function: loadRawKernelLog
@@ -3369,7 +2492,6 @@ def loadRawKernelLog(dmesgfile):
 	lf.close()
 	return testruns
 
->>>>>>> v4.9.227
 # Function: loadKernelLog
 # Description:
 #	 [deprecated for kernel 3.15.0 or newer]
@@ -3382,16 +2504,10 @@ def loadKernelLog():
 
 	vprint('Analyzing the dmesg data...')
 	if(os.path.exists(sysvals.dmesgfile) == False):
-<<<<<<< HEAD
-		doError('%s doesnt exist' % sysvals.dmesgfile, False)
-
-	# there can be multiple test runs in a single file delineated by stamps
-=======
 		doError('%s does not exist' % sysvals.dmesgfile, False)
 
 	# there can be multiple test runs in a single file
 	tp = TestProps()
->>>>>>> v4.9.227
 	testruns = []
 	data = 0
 	lf = open(sysvals.dmesgfile, 'r')
@@ -3402,37 +2518,6 @@ def loadKernelLog():
 			line = line[idx:]
 		m = re.match(sysvals.stampfmt, line)
 		if(m):
-<<<<<<< HEAD
-			if(data):
-				testruns.append(data)
-			data = Data(len(testruns))
-			parseStamp(m, data)
-			continue
-		if(not data):
-			continue
-		m = re.match(sysvals.firmwarefmt, line)
-		if(m):
-			data.fwSuspend = int(m.group('s'))
-			data.fwResume = int(m.group('r'))
-			if(data.fwSuspend > 0 or data.fwResume > 0):
-				data.fwValid = True
-			continue
-		m = re.match('[ \t]*(\[ *)(?P<ktime>[0-9\.]*)(\]) (?P<msg>.*)', line)
-		if(m):
-			data.dmesgtext.append(line)
-			if(re.match('ACPI: resume from mwait', m.group('msg'))):
-				print('NOTE: This suspend appears to be freeze rather than'+\
-					' %s, it will be treated as such' % sysvals.suspendmode)
-				sysvals.suspendmode = 'freeze'
-		else:
-			vprint('ignoring dmesg line: %s' % line.replace('\n', ''))
-	testruns.append(data)
-	lf.close()
-
-	if(not data):
-		print('ERROR: analyze_suspend header missing from dmesg log')
-		sys.exit()
-=======
 			tp.stamp = line
 			continue
 		m = re.match(sysvals.firmwarefmt, line)
@@ -3470,7 +2555,6 @@ def loadKernelLog():
 	if(len(testruns) < 1):
 		doError(' dmesg log is completely unreadable: %s' \
 			% sysvals.dmesgfile, False)
->>>>>>> v4.9.227
 
 	# fix lines with same timestamp/function with the call and return swapped
 	for data in testruns:
@@ -3687,12 +2771,8 @@ def parseKernelLog(data):
 						actions[a] = []
 					actions[a].append({'begin': ktime, 'end': ktime})
 				if(re.match(at[a]['emsg'], msg)):
-<<<<<<< HEAD
-					actions[a][-1]['end'] = ktime
-=======
 					if(a in actions):
 						actions[a][-1]['end'] = ktime
->>>>>>> v4.9.227
 			# now look for CPU on/off events
 			if(re.match('Disabling non-boot CPUs .*', msg)):
 				# start of first cpu suspend
@@ -3739,19 +2819,7 @@ def parseKernelLog(data):
 	# fill in any actions we've found
 	for name in actions:
 		for event in actions[name]:
-<<<<<<< HEAD
-			begin = event['begin']
-			end = event['end']
-			# if event starts before timeline start, expand timeline
-			if(begin < data.start):
-				data.setStart(begin)
-			# if event ends after timeline end, expand the timeline
-			if(end > data.end):
-				data.setEnd(end)
-			data.newActionGlobal(name, begin, end)
-=======
 			data.newActionGlobal(name, event['begin'], event['end'])
->>>>>>> v4.9.227
 
 	if(sysvals.verbose):
 		data.printDetails()
@@ -3760,95 +2828,6 @@ def parseKernelLog(data):
 	data.fixupInitcallsThatDidntReturn()
 	return True
 
-<<<<<<< HEAD
-# Function: setTimelineRows
-# Description:
-#	 Organize the timeline entries into the smallest
-#	 number of rows possible, with no entry overlapping
-# Arguments:
-#	 list: the list of devices/actions for a single phase
-#	 sortedkeys: cronologically sorted key list to use
-# Output:
-#	 The total number of rows needed to display this phase of the timeline
-def setTimelineRows(list, sortedkeys):
-
-	# clear all rows and set them to undefined
-	remaining = len(list)
-	rowdata = dict()
-	row = 0
-	for item in list:
-		list[item]['row'] = -1
-
-	# try to pack each row with as many ranges as possible
-	while(remaining > 0):
-		if(row not in rowdata):
-			rowdata[row] = []
-		for item in sortedkeys:
-			if(list[item]['row'] < 0):
-				s = list[item]['start']
-				e = list[item]['end']
-				valid = True
-				for ritem in rowdata[row]:
-					rs = ritem['start']
-					re = ritem['end']
-					if(not (((s <= rs) and (e <= rs)) or
-						((s >= re) and (e >= re)))):
-						valid = False
-						break
-				if(valid):
-					rowdata[row].append(list[item])
-					list[item]['row'] = row
-					remaining -= 1
-		row += 1
-	return row
-
-# Function: createTimeScale
-# Description:
-#	 Create the timescale header for the html timeline
-# Arguments:
-#	 t0: start time (suspend begin)
-#	 tMax: end time (resume end)
-#	 tSuspend: time when suspend occurs, i.e. the zero time
-# Output:
-#	 The html code needed to display the time scale
-def createTimeScale(t0, tMax, tSuspended):
-	timescale = '<div class="t" style="right:{0}%">{1}</div>\n'
-	output = '<div id="timescale">\n'
-
-	# set scale for timeline
-	tTotal = tMax - t0
-	tS = 0.1
-	if(tTotal <= 0):
-		return output
-	if(tTotal > 4):
-		tS = 1
-	if(tSuspended < 0):
-		for i in range(int(tTotal/tS)+1):
-			pos = '%0.3f' % (100 - ((float(i)*tS*100)/tTotal))
-			if(i > 0):
-				val = '%0.fms' % (float(i)*tS*1000)
-			else:
-				val = ''
-			output += timescale.format(pos, val)
-	else:
-		tSuspend = tSuspended - t0
-		divTotal = int(tTotal/tS) + 1
-		divSuspend = int(tSuspend/tS)
-		s0 = (tSuspend - tS*divSuspend)*100/tTotal
-		for i in range(divTotal):
-			pos = '%0.3f' % (100 - ((float(i)*tS*100)/tTotal) - s0)
-			if((i == 0) and (s0 < 3)):
-				val = ''
-			elif(i == divSuspend):
-				val = 'S/R'
-			else:
-				val = '%0.fms' % (float(i-divSuspend)*tS*1000)
-			output += timescale.format(pos, val)
-	output += '</div>\n'
-	return output
-
-=======
->>>>>>> v4.9.227
 # Function: createHTMLSummarySimple
 # Description:
 #	 Create summary html file for a series of tests
@@ -3980,8 +2959,6 @@ def createHTMLSummarySimple(testruns, htmlfile):
 	hf.write('</body>\n</html>\n')
 	hf.close()
 
-<<<<<<< HEAD
-=======
 def htmlTitle():
 	global sysvals
 	modename = {
@@ -4008,7 +2985,6 @@ def ordinal(value):
 			suffix = 'rd'
 	return '%d%s' % (value, suffix)
 
->>>>>>> v4.9.227
 # Function: createHTML
 # Description:
 #	 Create the output html file from the resident test data
@@ -4019,13 +2995,10 @@ def ordinal(value):
 def createHTML(testruns):
 	global sysvals
 
-<<<<<<< HEAD
-=======
 	if len(testruns) < 1:
 		print('ERROR: Not enough test data to build a timeline')
 		return
 
->>>>>>> v4.9.227
 	for data in testruns:
 		data.normalizeTime(testruns[-1].tSuspended)
 
@@ -4033,29 +3006,18 @@ def createHTML(testruns):
 	if len(testruns) > 1:
 		x2changes = ['1', 'relative']
 	# html function templates
-<<<<<<< HEAD
-=======
 	headline_version = '<div class="version"><a href="https://01.org/suspendresume">AnalyzeSuspend v%s</a></div>' % sysvals.version
->>>>>>> v4.9.227
 	headline_stamp = '<div class="stamp">{0} {1} {2} {3}</div>\n'
 	html_devlist1 = '<button id="devlist1" class="devlist" style="float:left;">Device Detail%s</button>' % x2changes[0]
 	html_zoombox = '<center><button id="zoomin">ZOOM IN</button><button id="zoomout">ZOOM OUT</button><button id="zoomdef">ZOOM 1:1</button></center>\n'
 	html_devlist2 = '<button id="devlist2" class="devlist" style="float:right;">Device Detail2</button>\n'
 	html_timeline = '<div id="dmesgzoombox" class="zoombox">\n<div id="{0}" class="timeline" style="height:{1}px">\n'
-<<<<<<< HEAD
-	html_device = '<div id="{0}" title="{1}" class="thread" style="left:{2}%;top:{3}%;height:{4}%;width:{5}%;">{6}</div>\n'
-	html_traceevent = '<div title="{0}" class="traceevent" style="left:{1}%;top:{2}%;height:{3}%;width:{4}%;border:1px solid {5};background-color:{5}">{6}</div>\n'
-	html_phase = '<div class="phase" style="left:{0}%;width:{1}%;top:{2}%;height:{3}%;background-color:{4}">{5}</div>\n'
-	html_phaselet = '<div id="{0}" class="phaselet" style="left:{1}%;width:{2}%;background-color:{3}"></div>\n'
-	html_legend = '<div class="square" style="left:{0}%;background-color:{1}">&nbsp;{2}</div>\n'
-=======
 	html_tblock = '<div id="block{0}" class="tblock" style="left:{1}%;width:{2}%;">\n'
 	html_device = '<div id="{0}" title="{1}" class="thread{7}" style="left:{2}%;top:{3}px;height:{4}px;width:{5}%;{8}">{6}</div>\n'
 	html_traceevent = '<div title="{0}" class="traceevent" style="left:{1}%;top:{2}px;height:{3}px;width:{4}%;line-height:{3}px;">{5}</div>\n'
 	html_phase = '<div class="phase" style="left:{0}%;width:{1}%;top:{2}px;height:{3}px;background-color:{4}">{5}</div>\n'
 	html_phaselet = '<div id="{0}" class="phaselet" style="left:{1}%;width:{2}%;background-color:{3}"></div>\n'
 	html_legend = '<div id="p{3}" class="square" style="left:{0}%;background-color:{1}">&nbsp;{2}</div>\n'
->>>>>>> v4.9.227
 	html_timetotal = '<table class="time1">\n<tr>'\
 		'<td class="green">{2} Suspend Time: <b>{0} ms</b></td>'\
 		'<td class="yellow">{2} Resume Time: <b>{1} ms</b></td>'\
@@ -4065,13 +3027,10 @@ def createHTML(testruns):
 		'<td class="gray">'+sysvals.suspendmode+' time: <b>{1} ms</b></td>'\
 		'<td class="yellow">{3} Resume Time: <b>{2} ms</b></td>'\
 		'</tr>\n</table>\n'
-<<<<<<< HEAD
-=======
 	html_timetotal3 = '<table class="time1">\n<tr>'\
 		'<td class="green">Execution Time: <b>{0} ms</b></td>'\
 		'<td class="yellow">Command: <b>{1}</b></td>'\
 		'</tr>\n</table>\n'
->>>>>>> v4.9.227
 	html_timegroups = '<table class="time2">\n<tr>'\
 		'<td class="green">{4}Kernel Suspend: {0} ms</td>'\
 		'<td class="purple">{4}Firmware Suspend: {1} ms</td>'\
@@ -4079,14 +3038,6 @@ def createHTML(testruns):
 		'<td class="yellow">{4}Kernel Resume: {3} ms</td>'\
 		'</tr>\n</table>\n'
 
-<<<<<<< HEAD
-	# device timeline
-	vprint('Creating Device Timeline...')
-	devtl = Timeline()
-
-	# Generate the header for this timeline
-	textnum = ['First', 'Second']
-=======
 	# html format variables
 	rowheight = 30
 	devtextS = '14px'
@@ -4102,7 +3053,6 @@ def createHTML(testruns):
 	devtl = Timeline(rowheight)
 
 	# Generate the header for this timeline
->>>>>>> v4.9.227
 	for data in testruns:
 		tTotal = data.end - data.start
 		tEnd = data.dmesg['resume_complete']['end']
@@ -4111,9 +3061,6 @@ def createHTML(testruns):
 			sys.exit()
 		if(data.tLow > 0):
 			low_time = '%.0f'%(data.tLow*1000)
-<<<<<<< HEAD
-		if data.fwValid:
-=======
 		if sysvals.suspendmode == 'command':
 			run_time = '%.0f'%((data.end-data.start)*1000)
 			if sysvals.testcommand:
@@ -4125,7 +3072,6 @@ def createHTML(testruns):
 			thtml = html_timetotal3.format(run_time, testdesc)
 			devtl.html['header'] += thtml
 		elif data.fwValid:
->>>>>>> v4.9.227
 			suspend_time = '%.0f'%((data.tSuspended-data.start)*1000 + \
 				(data.fwSuspend/1000000.0))
 			resume_time = '%.0f'%((tEnd-data.tSuspended)*1000 + \
@@ -4133,11 +3079,7 @@ def createHTML(testruns):
 			testdesc1 = 'Total'
 			testdesc2 = ''
 			if(len(testruns) > 1):
-<<<<<<< HEAD
-				testdesc1 = testdesc2 = textnum[data.testnumber]
-=======
 				testdesc1 = testdesc2 = ordinal(data.testnumber+1)
->>>>>>> v4.9.227
 				testdesc2 += ' '
 			if(data.tLow == 0):
 				thtml = html_timetotal.format(suspend_time, \
@@ -4145,46 +3087,28 @@ def createHTML(testruns):
 			else:
 				thtml = html_timetotal2.format(suspend_time, low_time, \
 					resume_time, testdesc1)
-<<<<<<< HEAD
-			devtl.html['timeline'] += thtml
-=======
 			devtl.html['header'] += thtml
->>>>>>> v4.9.227
 			sktime = '%.3f'%((data.dmesg['suspend_machine']['end'] - \
 				data.getStart())*1000)
 			sftime = '%.3f'%(data.fwSuspend / 1000000.0)
 			rftime = '%.3f'%(data.fwResume / 1000000.0)
-<<<<<<< HEAD
-			rktime = '%.3f'%((data.getEnd() - \
-				data.dmesg['resume_machine']['start'])*1000)
-			devtl.html['timeline'] += html_timegroups.format(sktime, \
-=======
 			rktime = '%.3f'%((data.dmesg['resume_complete']['end'] - \
 				data.dmesg['resume_machine']['start'])*1000)
 			devtl.html['header'] += html_timegroups.format(sktime, \
->>>>>>> v4.9.227
 				sftime, rftime, rktime, testdesc2)
 		else:
 			suspend_time = '%.0f'%((data.tSuspended-data.start)*1000)
 			resume_time = '%.0f'%((tEnd-data.tSuspended)*1000)
 			testdesc = 'Kernel'
 			if(len(testruns) > 1):
-<<<<<<< HEAD
-				testdesc = textnum[data.testnumber]+' '+testdesc
-=======
 				testdesc = ordinal(data.testnumber+1)+' '+testdesc
->>>>>>> v4.9.227
 			if(data.tLow == 0):
 				thtml = html_timetotal.format(suspend_time, \
 					resume_time, testdesc)
 			else:
 				thtml = html_timetotal2.format(suspend_time, low_time, \
 					resume_time, testdesc)
-<<<<<<< HEAD
-			devtl.html['timeline'] += thtml
-=======
 			devtl.html['header'] += thtml
->>>>>>> v4.9.227
 
 	# time scale for potentially multiple datasets
 	t0 = testruns[0].start
@@ -4193,81 +3117,6 @@ def createHTML(testruns):
 	tTotal = tMax - t0
 
 	# determine the maximum number of rows we need to draw
-<<<<<<< HEAD
-	timelinerows = 0
-	for data in testruns:
-		for phase in data.dmesg:
-			list = data.dmesg[phase]['list']
-			rows = setTimelineRows(list, list)
-			data.dmesg[phase]['row'] = rows
-			if(rows > timelinerows):
-				timelinerows = rows
-
-	# calculate the timeline height and create bounding box, add buttons
-	devtl.setRows(timelinerows + 1)
-	devtl.html['timeline'] += html_devlist1
-	if len(testruns) > 1:
-		devtl.html['timeline'] += html_devlist2
-	devtl.html['timeline'] += html_zoombox
-	devtl.html['timeline'] += html_timeline.format('dmesg', devtl.height)
-
-	# draw the colored boxes for each of the phases
-	for data in testruns:
-		for b in data.dmesg:
-			phase = data.dmesg[b]
-			length = phase['end']-phase['start']
-			left = '%.3f' % (((phase['start']-t0)*100.0)/tTotal)
-			width = '%.3f' % ((length*100.0)/tTotal)
-			devtl.html['timeline'] += html_phase.format(left, width, \
-				'%.3f'%devtl.scaleH, '%.3f'%(100-devtl.scaleH), \
-				data.dmesg[b]['color'], '')
-
-	# draw the time scale, try to make the number of labels readable
-	devtl.html['scale'] = createTimeScale(t0, tMax, tSuspended)
-	devtl.html['timeline'] += devtl.html['scale']
-	for data in testruns:
-		for b in data.dmesg:
-			phaselist = data.dmesg[b]['list']
-			for d in phaselist:
-				name = d
-				drv = ''
-				dev = phaselist[d]
-				if(d in sysvals.altdevname):
-					name = sysvals.altdevname[d]
-				if('drv' in dev and dev['drv']):
-					drv = ' {%s}' % dev['drv']
-				height = (100.0 - devtl.scaleH)/data.dmesg[b]['row']
-				top = '%.3f' % ((dev['row']*height) + devtl.scaleH)
-				left = '%.3f' % (((dev['start']-t0)*100)/tTotal)
-				width = '%.3f' % (((dev['end']-dev['start'])*100)/tTotal)
-				length = ' (%0.3f ms) ' % ((dev['end']-dev['start'])*1000)
-				color = 'rgba(204,204,204,0.5)'
-				devtl.html['timeline'] += html_device.format(dev['id'], \
-					d+drv+length+b, left, top, '%.3f'%height, width, name+drv)
-
-	# draw any trace events found
-	for data in testruns:
-		for b in data.dmesg:
-			phaselist = data.dmesg[b]['list']
-			for name in phaselist:
-				dev = phaselist[name]
-				if('traceevents' in dev):
-					vprint('Debug trace events found for device %s' % name)
-					vprint('%20s %20s %10s %8s' % ('action', \
-						'name', 'time(ms)', 'length(ms)'))
-					for e in dev['traceevents']:
-						vprint('%20s %20s %10.3f %8.3f' % (e.action, \
-							e.name, e.time*1000, e.length*1000))
-						height = (100.0 - devtl.scaleH)/data.dmesg[b]['row']
-						top = '%.3f' % ((dev['row']*height) + devtl.scaleH)
-						left = '%.3f' % (((e.time-t0)*100)/tTotal)
-						width = '%.3f' % (e.length*100/tTotal)
-						color = 'rgba(204,204,204,0.5)'
-						devtl.html['timeline'] += \
-							html_traceevent.format(e.action+' '+e.name, \
-								left, top, '%.3f'%height, \
-								width, e.color, '')
-=======
 	for data in testruns:
 		data.selectTimelineDevices('%f', tTotal, sysvals.mindevlen)
 		for group in data.devicegroups:
@@ -4390,27 +3239,11 @@ def createHTML(testruns):
 			# draw the time scale, try to make the number of labels readable
 			devtl.html['timeline'] += devtl.createTimeScale(m0, mMax, tTotal, dir)
 			devtl.html['timeline'] += '</div>\n'
->>>>>>> v4.9.227
 
 	# timeline is finished
 	devtl.html['timeline'] += '</div>\n</div>\n'
 
 	# draw a legend which describes the phases by color
-<<<<<<< HEAD
-	data = testruns[-1]
-	devtl.html['legend'] = '<div class="legend">\n'
-	pdelta = 100.0/len(data.phases)
-	pmargin = pdelta / 4.0
-	for phase in data.phases:
-		order = '%.2f' % ((data.dmesg[phase]['order'] * pdelta) + pmargin)
-		name = string.replace(phase, '_', ' &nbsp;')
-		devtl.html['legend'] += html_legend.format(order, \
-			data.dmesg[phase]['color'], name)
-	devtl.html['legend'] += '</div>\n'
-
-	hf = open(sysvals.htmlfile, 'w')
-	thread_height = 0
-=======
 	if sysvals.suspendmode != 'command':
 		data = testruns[-1]
 		devtl.html['legend'] = '<div class="legend">\n'
@@ -4435,25 +3268,10 @@ def createHTML(testruns):
 	else:
 		cgchk = 'not(:checked)'
 		cgnchk = 'checked'
->>>>>>> v4.9.227
 
 	# write the html header first (html head, css code, up to body start)
 	html_header = '<!DOCTYPE html>\n<html>\n<head>\n\
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">\n\
-<<<<<<< HEAD
-	<title>AnalyzeSuspend</title>\n\
-	<style type=\'text/css\'>\n\
-		body {overflow-y: scroll;}\n\
-		.stamp {width: 100%;text-align:center;background-color:gray;line-height:30px;color:white;font: 25px Arial;}\n\
-		.callgraph {margin-top: 30px;box-shadow: 5px 5px 20px black;}\n\
-		.callgraph article * {padding-left: 28px;}\n\
-		h1 {color:black;font: bold 30px Times;}\n\
-		t0 {color:black;font: bold 30px Times;}\n\
-		t1 {color:black;font: 30px Times;}\n\
-		t2 {color:black;font: 25px Times;}\n\
-		t3 {color:black;font: 20px Times;white-space:nowrap;}\n\
-		t4 {color:black;font: bold 30px Times;line-height:60px;white-space:nowrap;}\n\
-=======
 	<title>'+htmlTitle()+'</title>\n\
 	<style type=\'text/css\'>\n\
 		body {overflow-y:scroll;}\n\
@@ -4468,44 +3286,11 @@ def createHTML(testruns):
 		t4 {color:black;font:bold 30px Times;line-height:60px;white-space:nowrap;}\n\
 		cS {color:blue;font:bold 11px Times;}\n\
 		cR {color:red;font:bold 11px Times;}\n\
->>>>>>> v4.9.227
 		table {width:100%;}\n\
 		.gray {background-color:rgba(80,80,80,0.1);}\n\
 		.green {background-color:rgba(204,255,204,0.4);}\n\
 		.purple {background-color:rgba(128,0,128,0.2);}\n\
 		.yellow {background-color:rgba(255,255,204,0.4);}\n\
-<<<<<<< HEAD
-		.time1 {font: 22px Arial;border:1px solid;}\n\
-		.time2 {font: 15px Arial;border-bottom:1px solid;border-left:1px solid;border-right:1px solid;}\n\
-		td {text-align: center;}\n\
-		r {color:#500000;font:15px Tahoma;}\n\
-		n {color:#505050;font:15px Tahoma;}\n\
-		.tdhl {color: red;}\n\
-		.hide {display: none;}\n\
-		.pf {display: none;}\n\
-		.pf:checked + label {background: url(\'data:image/svg+xml;utf,<?xml version="1.0" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" version="1.1"><circle cx="9" cy="9" r="8" stroke="black" stroke-width="1" fill="white"/><rect x="4" y="8" width="10" height="2" style="fill:black;stroke-width:0"/><rect x="8" y="4" width="2" height="10" style="fill:black;stroke-width:0"/></svg>\') no-repeat left center;}\n\
-		.pf:not(:checked) ~ label {background: url(\'data:image/svg+xml;utf,<?xml version="1.0" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" version="1.1"><circle cx="9" cy="9" r="8" stroke="black" stroke-width="1" fill="white"/><rect x="4" y="8" width="10" height="2" style="fill:black;stroke-width:0"/></svg>\') no-repeat left center;}\n\
-		.pf:checked ~ *:not(:nth-child(2)) {display: none;}\n\
-		.zoombox {position: relative; width: 100%; overflow-x: scroll;}\n\
-		.timeline {position: relative; font-size: 14px;cursor: pointer;width: 100%; overflow: hidden; background-color:#dddddd;}\n\
-		.thread {position: absolute; height: '+'%.3f'%thread_height+'%; overflow: hidden; line-height: 30px; border:1px solid;text-align:center;white-space:nowrap;background-color:rgba(204,204,204,0.5);}\n\
-		.thread:hover {background-color:white;border:1px solid red;z-index:10;}\n\
-		.hover {background-color:white;border:1px solid red;z-index:10;}\n\
-		.traceevent {position: absolute;opacity: 0.3;height: '+'%.3f'%thread_height+'%;width:0;overflow:hidden;line-height:30px;text-align:center;white-space:nowrap;}\n\
-		.phase {position: absolute;overflow: hidden;border:0px;text-align:center;}\n\
-		.phaselet {position:absolute;overflow:hidden;border:0px;text-align:center;height:100px;font-size:24px;}\n\
-		.t {position:absolute;top:0%;height:100%;border-right:1px solid black;}\n\
-		.legend {position: relative; width: 100%; height: 40px; text-align: center;margin-bottom:20px}\n\
-		.legend .square {position:absolute;top:10px; width: 0px;height: 20px;border:1px solid;padding-left:20px;}\n\
-		button {height:40px;width:200px;margin-bottom:20px;margin-top:20px;font-size:24px;}\n\
-		.devlist {position:'+x2changes[1]+';width:190px;}\n\
-		#devicedetail {height:100px;box-shadow: 5px 5px 20px black;}\n\
-	</style>\n</head>\n<body>\n'
-	hf.write(html_header)
-
-	# write the test title and general info header
-	if(sysvals.stamp['time'] != ""):
-=======
 		.time1 {font:22px Arial;border:1px solid;}\n\
 		.time2 {font:15px Arial;border-bottom:1px solid;border-left:1px solid;border-right:1px solid;}\n\
 		td {text-align:center;}\n\
@@ -4561,16 +3346,12 @@ def createHTML(testruns):
 			hf.write('<button id="showdmesg" class="logbtn">dmesg</button>')
 		if sysvals.addlogs and sysvals.ftracefile:
 			hf.write('<button id="showftrace" class="logbtn">ftrace</button>')
->>>>>>> v4.9.227
 		hf.write(headline_stamp.format(sysvals.stamp['host'],
 			sysvals.stamp['kernel'], sysvals.stamp['mode'], \
 				sysvals.stamp['time']))
 
 	# write the device timeline
-<<<<<<< HEAD
-=======
 	hf.write(devtl.html['header'])
->>>>>>> v4.9.227
 	hf.write(devtl.html['timeline'])
 	hf.write(devtl.html['legend'])
 	hf.write('<div id="devicedetailtitle"></div>\n')
@@ -4585,22 +3366,15 @@ def createHTML(testruns):
 			width = '%.3f' % ((length*100.0)/tTotal)
 			hf.write(html_phaselet.format(b, left, width, \
 				data.dmesg[b]['color']))
-<<<<<<< HEAD
-=======
 		if sysvals.suspendmode == 'command':
 			hf.write(html_phaselet.format('cmdexec', '0', '0', \
 				data.dmesg['resume_complete']['color']))
->>>>>>> v4.9.227
 		hf.write('</div>\n')
 	hf.write('</div>\n')
 
 	# write the ftrace data (callgraph)
 	data = testruns[-1]
-<<<<<<< HEAD
-	if(sysvals.usecallgraph):
-=======
 	if(sysvals.usecallgraph and not sysvals.embedded):
->>>>>>> v4.9.227
 		hf.write('<section id="callgraphs" class="callgraph">\n')
 		# write out the ftrace data converted to html
 		html_func_top = '<article id="{0}" class="atop" style="background-color:{1}">\n<input type="checkbox" class="pf" id="f{2}" checked/><label for="f{2}">{3} {4}</label>\n'
@@ -4613,17 +3387,6 @@ def createHTML(testruns):
 			for devname in data.sortedDevices(p):
 				if('ftrace' not in list[devname]):
 					continue
-<<<<<<< HEAD
-				name = devname
-				if(devname in sysvals.altdevname):
-					name = sysvals.altdevname[devname]
-				devid = list[devname]['id']
-				cg = list[devname]['ftrace']
-				flen = '<r>(%.3f ms @ %.3f to %.3f)</r>' % \
-					((cg.end - cg.start)*1000, cg.start*1000, cg.end*1000)
-				hf.write(html_func_top.format(devid, data.dmesg[p]['color'], \
-					num, name+' '+p, flen))
-=======
 				devid = list[devname]['id']
 				cg = list[devname]['ftrace']
 				clen = (cg.end - cg.start) * 1000
@@ -4640,19 +3403,13 @@ def createHTML(testruns):
 					ftitle = name+' '+p
 				hf.write(html_func_top.format(devid, data.dmesg[p]['color'], \
 					num, ftitle, flen))
->>>>>>> v4.9.227
 				num += 1
 				for line in cg.list:
 					if(line.length < 0.000000001):
 						flen = ''
 					else:
-<<<<<<< HEAD
-						flen = '<n>(%.3f ms @ %.3f)</n>' % (line.length*1000, \
-							line.time*1000)
-=======
 						fmt = '<n>(%.3f ms @ '+sysvals.timeformat+')</n>'
 						flen = fmt % (line.length*1000, line.time)
->>>>>>> v4.9.227
 					if(line.freturn and line.fcall):
 						hf.write(html_func_leaf.format(line.name, flen))
 					elif(line.freturn):
@@ -4662,11 +3419,6 @@ def createHTML(testruns):
 						num += 1
 				hf.write(html_func_end)
 		hf.write('\n\n    </section>\n')
-<<<<<<< HEAD
-	# write the footer and close
-	addScriptCode(hf, testruns)
-	hf.write('</body>\n</html>\n')
-=======
 
 	# add the dmesg log as a hidden div
 	if sysvals.addlogs and sysvals.dmesgfile:
@@ -4701,7 +3453,6 @@ def createHTML(testruns):
 			detail += '\t"%s",\n' % (topo)
 		detail += '];\n'
 		hf.write('<div id=customcode style=display:none>\n'+detail+'</div>\n')
->>>>>>> v4.9.227
 	hf.close()
 	return True
 
@@ -4712,13 +3463,8 @@ def createHTML(testruns):
 #	 hf: the open html file pointer
 #	 testruns: array of Data objects from parseKernelLog or parseTraceLog
 def addScriptCode(hf, testruns):
-<<<<<<< HEAD
-	t0 = (testruns[0].start - testruns[-1].tSuspended) * 1000
-	tMax = (testruns[-1].end - testruns[-1].tSuspended) * 1000
-=======
 	t0 = testruns[0].start * 1000
 	tMax = testruns[-1].end * 1000
->>>>>>> v4.9.227
 	# create an array in javascript memory with the device details
 	detail = '	var devtable = [];\n'
 	for data in testruns:
@@ -4728,10 +3474,6 @@ def addScriptCode(hf, testruns):
 	# add the code which will manipulate the data in the browser
 	script_code = \
 	'<script type="text/javascript">\n'+detail+\
-<<<<<<< HEAD
-	'	function zoomTimeline() {\n'\
-	'		var timescale = document.getElementById("timescale");\n'\
-=======
 	'	var resolution = -1;\n'\
 	'	function redrawTimescale(t0, tMax, tS) {\n'\
 	'		var rline = \'<div class="t" style="left:0;border-left:1px solid black;border-right:0;"><cR><-R</cR></div>\';\n'\
@@ -4769,7 +3511,6 @@ def addScriptCode(hf, testruns):
 	'		}\n'\
 	'	}\n'\
 	'	function zoomTimeline() {\n'\
->>>>>>> v4.9.227
 	'		var dmesg = document.getElementById("dmesg");\n'\
 	'		var zoombox = document.getElementById("dmesgzoombox");\n'\
 	'		var val = parseFloat(dmesg.style.width);\n'\
@@ -4777,11 +3518,7 @@ def addScriptCode(hf, testruns):
 	'		var sh = window.outerWidth / 2;\n'\
 	'		if(this.id == "zoomin") {\n'\
 	'			newval = val * 1.2;\n'\
-<<<<<<< HEAD
-	'			if(newval > 40000) newval = 40000;\n'\
-=======
 	'			if(newval > 910034) newval = 910034;\n'\
->>>>>>> v4.9.227
 	'			dmesg.style.width = newval+"%";\n'\
 	'			zoombox.scrollLeft = ((zoombox.scrollLeft + sh) * newval / val) - sh;\n'\
 	'		} else if (this.id == "zoomout") {\n'\
@@ -4793,32 +3530,17 @@ def addScriptCode(hf, testruns):
 	'			zoombox.scrollLeft = 0;\n'\
 	'			dmesg.style.width = "100%";\n'\
 	'		}\n'\
-<<<<<<< HEAD
-	'		var html = "";\n'\
-=======
 	'		var tS = [10000, 5000, 2000, 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1];\n'\
->>>>>>> v4.9.227
 	'		var t0 = bounds[0];\n'\
 	'		var tMax = bounds[1];\n'\
 	'		var tTotal = tMax - t0;\n'\
 	'		var wTotal = tTotal * 100.0 / newval;\n'\
-<<<<<<< HEAD
-	'		for(var tS = 1000; (wTotal / tS) < 3; tS /= 10);\n'\
-	'		if(tS < 1) tS = 1;\n'\
-	'		for(var s = ((t0 / tS)|0) * tS; s < tMax; s += tS) {\n'\
-	'			var pos = (tMax - s) * 100.0 / tTotal;\n'\
-	'			var name = (s == 0)?"S/R":(s+"ms");\n'\
-	'			html += "<div class=\\"t\\" style=\\"right:"+pos+"%\\">"+name+"</div>";\n'\
-	'		}\n'\
-	'		timescale.innerHTML = html;\n'\
-=======
 	'		var idx = 7*window.innerWidth/1100;\n'\
 	'		for(var i = 0; (i < tS.length)&&((wTotal / tS[i]) < idx); i++);\n'\
 	'		if(i >= tS.length) i = tS.length - 1;\n'\
 	'		if(tS[i] == resolution) return;\n'\
 	'		resolution = tS[i];\n'\
 	'		redrawTimescale(t0, tMax, tS[i]);\n'\
->>>>>>> v4.9.227
 	'	}\n'\
 	'	function deviceHover() {\n'\
 	'		var name = this.title.slice(0, this.title.indexOf(" ("));\n'\
@@ -4831,14 +3553,6 @@ def addScriptCode(hf, testruns):
 	'			cpu = parseInt(name.slice(8));\n'\
 	'		for (var i = 0; i < dev.length; i++) {\n'\
 	'			dname = dev[i].title.slice(0, dev[i].title.indexOf(" ("));\n'\
-<<<<<<< HEAD
-	'			if((cpu >= 0 && dname.match("CPU_O[NF]*\\\[*"+cpu+"\\\]")) ||\n'\
-	'				(name == dname))\n'\
-	'			{\n'\
-	'				dev[i].className = "thread hover";\n'\
-	'			} else {\n'\
-	'				dev[i].className = "thread";\n'\
-=======
 	'			var cname = dev[i].className.slice(dev[i].className.indexOf("thread"));\n'\
 	'			if((cpu >= 0 && dname.match("CPU_O[NF]*\\\[*"+cpu+"\\\]")) ||\n'\
 	'				(name == dname))\n'\
@@ -4846,7 +3560,6 @@ def addScriptCode(hf, testruns):
 	'				dev[i].className = "hover "+cname;\n'\
 	'			} else {\n'\
 	'				dev[i].className = cname;\n'\
->>>>>>> v4.9.227
 	'			}\n'\
 	'		}\n'\
 	'	}\n'\
@@ -4854,11 +3567,7 @@ def addScriptCode(hf, testruns):
 	'		var dmesg = document.getElementById("dmesg");\n'\
 	'		var dev = dmesg.getElementsByClassName("thread");\n'\
 	'		for (var i = 0; i < dev.length; i++) {\n'\
-<<<<<<< HEAD
-	'			dev[i].className = "thread";\n'\
-=======
 	'			dev[i].className = dev[i].className.slice(dev[i].className.indexOf("thread"));\n'\
->>>>>>> v4.9.227
 	'		}\n'\
 	'	}\n'\
 	'	function deviceTitle(title, total, cpu) {\n'\
@@ -4869,11 +3578,7 @@ def addScriptCode(hf, testruns):
 	'			total[2] = (total[2]+total[4])/2;\n'\
 	'		}\n'\
 	'		var devtitle = document.getElementById("devicedetailtitle");\n'\
-<<<<<<< HEAD
-	'		var name = title.slice(0, title.indexOf(" "));\n'\
-=======
 	'		var name = title.slice(0, title.indexOf(" ("));\n'\
->>>>>>> v4.9.227
 	'		if(cpu >= 0) name = "CPU"+cpu;\n'\
 	'		var driver = "";\n'\
 	'		var tS = "<t2>(</t2>";\n'\
@@ -4905,11 +3610,8 @@ def addScriptCode(hf, testruns):
 	'		var dev = dmesg.getElementsByClassName("thread");\n'\
 	'		var idlist = [];\n'\
 	'		var pdata = [[]];\n'\
-<<<<<<< HEAD
-=======
 	'		if(document.getElementById("devicedetail1"))\n'\
 	'			pdata = [[], []];\n'\
->>>>>>> v4.9.227
 	'		var pd = pdata[0];\n'\
 	'		var total = [0.0, 0.0, 0.0];\n'\
 	'		for (var i = 0; i < dev.length; i++) {\n'\
@@ -4965,10 +3667,7 @@ def addScriptCode(hf, testruns):
 	'		var cglist = document.getElementById("callgraphs");\n'\
 	'		if(!cglist) return;\n'\
 	'		var cg = cglist.getElementsByClassName("atop");\n'\
-<<<<<<< HEAD
-=======
 	'		if(cg.length < 10) return;\n'\
->>>>>>> v4.9.227
 	'		for (var i = 0; i < cg.length; i++) {\n'\
 	'			if(idlist.indexOf(cg[i].id) >= 0) {\n'\
 	'				cg[i].style.display = "block";\n'\
@@ -4993,8 +3692,6 @@ def addScriptCode(hf, testruns):
 	'			dt = devtable[1];\n'\
 	'		win.document.write(html+dt);\n'\
 	'	}\n'\
-<<<<<<< HEAD
-=======
 	'	function logWindow(e) {\n'\
 	'		var name = e.target.id.slice(4);\n'\
 	'		var win = window.open();\n'\
@@ -5006,18 +3703,12 @@ def addScriptCode(hf, testruns):
 	'	function onClickPhase(e) {\n'\
 	'	}\n'\
 	'	window.addEventListener("resize", function () {zoomTimeline();});\n'\
->>>>>>> v4.9.227
 	'	window.addEventListener("load", function () {\n'\
 	'		var dmesg = document.getElementById("dmesg");\n'\
 	'		dmesg.style.width = "100%"\n'\
 	'		document.getElementById("zoomin").onclick = zoomTimeline;\n'\
 	'		document.getElementById("zoomout").onclick = zoomTimeline;\n'\
 	'		document.getElementById("zoomdef").onclick = zoomTimeline;\n'\
-<<<<<<< HEAD
-	'		var devlist = document.getElementsByClassName("devlist");\n'\
-	'		for (var i = 0; i < devlist.length; i++)\n'\
-	'			devlist[i].onclick = devListWindow;\n'\
-=======
 	'		var list = document.getElementsByClassName("square");\n'\
 	'		for (var i = 0; i < list.length; i++)\n'\
 	'			list[i].onclick = onClickPhase;\n'\
@@ -5027,7 +3718,6 @@ def addScriptCode(hf, testruns):
 	'		list = document.getElementsByClassName("devlist");\n'\
 	'		for (var i = 0; i < list.length; i++)\n'\
 	'			list[i].onclick = devListWindow;\n'\
->>>>>>> v4.9.227
 	'		var dev = dmesg.getElementsByClassName("thread");\n'\
 	'		for (var i = 0; i < dev.length; i++) {\n'\
 	'			dev[i].onclick = deviceDetail;\n'\
@@ -5046,26 +3736,6 @@ def addScriptCode(hf, testruns):
 def executeSuspend():
 	global sysvals
 
-<<<<<<< HEAD
-	detectUSB(False)
-	t0 = time.time()*1000
-	tp = sysvals.tpath
-	# execute however many s/r runs requested
-	for count in range(1,sysvals.execcount+1):
-		# clear the kernel ring buffer just as we start
-		os.system('dmesg -C')
-		# enable callgraph ftrace only for the second run
-		if(sysvals.usecallgraph and count == 2):
-			# set trace type
-			os.system('echo function_graph > '+tp+'current_tracer')
-			os.system('echo "" > '+tp+'set_ftrace_filter')
-			# set trace format options
-			os.system('echo funcgraph-abstime > '+tp+'trace_options')
-			os.system('echo funcgraph-proc > '+tp+'trace_options')
-			# focus only on device suspend and resume
-			os.system('cat '+tp+'available_filter_functions | '+\
-				'grep dpm_run_callback > '+tp+'set_graph_function')
-=======
 	t0 = time.time()*1000
 	tp = sysvals.tpath
 	fwdata = []
@@ -5077,63 +3747,12 @@ def executeSuspend():
 		sysvals.fsetVal('1', 'tracing_on')
 	# execute however many s/r runs requested
 	for count in range(1,sysvals.execcount+1):
->>>>>>> v4.9.227
 		# if this is test2 and there's a delay, start here
 		if(count > 1 and sysvals.x2delay > 0):
 			tN = time.time()*1000
 			while (tN - t0) < sysvals.x2delay:
 				tN = time.time()*1000
 				time.sleep(0.001)
-<<<<<<< HEAD
-		# start ftrace
-		if(sysvals.usecallgraph or sysvals.usetraceevents):
-			print('START TRACING')
-			os.system('echo 1 > '+tp+'tracing_on')
-		# initiate suspend
-		if(sysvals.usecallgraph or sysvals.usetraceevents):
-			os.system('echo SUSPEND START > '+tp+'trace_marker')
-		if(sysvals.rtcwake):
-			print('SUSPEND START')
-			print('will autoresume in %d seconds' % sysvals.rtcwaketime)
-			sysvals.rtcWakeAlarm()
-		else:
-			print('SUSPEND START (press a key to resume)')
-		pf = open(sysvals.powerfile, 'w')
-		pf.write(sysvals.suspendmode)
-		# execution will pause here
-		pf.close()
-		t0 = time.time()*1000
-		# return from suspend
-		print('RESUME COMPLETE')
-		if(sysvals.usecallgraph or sysvals.usetraceevents):
-			os.system('echo RESUME COMPLETE > '+tp+'trace_marker')
-		# see if there's firmware timing data to be had
-		t = sysvals.postresumetime
-		if(t > 0):
-			print('Waiting %d seconds for POST-RESUME trace events...' % t)
-			time.sleep(t)
-		# stop ftrace
-		if(sysvals.usecallgraph or sysvals.usetraceevents):
-			os.system('echo 0 > '+tp+'tracing_on')
-			print('CAPTURING TRACE')
-			writeDatafileHeader(sysvals.ftracefile)
-			os.system('cat '+tp+'trace >> '+sysvals.ftracefile)
-			os.system('echo "" > '+tp+'trace')
-		# grab a copy of the dmesg output
-		print('CAPTURING DMESG')
-		writeDatafileHeader(sysvals.dmesgfile)
-		os.system('dmesg -c >> '+sysvals.dmesgfile)
-
-def writeDatafileHeader(filename):
-	global sysvals
-
-	fw = getFPDT(False)
-	prt = sysvals.postresumetime
-	fp = open(filename, 'a')
-	fp.write(sysvals.teststamp+'\n')
-	if(fw):
-		fp.write('# fwsuspend %u fwresume %u\n' % (fw[0], fw[1]))
-=======
 		# initiate suspend
 		if(sysvals.usecallgraph or sysvals.usetraceevents):
 			sysvals.fsetVal('SUSPEND START', 'trace_marker')
@@ -5194,73 +3813,10 @@ def writeDatafileHeader(filename, fwdata):
 		for fw in fwdata:
 			if(fw):
 				fp.write('# fwsuspend %u fwresume %u\n' % (fw[0], fw[1]))
->>>>>>> v4.9.227
 	if(prt > 0):
 		fp.write('# post resume time %u\n' % prt)
 	fp.close()
 
-<<<<<<< HEAD
-# Function: executeAndroidSuspend
-# Description:
-#	 Execute system suspend through the sysfs interface
-#	 on a remote android device, then transfer the output
-#	 dmesg and ftrace files to the local output directory.
-def executeAndroidSuspend():
-	global sysvals
-
-	# check to see if the display is currently off
-	tp = sysvals.tpath
-	out = os.popen(sysvals.adb+\
-		' shell dumpsys power | grep mScreenOn').read().strip()
-	# if so we need to turn it on so we can issue a new suspend
-	if(out.endswith('false')):
-		print('Waking the device up for the test...')
-		# send the KEYPAD_POWER keyevent to wake it up
-		os.system(sysvals.adb+' shell input keyevent 26')
-		# wait a few seconds so the user can see the device wake up
-		time.sleep(3)
-	# execute however many s/r runs requested
-	for count in range(1,sysvals.execcount+1):
-		# clear the kernel ring buffer just as we start
-		os.system(sysvals.adb+' shell dmesg -c > /dev/null 2>&1')
-		# start ftrace
-		if(sysvals.usetraceevents):
-			print('START TRACING')
-			os.system(sysvals.adb+" shell 'echo 1 > "+tp+"tracing_on'")
-		# initiate suspend
-		for count in range(1,sysvals.execcount+1):
-			if(sysvals.usetraceevents):
-				os.system(sysvals.adb+\
-					" shell 'echo SUSPEND START > "+tp+"trace_marker'")
-			print('SUSPEND START (press a key on the device to resume)')
-			os.system(sysvals.adb+" shell 'echo "+sysvals.suspendmode+\
-				" > "+sysvals.powerfile+"'")
-			# execution will pause here, then adb will exit
-			while(True):
-				check = os.popen(sysvals.adb+\
-					' shell pwd 2>/dev/null').read().strip()
-				if(len(check) > 0):
-					break
-				time.sleep(1)
-			if(sysvals.usetraceevents):
-				os.system(sysvals.adb+" shell 'echo RESUME COMPLETE > "+tp+\
-					"trace_marker'")
-		# return from suspend
-		print('RESUME COMPLETE')
-		# stop ftrace
-		if(sysvals.usetraceevents):
-			os.system(sysvals.adb+" shell 'echo 0 > "+tp+"tracing_on'")
-			print('CAPTURING TRACE')
-			os.system('echo "'+sysvals.teststamp+'" > '+sysvals.ftracefile)
-			os.system(sysvals.adb+' shell cat '+tp+\
-				'trace >> '+sysvals.ftracefile)
-		# grab a copy of the dmesg output
-		print('CAPTURING DMESG')
-		os.system('echo "'+sysvals.teststamp+'" > '+sysvals.dmesgfile)
-		os.system(sysvals.adb+' shell dmesg >> '+sysvals.dmesgfile)
-
-=======
->>>>>>> v4.9.227
 # Function: setUSBDevicesAuto
 # Description:
 #	 Set the autosuspend control parameter of all USB devices to auto
@@ -5270,11 +3826,7 @@ def executeAndroidSuspend():
 def setUSBDevicesAuto():
 	global sysvals
 
-<<<<<<< HEAD
-	rootCheck()
-=======
 	rootCheck(True)
->>>>>>> v4.9.227
 	for dirname, dirnames, filenames in os.walk('/sys/devices'):
 		if(re.match('.*/usb[0-9]*.*', dirname) and
 			'idVendor' in filenames and 'idProduct' in filenames):
@@ -5319,13 +3871,7 @@ def ms2nice(val):
 # Description:
 #	 Detect all the USB hosts and devices currently connected and add
 #	 a list of USB device names to sysvals for better timeline readability
-<<<<<<< HEAD
-# Arguments:
-#	 output: True to output the info to stdout, False otherwise
-def detectUSB(output):
-=======
 def detectUSB():
->>>>>>> v4.9.227
 	global sysvals
 
 	field = {'idVendor':'', 'idProduct':'', 'product':'', 'speed':''}
@@ -5336,20 +3882,6 @@ def detectUSB():
 			'runtime_suspended_time':'',
 			'active_duration':'',
 			'connected_duration':''}
-<<<<<<< HEAD
-	if(output):
-		print('LEGEND')
-		print('---------------------------------------------------------------------------------------------')
-		print('  A = async/sync PM queue Y/N                       D = autosuspend delay (seconds)')
-		print('  S = autosuspend Y/N                         rACTIVE = runtime active (min/sec)')
-		print('  P = persist across suspend Y/N              rSUSPEN = runtime suspend (min/sec)')
-		print('  E = runtime suspend enabled/forbidden Y/N    ACTIVE = active duration (min/sec)')
-		print('  R = runtime status active/suspended Y/N     CONNECT = connected duration (min/sec)')
-		print('  U = runtime usage count')
-		print('---------------------------------------------------------------------------------------------')
-		print('  NAME       ID      DESCRIPTION         SPEED A S P E R U D rACTIVE rSUSPEN  ACTIVE CONNECT')
-		print('---------------------------------------------------------------------------------------------')
-=======
 
 	print('LEGEND')
 	print('---------------------------------------------------------------------------------------------')
@@ -5362,7 +3894,6 @@ def detectUSB():
 	print('---------------------------------------------------------------------------------------------')
 	print('  NAME       ID      DESCRIPTION         SPEED A S P E R U D rACTIVE rSUSPEN  ACTIVE CONNECT')
 	print('---------------------------------------------------------------------------------------------')
->>>>>>> v4.9.227
 
 	for dirname, dirnames, filenames in os.walk('/sys/devices'):
 		if(re.match('.*/usb[0-9]*.*', dirname) and
@@ -5371,37 +3902,6 @@ def detectUSB():
 				field[i] = os.popen('cat %s/%s 2>/dev/null' % \
 					(dirname, i)).read().replace('\n', '')
 			name = dirname.split('/')[-1]
-<<<<<<< HEAD
-			if(len(field['product']) > 0):
-				sysvals.altdevname[name] = \
-					'%s [%s]' % (field['product'], name)
-			else:
-				sysvals.altdevname[name] = \
-					'%s:%s [%s]' % (field['idVendor'], \
-						field['idProduct'], name)
-			if(output):
-				for i in power:
-					power[i] = os.popen('cat %s/power/%s 2>/dev/null' % \
-						(dirname, i)).read().replace('\n', '')
-				if(re.match('usb[0-9]*', name)):
-					first = '%-8s' % name
-				else:
-					first = '%8s' % name
-				print('%s [%s:%s] %-20s %-4s %1s %1s %1s %1s %1s %1s %1s %s %s %s %s' % \
-					(first, field['idVendor'], field['idProduct'], \
-					field['product'][0:20], field['speed'], \
-					yesno(power['async']), \
-					yesno(power['control']), \
-					yesno(power['persist']), \
-					yesno(power['runtime_enabled']), \
-					yesno(power['runtime_status']), \
-					power['runtime_usage'], \
-					power['autosuspend'], \
-					ms2nice(power['runtime_active_time']), \
-					ms2nice(power['runtime_suspended_time']), \
-					ms2nice(power['active_duration']), \
-					ms2nice(power['connected_duration'])))
-=======
 			for i in power:
 				power[i] = os.popen('cat %s/power/%s 2>/dev/null' % \
 					(dirname, i)).read().replace('\n', '')
@@ -5545,7 +4045,6 @@ def devProps(data=0):
 			fp.write(out+'\n')
 
 	sysvals.devprops = props
->>>>>>> v4.9.227
 
 # Function: getModes
 # Description:
@@ -5555,22 +4054,10 @@ def devProps(data=0):
 def getModes():
 	global sysvals
 	modes = ''
-<<<<<<< HEAD
-	if(not sysvals.android):
-		if(os.path.exists(sysvals.powerfile)):
-			fp = open(sysvals.powerfile, 'r')
-			modes = string.split(fp.read())
-			fp.close()
-	else:
-		line = os.popen(sysvals.adb+' shell cat '+\
-			sysvals.powerfile).read().strip()
-		modes = string.split(line)
-=======
 	if(os.path.exists(sysvals.powerfile)):
 		fp = open(sysvals.powerfile, 'r')
 		modes = string.split(fp.read())
 		fp.close()
->>>>>>> v4.9.227
 	return modes
 
 # Function: getFPDT
@@ -5588,24 +4075,6 @@ def getFPDT(output):
 	prectype[0] = 'Basic S3 Resume Performance Record'
 	prectype[1] = 'Basic S3 Suspend Performance Record'
 
-<<<<<<< HEAD
-	rootCheck()
-	if(not os.path.exists(sysvals.fpdtpath)):
-		if(output):
-			doError('file doesnt exist: %s' % sysvals.fpdtpath, False)
-		return False
-	if(not os.access(sysvals.fpdtpath, os.R_OK)):
-		if(output):
-			doError('file isnt readable: %s' % sysvals.fpdtpath, False)
-		return False
-	if(not os.path.exists(sysvals.mempath)):
-		if(output):
-			doError('file doesnt exist: %s' % sysvals.mempath, False)
-		return False
-	if(not os.access(sysvals.mempath, os.R_OK)):
-		if(output):
-			doError('file isnt readable: %s' % sysvals.mempath, False)
-=======
 	rootCheck(True)
 	if(not os.path.exists(sysvals.fpdtpath)):
 		if(output):
@@ -5622,7 +4091,6 @@ def getFPDT(output):
 	if(not os.access(sysvals.mempath, os.R_OK)):
 		if(output):
 			doError('file is not readable: %s' % sysvals.mempath, False)
->>>>>>> v4.9.227
 		return False
 
 	fp = open(sysvals.fpdtpath, 'rb')
@@ -5663,28 +4131,19 @@ def getFPDT(output):
 	while(i < len(records)):
 		header = struct.unpack('HBB', records[i:i+4])
 		if(header[0] not in rectype):
-<<<<<<< HEAD
-			continue
-		if(header[1] != 16):
-=======
 			i += header[1]
 			continue
 		if(header[1] != 16):
 			i += header[1]
->>>>>>> v4.9.227
 			continue
 		addr = struct.unpack('Q', records[i+8:i+16])[0]
 		try:
 			fp.seek(addr)
 			first = fp.read(8)
 		except:
-<<<<<<< HEAD
-			doError('Bad address 0x%x in %s' % (addr, sysvals.mempath), False)
-=======
 			if(output):
 				print('Bad address 0x%x in %s' % (addr, sysvals.mempath))
 			return [0, 0]
->>>>>>> v4.9.227
 		rechead = struct.unpack('4sI', first)
 		recdata = fp.read(rechead[1]-8)
 		if(rechead[0] == 'FBPT'):
@@ -5739,55 +4198,6 @@ def getFPDT(output):
 #	 print the results to the terminal
 # Output:
 #	 True if the test will work, False if not
-<<<<<<< HEAD
-def statusCheck():
-	global sysvals
-	status = True
-
-	if(sysvals.android):
-		print('Checking the android system ...')
-	else:
-		print('Checking this system (%s)...' % platform.node())
-
-	# check if adb is connected to a device
-	if(sysvals.android):
-		res = 'NO'
-		out = os.popen(sysvals.adb+' get-state').read().strip()
-		if(out == 'device'):
-			res = 'YES'
-		print('    is android device connected: %s' % res)
-		if(res != 'YES'):
-			print('    Please connect the device before using this tool')
-			return False
-
-	# check we have root access
-	res = 'NO (No features of this tool will work!)'
-	if(sysvals.android):
-		out = os.popen(sysvals.adb+' shell id').read().strip()
-		if('root' in out):
-			res = 'YES'
-	else:
-		if(os.environ['USER'] == 'root'):
-			res = 'YES'
-	print('    have root access: %s' % res)
-	if(res != 'YES'):
-		if(sysvals.android):
-			print('    Try running "adb root" to restart the daemon as root')
-		else:
-			print('    Try running this script with sudo')
-		return False
-
-	# check sysfs is mounted
-	res = 'NO (No features of this tool will work!)'
-	if(sysvals.android):
-		out = os.popen(sysvals.adb+' shell ls '+\
-			sysvals.powerfile).read().strip()
-		if(out == sysvals.powerfile):
-			res = 'YES'
-	else:
-		if(os.path.exists(sysvals.powerfile)):
-			res = 'YES'
-=======
 def statusCheck(probecheck=False):
 	global sysvals
 	status = True
@@ -5807,39 +4217,11 @@ def statusCheck(probecheck=False):
 	res = sysvals.colorText('NO (No features of this tool will work!)')
 	if(os.path.exists(sysvals.powerfile)):
 		res = 'YES'
->>>>>>> v4.9.227
 	print('    is sysfs mounted: %s' % res)
 	if(res != 'YES'):
 		return False
 
 	# check target mode is a valid mode
-<<<<<<< HEAD
-	res = 'NO'
-	modes = getModes()
-	if(sysvals.suspendmode in modes):
-		res = 'YES'
-	else:
-		status = False
-	print('    is "%s" a valid power mode: %s' % (sysvals.suspendmode, res))
-	if(res == 'NO'):
-		print('      valid power modes are: %s' % modes)
-		print('      please choose one with -m')
-
-	# check if the tool can unlock the device
-	if(sysvals.android):
-		res = 'YES'
-		out1 = os.popen(sysvals.adb+\
-			' shell dumpsys power | grep mScreenOn').read().strip()
-		out2 = os.popen(sysvals.adb+\
-			' shell input').read().strip()
-		if(not out1.startswith('mScreenOn') or not out2.startswith('usage')):
-			res = 'NO (wake the android device up before running the test)'
-		print('    can I unlock the screen: %s' % res)
-
-	# check if ftrace is available
-	res = 'NO'
-	ftgood = verifyFtrace()
-=======
 	if sysvals.suspendmode != 'command':
 		res = sysvals.colorText('NO')
 		modes = getModes()
@@ -5855,15 +4237,12 @@ def statusCheck(probecheck=False):
 	# check if ftrace is available
 	res = sysvals.colorText('NO')
 	ftgood = sysvals.verifyFtrace()
->>>>>>> v4.9.227
 	if(ftgood):
 		res = 'YES'
 	elif(sysvals.usecallgraph):
 		status = False
 	print('    is ftrace supported: %s' % res)
 
-<<<<<<< HEAD
-=======
 	# check if kprobes are available
 	res = sysvals.colorText('NO')
 	sysvals.usekprobes = sysvals.verifyKprobes()
@@ -5873,7 +4252,6 @@ def statusCheck(probecheck=False):
 		sysvals.usedevsrc = False
 	print('    are kprobes supported: %s' % res)
 
->>>>>>> v4.9.227
 	# what data source are we using
 	res = 'DMESG'
 	if(ftgood):
@@ -5881,19 +4259,8 @@ def statusCheck(probecheck=False):
 		sysvals.usetraceevents = False
 		for e in sysvals.traceevents:
 			check = False
-<<<<<<< HEAD
-			if(sysvals.android):
-				out = os.popen(sysvals.adb+' shell ls -d '+\
-					sysvals.epath+e).read().strip()
-				if(out == sysvals.epath+e):
-					check = True
-			else:
-				if(os.path.exists(sysvals.epath+e)):
-					check = True
-=======
 			if(os.path.exists(sysvals.epath+e)):
 				check = True
->>>>>>> v4.9.227
 			if(not check):
 				sysvals.usetraceeventsonly = False
 			if(e == 'suspend_resume' and check):
@@ -5905,19 +4272,13 @@ def statusCheck(probecheck=False):
 	print('    timeline data source: %s' % res)
 
 	# check if rtcwake
-<<<<<<< HEAD
-	res = 'NO'
-=======
 	res = sysvals.colorText('NO')
->>>>>>> v4.9.227
 	if(sysvals.rtcpath != ''):
 		res = 'YES'
 	elif(sysvals.rtcwake):
 		status = False
 	print('    is rtcwake supported: %s' % res)
 
-<<<<<<< HEAD
-=======
 	if not probecheck:
 		return status
 
@@ -5953,7 +4314,6 @@ def statusCheck(probecheck=False):
 				res = 'YES'
 			print('         %s: %s' % (name, res))
 
->>>>>>> v4.9.227
 	return status
 
 # Function: doError
@@ -5974,11 +4334,7 @@ def doError(msg, help):
 # Arguments:
 #	 msg: the warning message to print
 #	 file: If not empty, a filename to request be sent to the owner for debug
-<<<<<<< HEAD
-def doWarning(msg, file):
-=======
 def doWarning(msg, file=''):
->>>>>>> v4.9.227
 	print('/* %s */') % msg
 	if(file):
 		print('/* For a fix, please send this'+\
@@ -5987,11 +4343,6 @@ def doWarning(msg, file=''):
 # Function: rootCheck
 # Description:
 #	 quick check to see if we have root access
-<<<<<<< HEAD
-def rootCheck():
-	if(os.environ['USER'] != 'root'):
-		doError('This script must be run as root', False)
-=======
 def rootCheck(fatal):
 	global sysvals
 	if(os.access(sysvals.powerfile, os.W_OK)):
@@ -5999,18 +4350,10 @@ def rootCheck(fatal):
 	if fatal:
 		doError('This command must be run as root', False)
 	return False
->>>>>>> v4.9.227
 
 # Function: getArgInt
 # Description:
 #	 pull out an integer argument from the command line with checks
-<<<<<<< HEAD
-def getArgInt(name, args, min, max):
-	try:
-		arg = args.next()
-	except:
-		doError(name+': no argument supplied', True)
-=======
 def getArgInt(name, args, min, max, main=True):
 	if main:
 		try:
@@ -6019,7 +4362,6 @@ def getArgInt(name, args, min, max, main=True):
 			doError(name+': no argument supplied', True)
 	else:
 		arg = args
->>>>>>> v4.9.227
 	try:
 		val = int(arg)
 	except:
@@ -6028,8 +4370,6 @@ def getArgInt(name, args, min, max, main=True):
 		doError(name+': value should be between %d and %d' % (min, max), True)
 	return val
 
-<<<<<<< HEAD
-=======
 # Function: getArgFloat
 # Description:
 #	 pull out a float argument from the command line with checks
@@ -6049,7 +4389,6 @@ def getArgFloat(name, args, min, max, main=True):
 		doError(name+': value should be between %f and %f' % (min, max), True)
 	return val
 
->>>>>>> v4.9.227
 # Function: rerunTest
 # Description:
 #	 generate an output from an existing set of ftrace/dmesg logs
@@ -6077,24 +4416,12 @@ def rerunTest():
 # Function: runTest
 # Description:
 #	 execute a suspend/resume, gather the logs, and generate the output
-<<<<<<< HEAD
-def runTest(subdir):
-	global sysvals
-
-	# prepare for the test
-	if(not sysvals.android):
-		initFtrace()
-	else:
-		initFtraceAndroid()
-	sysvals.initTestOutput(subdir)
-=======
 def runTest(subdir, testpath=''):
 	global sysvals
 
 	# prepare for the test
 	sysvals.initFtrace()
 	sysvals.initTestOutput(subdir, testpath)
->>>>>>> v4.9.227
 
 	vprint('Output files:\n    %s' % sysvals.dmesgfile)
 	if(sysvals.usecallgraph or
@@ -6104,15 +4431,8 @@ def runTest(subdir, testpath=''):
 	vprint('    %s' % sysvals.htmlfile)
 
 	# execute the test
-<<<<<<< HEAD
-	if(not sysvals.android):
-		executeSuspend()
-	else:
-		executeAndroidSuspend()
-=======
 	executeSuspend()
 	sysvals.cleanupFtrace()
->>>>>>> v4.9.227
 
 	# analyze the data and create the html output
 	print('PROCESSING DATA')
@@ -6176,8 +4496,6 @@ def runSummary(subdir, output):
 
 	createHTMLSummarySimple(testruns, subdir+'/summary.html')
 
-<<<<<<< HEAD
-=======
 # Function: checkArgBool
 # Description:
 #	 check if a boolean string value is true or false
@@ -6325,7 +4643,6 @@ def configFromFile(file):
 		if color:
 			sysvals.kprobes[name]['color'] = color
 
->>>>>>> v4.9.227
 # Function: printHelp
 # Description:
 #	 print out the help text
@@ -6334,11 +4651,7 @@ def printHelp():
 	modes = getModes()
 
 	print('')
-<<<<<<< HEAD
-	print('AnalyzeSuspend v%.1f' % sysvals.version)
-=======
 	print('AnalyzeSuspend v%s' % sysvals.version)
->>>>>>> v4.9.227
 	print('Usage: sudo analyze_suspend.py <options>')
 	print('')
 	print('Description:')
@@ -6359,25 +4672,11 @@ def printHelp():
 	print('  [general]')
 	print('    -h          Print this help text')
 	print('    -v          Print the current tool version')
-<<<<<<< HEAD
-=======
 	print('    -config file Pull arguments and config options from a file')
->>>>>>> v4.9.227
 	print('    -verbose    Print extra information during execution and analysis')
 	print('    -status     Test to see if the system is enabled to run this tool')
 	print('    -modes      List available suspend modes')
 	print('    -m mode     Mode to initiate for suspend %s (default: %s)') % (modes, sysvals.suspendmode)
-<<<<<<< HEAD
-	print('    -rtcwake t  Use rtcwake to autoresume after <t> seconds (default: disabled)')
-	print('  [advanced]')
-	print('    -f          Use ftrace to create device callgraphs (default: disabled)')
-	print('    -filter "d1 d2 ..." Filter out all but this list of dev names')
-	print('    -x2         Run two suspend/resumes back to back (default: disabled)')
-	print('    -x2delay t  Minimum millisecond delay <t> between the two test runs (default: 0 ms)')
-	print('    -postres t  Time after resume completion to wait for post-resume events (default: 0 S)')
-	print('    -multi n d  Execute <n> consecutive tests at <d> seconds intervals. The outputs will')
-	print('                be created in a new subdirectory with a summary page.')
-=======
 	print('    -o subdir   Override the output subdirectory')
 	print('  [advanced]')
 	print('    -rtcwake t  Use rtcwake to autoresume after <t> seconds (default: disabled)')
@@ -6401,18 +4700,10 @@ def printHelp():
 	print('    -x2         Run two suspend/resumes back to back (default: disabled)')
 	print('    -x2delay t  Minimum millisecond delay <t> between the two test runs (default: 0 ms)')
 	print('    -postres t  Time after resume completion to wait for post-resume events (default: 0 S)')
->>>>>>> v4.9.227
 	print('  [utilities]')
 	print('    -fpdt       Print out the contents of the ACPI Firmware Performance Data Table')
 	print('    -usbtopo    Print out the current USB topology with power info')
 	print('    -usbauto    Enable autosuspend for all connected USB devices')
-<<<<<<< HEAD
-	print('  [android testing]')
-	print('    -adb binary Use the given adb binary to run the test on an android device.')
-	print('                The device should already be connected and with root access.')
-	print('                Commands will be executed on the device using "adb shell"')
-=======
->>>>>>> v4.9.227
 	print('  [re-analyze data from previous runs]')
 	print('    -ftrace ftracefile  Create HTML output using ftrace input')
 	print('    -dmesg dmesgfile    Create HTML output using dmesg (not needed for kernel >= 3.15)')
@@ -6426,10 +4717,7 @@ if __name__ == '__main__':
 	cmd = ''
 	cmdarg = ''
 	multitest = {'run': False, 'count': 0, 'delay': 0}
-<<<<<<< HEAD
-=======
 	simplecmds = ['-modes', '-fpdt', '-flist', '-flistall', '-usbtopo', '-usbauto', '-status']
->>>>>>> v4.9.227
 	# loop through the command line arguments
 	args = iter(sys.argv[1:])
 	for arg in args:
@@ -6438,56 +4726,6 @@ if __name__ == '__main__':
 				val = args.next()
 			except:
 				doError('No mode supplied', True)
-<<<<<<< HEAD
-			sysvals.suspendmode = val
-		elif(arg == '-adb'):
-			try:
-				val = args.next()
-			except:
-				doError('No adb binary supplied', True)
-			if(not os.path.exists(val)):
-				doError('file doesnt exist: %s' % val, False)
-			if(not os.access(val, os.X_OK)):
-				doError('file isnt executable: %s' % val, False)
-			try:
-				check = os.popen(val+' version').read().strip()
-			except:
-				doError('adb version failed to execute', False)
-			if(not re.match('Android Debug Bridge .*', check)):
-				doError('adb version failed to execute', False)
-			sysvals.adb = val
-			sysvals.android = True
-		elif(arg == '-x2'):
-			if(sysvals.postresumetime > 0):
-				doError('-x2 is not compatible with -postres', False)
-			sysvals.execcount = 2
-		elif(arg == '-x2delay'):
-			sysvals.x2delay = getArgInt('-x2delay', args, 0, 60000)
-		elif(arg == '-postres'):
-			if(sysvals.execcount != 1):
-				doError('-x2 is not compatible with -postres', False)
-			sysvals.postresumetime = getArgInt('-postres', args, 0, 3600)
-		elif(arg == '-f'):
-			sysvals.usecallgraph = True
-		elif(arg == '-modes'):
-			cmd = 'modes'
-		elif(arg == '-fpdt'):
-			cmd = 'fpdt'
-		elif(arg == '-usbtopo'):
-			cmd = 'usbtopo'
-		elif(arg == '-usbauto'):
-			cmd = 'usbauto'
-		elif(arg == '-status'):
-			cmd = 'status'
-		elif(arg == '-verbose'):
-			sysvals.verbose = True
-		elif(arg == '-v'):
-			print("Version %.1f" % sysvals.version)
-			sys.exit()
-		elif(arg == '-rtcwake'):
-			sysvals.rtcwake = True
-			sysvals.rtcwaketime = getArgInt('-rtcwake', args, 0, 3600)
-=======
 			if val == 'command' and not sysvals.testcommand:
 				doError('No command supplied for mode "command"', True)
 			sysvals.suspendmode = val
@@ -6541,13 +4779,10 @@ if __name__ == '__main__':
 			sysvals.cgexp = True
 		elif(arg == '-srgap'):
 			sysvals.srgap = 5
->>>>>>> v4.9.227
 		elif(arg == '-multi'):
 			multitest['run'] = True
 			multitest['count'] = getArgInt('-multi n (exec count)', args, 2, 1000000)
 			multitest['delay'] = getArgInt('-multi d (delay between tests)', args, 0, 3600)
-<<<<<<< HEAD
-=======
 		elif(arg == '-o'):
 			try:
 				val = args.next()
@@ -6570,7 +4805,6 @@ if __name__ == '__main__':
 			if(os.path.exists(val) == False):
 				doError('%s does not exist' % val, False)
 			sysvals.addFtraceFilterFunctions(val)
->>>>>>> v4.9.227
 		elif(arg == '-dmesg'):
 			try:
 				val = args.next()
@@ -6579,27 +4813,16 @@ if __name__ == '__main__':
 			sysvals.notestrun = True
 			sysvals.dmesgfile = val
 			if(os.path.exists(sysvals.dmesgfile) == False):
-<<<<<<< HEAD
-				doError('%s doesnt exist' % sysvals.dmesgfile, False)
-=======
 				doError('%s does not exist' % sysvals.dmesgfile, False)
->>>>>>> v4.9.227
 		elif(arg == '-ftrace'):
 			try:
 				val = args.next()
 			except:
 				doError('No ftrace file supplied', True)
 			sysvals.notestrun = True
-<<<<<<< HEAD
-			sysvals.usecallgraph = True
-			sysvals.ftracefile = val
-			if(os.path.exists(sysvals.ftracefile) == False):
-				doError('%s doesnt exist' % sysvals.ftracefile, False)
-=======
 			sysvals.ftracefile = val
 			if(os.path.exists(sysvals.ftracefile) == False):
 				doError('%s does not exist' % sysvals.ftracefile, False)
->>>>>>> v4.9.227
 		elif(arg == '-summary'):
 			try:
 				val = args.next()
@@ -6609,41 +4832,13 @@ if __name__ == '__main__':
 			cmdarg = val
 			sysvals.notestrun = True
 			if(os.path.isdir(val) == False):
-<<<<<<< HEAD
-				doError('%s isnt accesible' % val, False)
-=======
 				doError('%s is not accesible' % val, False)
->>>>>>> v4.9.227
 		elif(arg == '-filter'):
 			try:
 				val = args.next()
 			except:
 				doError('No devnames supplied', True)
 			sysvals.setDeviceFilter(val)
-<<<<<<< HEAD
-		elif(arg == '-h'):
-			printHelp()
-			sys.exit()
-		else:
-			doError('Invalid argument: '+arg, True)
-
-	# just run a utility command and exit
-	if(cmd != ''):
-		if(cmd == 'status'):
-			statusCheck()
-		elif(cmd == 'fpdt'):
-			if(sysvals.android):
-				doError('cannot read FPDT on android device', False)
-			getFPDT(True)
-		elif(cmd == 'usbtopo'):
-			if(sysvals.android):
-				doError('cannot read USB topology '+\
-					'on an android device', False)
-			detectUSB(True)
-		elif(cmd == 'modes'):
-			modes = getModes()
-			print modes
-=======
 		else:
 			doError('Invalid argument: '+arg, True)
 
@@ -6666,7 +4861,6 @@ if __name__ == '__main__':
 			sysvals.getFtraceFilterFunctions(True)
 		elif(cmd == 'flistall'):
 			sysvals.getFtraceFilterFunctions(False)
->>>>>>> v4.9.227
 		elif(cmd == 'usbauto'):
 			setUSBDevicesAuto()
 		elif(cmd == 'summary'):
@@ -6674,18 +4868,6 @@ if __name__ == '__main__':
 			runSummary(cmdarg, True)
 		sys.exit()
 
-<<<<<<< HEAD
-	# run test on android device
-	if(sysvals.android):
-		if(sysvals.usecallgraph):
-			doError('ftrace (-f) is not yet supported '+\
-				'in the android kernel', False)
-		if(sysvals.notestrun):
-			doError('cannot analyze test files on the '+\
-				'android device', False)
-
-=======
->>>>>>> v4.9.227
 	# if instructed, re-analyze existing data files
 	if(sysvals.notestrun):
 		rerunTest()
@@ -6697,36 +4879,20 @@ if __name__ == '__main__':
 		sys.exit()
 
 	if multitest['run']:
-<<<<<<< HEAD
-		# run multiple tests in a separte subdirectory
-		s = 'x%d' % multitest['count']
-		subdir = datetime.now().strftime('suspend-'+s+'-%m%d%y-%H%M%S')
-		os.mkdir(subdir)
-=======
 		# run multiple tests in a separate subdirectory
 		s = 'x%d' % multitest['count']
 		if not sysvals.outdir:
 			sysvals.outdir = datetime.now().strftime('suspend-'+s+'-%m%d%y-%H%M%S')
 		if not os.path.isdir(sysvals.outdir):
 			os.mkdir(sysvals.outdir)
->>>>>>> v4.9.227
 		for i in range(multitest['count']):
 			if(i != 0):
 				print('Waiting %d seconds...' % (multitest['delay']))
 				time.sleep(multitest['delay'])
 			print('TEST (%d/%d) START' % (i+1, multitest['count']))
-<<<<<<< HEAD
-			runTest(subdir)
-			print('TEST (%d/%d) COMPLETE' % (i+1, multitest['count']))
-		runSummary(subdir, False)
-	else:
-		# run the test in the current directory
-		runTest(".")
-=======
 			runTest(sysvals.outdir)
 			print('TEST (%d/%d) COMPLETE' % (i+1, multitest['count']))
 		runSummary(sysvals.outdir, False)
 	else:
 		# run the test in the current directory
 		runTest('.', sysvals.outdir)
->>>>>>> v4.9.227

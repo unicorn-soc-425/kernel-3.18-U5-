@@ -32,10 +32,7 @@ accoring||according
 accout||account
 accquire||acquire
 accquired||acquired
-<<<<<<< HEAD
-=======
 accross||across
->>>>>>> v4.9.227
 acessable||accessible
 acess||access
 achitecture||architecture
@@ -104,15 +101,10 @@ appropiate||appropriate
 appropriatly||appropriately
 approriate||appropriate
 approriately||appropriately
-<<<<<<< HEAD
-aquainted||acquainted
-aquired||acquired
-=======
 apropriate||appropriate
 aquainted||acquainted
 aquired||acquired
 aquisition||acquisition
->>>>>>> v4.9.227
 arbitary||arbitrary
 architechture||architecture
 arguement||argument
@@ -122,11 +114,8 @@ arne't||aren't
 arraival||arrival
 artifical||artificial
 artillary||artillery
-<<<<<<< HEAD
-=======
 asign||assign
 assertation||assertion
->>>>>>> v4.9.227
 assiged||assigned
 assigment||assignment
 assigments||assignments
@@ -152,10 +141,7 @@ automatize||automate
 automatized||automated
 automatizes||automates
 autonymous||autonomous
-<<<<<<< HEAD
-=======
 auxillary||auxiliary
->>>>>>> v4.9.227
 auxilliary||auxiliary
 avaiable||available
 avaible||available
@@ -207,10 +193,7 @@ capatibilities||capabilities
 carefuly||carefully
 cariage||carriage
 catagory||category
-<<<<<<< HEAD
-=======
 cehck||check
->>>>>>> v4.9.227
 challange||challenge
 challanges||challenges
 chanell||channel
@@ -223,11 +206,8 @@ charactor||character
 charater||character
 charaters||characters
 charcter||character
-<<<<<<< HEAD
-=======
 chcek||check
 chck||check
->>>>>>> v4.9.227
 checksuming||checksumming
 childern||children
 childs||children
@@ -260,11 +240,8 @@ compatability||compatibility
 compatable||compatible
 compatibiliy||compatibility
 compatibilty||compatibility
-<<<<<<< HEAD
-=======
 compatiblity||compatibility
 competion||completion
->>>>>>> v4.9.227
 compilant||compliant
 compleatly||completely
 completly||completely
@@ -325,10 +302,7 @@ defferred||deferred
 definate||definite
 definately||definitely
 defintion||definition
-<<<<<<< HEAD
-=======
 defintions||definitions
->>>>>>> v4.9.227
 defualt||default
 defult||default
 deivce||device
@@ -344,10 +318,7 @@ depreacted||deprecated
 depreacte||deprecate
 desactivate||deactivate
 desciptors||descriptors
-<<<<<<< HEAD
-=======
 descripton||description
->>>>>>> v4.9.227
 descrition||description
 descritptor||descriptor
 desctiptor||descriptor
@@ -369,10 +340,7 @@ devided||divided
 deviece||device
 diable||disable
 dictionnary||dictionary
-<<<<<<< HEAD
-=======
 didnt||didn't
->>>>>>> v4.9.227
 diferent||different
 differrence||difference
 difinition||definition
@@ -390,10 +358,7 @@ docuentation||documentation
 documantation||documentation
 documentaion||documentation
 documment||document
-<<<<<<< HEAD
-=======
 doesnt||doesn't
->>>>>>> v4.9.227
 dorp||drop
 dosen||doesn
 downlad||download
@@ -463,10 +428,7 @@ feautures||features
 fetaure||feature
 fetaures||features
 fileystem||filesystem
-<<<<<<< HEAD
-=======
 fimware||firmware
->>>>>>> v4.9.227
 finanize||finalize
 findn||find
 finilizes||finalizes
@@ -504,19 +466,13 @@ grahical||graphical
 grahpical||graphical
 grapic||graphic
 guage||gauge
-<<<<<<< HEAD
-=======
 guarenteed||guaranteed
->>>>>>> v4.9.227
 guarentee||guarantee
 halfs||halves
 hander||handler
 handfull||handful
 hanled||handled
-<<<<<<< HEAD
-=======
 happend||happened
->>>>>>> v4.9.227
 harware||hardware
 heirarchically||hierarchically
 helpfull||helpful
@@ -574,10 +530,7 @@ initialzed||initialized
 initilization||initialization
 initilize||initialize
 inofficial||unofficial
-<<<<<<< HEAD
-=======
 insititute||institute
->>>>>>> v4.9.227
 instal||install
 inteface||interface
 integreated||integrated
@@ -612,10 +565,7 @@ invididual||individual
 invokation||invocation
 invokations||invocations
 irrelevent||irrelevant
-<<<<<<< HEAD
-=======
 isnt||isn't
->>>>>>> v4.9.227
 isssue||issue
 itslef||itself
 jave||java
@@ -628,10 +578,7 @@ langauage||language
 langauge||language
 langugage||language
 lauch||launch
-<<<<<<< HEAD
-=======
 layed||laid
->>>>>>> v4.9.227
 leightweight||lightweight
 lengh||length
 lenght||length
@@ -682,10 +629,6 @@ mispelt||misspelt
 miximum||maximum
 mmnemonic||mnemonic
 mnay||many
-<<<<<<< HEAD
-modeled||modelled
-=======
->>>>>>> v4.9.227
 modulues||modules
 monochorome||monochrome
 monochromo||monochrome
@@ -791,10 +734,7 @@ preceeding||preceding
 preceed||precede
 precendence||precedence
 precission||precision
-<<<<<<< HEAD
-=======
 preemptable||preemptible
->>>>>>> v4.9.227
 prefered||preferred
 prefferably||preferably
 premption||preemption
@@ -825,10 +765,7 @@ programers||programmers
 programm||program
 programms||programs
 progresss||progress
-<<<<<<< HEAD
-=======
 promiscous||promiscuous
->>>>>>> v4.9.227
 promps||prompts
 pronnounced||pronounced
 prononciation||pronunciation
@@ -902,10 +839,7 @@ reseting||resetting
 resizeable||resizable
 resouces||resources
 resoures||resources
-<<<<<<< HEAD
-=======
 responce||response
->>>>>>> v4.9.227
 ressizes||resizes
 ressource||resource
 ressources||resources
@@ -914,10 +848,7 @@ retreived||retrieved
 retreive||retrieve
 retrive||retrieve
 retuned||returned
-<<<<<<< HEAD
-=======
 reudce||reduce
->>>>>>> v4.9.227
 reuest||request
 reuqest||request
 reutnred||returned
@@ -961,10 +892,7 @@ setts||sets
 settting||setting
 shotdown||shutdown
 shoud||should
-<<<<<<< HEAD
-=======
 shouldnt||shouldn't
->>>>>>> v4.9.227
 shoule||should
 shrinked||shrunk
 siginificantly||significantly
@@ -1009,17 +937,11 @@ straming||streaming
 struc||struct
 structres||structures
 stuct||struct
-<<<<<<< HEAD
-sturcture||structure
-subdirectoires||subdirectories
-suble||subtle
-=======
 stucture||structure
 sturcture||structure
 subdirectoires||subdirectories
 suble||subtle
 substract||subtract
->>>>>>> v4.9.227
 succesfully||successfully
 succesful||successful
 successfull||successful
@@ -1091,10 +1013,7 @@ unexpectd||unexpected
 unexpeted||unexpected
 unfortunatelly||unfortunately
 unifiy||unify
-<<<<<<< HEAD
-=======
 unintialized||uninitialized
->>>>>>> v4.9.227
 unknonw||unknown
 unknow||unknown
 unkown||unknown
@@ -1135,13 +1054,9 @@ virtiual||virtual
 visiters||visitors
 vitual||virtual
 wating||waiting
-<<<<<<< HEAD
-whataver||whatever
-=======
 wether||whether
 whataver||whatever
 whcih||which
->>>>>>> v4.9.227
 whenver||whenever
 wheter||whether
 whe||when

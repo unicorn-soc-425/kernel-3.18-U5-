@@ -15,11 +15,8 @@ set -e
 create_package() {
 	local pname="$1" pdir="$2"
 
-<<<<<<< HEAD
-=======
 	mkdir -m 755 -p "$pdir/DEBIAN"
 	mkdir -p "$pdir/usr/share/doc/$pname"
->>>>>>> v4.9.227
 	cp debian/copyright "$pdir/usr/share/doc/$pname/"
 	cp debian/changelog "$pdir/usr/share/doc/$pname/changelog.Debian"
 	gzip -9 "$pdir/usr/share/doc/$pname/changelog.Debian"
@@ -29,11 +26,6 @@ create_package() {
 	# Fix ownership and permissions
 	chown -R root:root "$pdir"
 	chmod -R go-w "$pdir"
-<<<<<<< HEAD
-
-	# Attempt to find the correct Debian architecture
-	local forcearch="" debarch=""
-=======
 	# in case we are in a restrictive umask environment like 0077
 	chmod -R a+rX "$pdir"
 
@@ -44,7 +36,6 @@ create_package() {
 
 set_debarch() {
 	# Attempt to find the correct Debian architecture
->>>>>>> v4.9.227
 	case "$UTS_MACHINE" in
 	i386|ia64|alpha)
 		debarch="$UTS_MACHINE" ;;
@@ -60,13 +51,6 @@ set_debarch() {
 		debarch=hppa ;;
 	mips*)
 		debarch=mips$(grep -q CPU_LITTLE_ENDIAN=y $KCONFIG_CONFIG && echo el || true) ;;
-<<<<<<< HEAD
-	arm64)
-		debarch=arm64 ;;
-	arm*)
-		debarch=arm$(grep -q CONFIG_AEABI=y $KCONFIG_CONFIG && echo el || true) ;;
-	*)
-=======
 	aarch64|arm64)
 		debarch=arm64 ;;
 	arm*)
@@ -82,7 +66,6 @@ set_debarch() {
 		;;
 	*)
 		debarch=$(dpkg --print-architecture)
->>>>>>> v4.9.227
 		echo "" >&2
 		echo "** ** **  WARNING  ** ** **" >&2
 		echo "" >&2
@@ -95,18 +78,8 @@ set_debarch() {
 	if [ -n "$KBUILD_DEBARCH" ] ; then
 		debarch="$KBUILD_DEBARCH"
 	fi
-<<<<<<< HEAD
-	if [ -n "$debarch" ] ; then
-		forcearch="-DArchitecture=$debarch"
-	fi
-
-	# Create the package
-	dpkg-gencontrol $forcearch -Vkernel:debarch="${debarch:-$(dpkg --print-architecture)}" -p$pname -P"$pdir"
-	dpkg --build "$pdir" ..
-=======
 	forcearch="-DArchitecture=$debarch"
 
->>>>>>> v4.9.227
 }
 
 # Some variables and settings used throughout the script
@@ -117,10 +90,7 @@ if [ -n "$KDEB_PKGVERSION" ]; then
 else
 	packageversion=$version-$revision
 fi
-<<<<<<< HEAD
-=======
 sourcename=$KDEB_SOURCENAME
->>>>>>> v4.9.227
 tmpdir="$objtree/debian/tmp"
 fwdir="$objtree/debian/fwtmp"
 kernel_headers_dir="$objtree/debian/hdrtmp"
@@ -131,12 +101,9 @@ fwpackagename=linux-firmware-image-$version
 kernel_headers_packagename=linux-headers-$version
 libc_headers_packagename=linux-libc-dev
 dbg_packagename=$packagename-dbg
-<<<<<<< HEAD
-=======
 debarch=
 forcearch=
 set_debarch
->>>>>>> v4.9.227
 
 if [ "$ARCH" = "um" ] ; then
 	packagename=user-mode-linux-$version
@@ -159,28 +126,6 @@ esac
 BUILD_DEBUG="$(grep -s '^CONFIG_DEBUG_INFO=y' $KCONFIG_CONFIG || true)"
 
 # Setup the directory structure
-<<<<<<< HEAD
-rm -rf "$tmpdir" "$fwdir" "$kernel_headers_dir" "$libc_headers_dir" "$dbg_dir"
-mkdir -m 755 -p "$tmpdir/DEBIAN"
-mkdir -p  "$tmpdir/lib" "$tmpdir/boot" "$tmpdir/usr/share/doc/$packagename"
-mkdir -m 755 -p "$fwdir/DEBIAN"
-mkdir -p "$fwdir/lib/firmware/$version/" "$fwdir/usr/share/doc/$fwpackagename"
-mkdir -m 755 -p "$libc_headers_dir/DEBIAN"
-mkdir -p "$libc_headers_dir/usr/share/doc/$libc_headers_packagename"
-mkdir -m 755 -p "$kernel_headers_dir/DEBIAN"
-mkdir -p "$kernel_headers_dir/usr/share/doc/$kernel_headers_packagename"
-mkdir -p "$kernel_headers_dir/lib/modules/$version/"
-if [ "$ARCH" = "um" ] ; then
-	mkdir -p "$tmpdir/usr/lib/uml/modules/$version" "$tmpdir/usr/bin"
-fi
-if [ -n "$BUILD_DEBUG" ] ; then
-	mkdir -p "$dbg_dir/usr/share/doc/$dbg_packagename"
-	mkdir -m 755 -p "$dbg_dir/DEBIAN"
-fi
-
-# Build and install the kernel
-if [ "$ARCH" = "um" ] ; then
-=======
 rm -rf "$tmpdir" "$fwdir" "$kernel_headers_dir" "$libc_headers_dir" "$dbg_dir" $objtree/debian/files
 mkdir -m 755 -p "$tmpdir/DEBIAN"
 mkdir -p "$tmpdir/lib" "$tmpdir/boot"
@@ -190,7 +135,6 @@ mkdir -p "$kernel_headers_dir/lib/modules/$version/"
 # Build and install the kernel
 if [ "$ARCH" = "um" ] ; then
 	mkdir -p "$tmpdir/usr/lib/uml/modules/$version" "$tmpdir/usr/bin" "$tmpdir/usr/share/doc/$packagename"
->>>>>>> v4.9.227
 	$MAKE linux
 	cp System.map "$tmpdir/usr/lib/uml/modules/$version/System.map"
 	cp $KCONFIG_CONFIG "$tmpdir/usr/share/doc/$packagename/config"
@@ -206,8 +150,6 @@ else
 	cp arch/$ARCH/boot/$KBUILD_IMAGE "$tmpdir/$installed_image_path"
 fi
 
-<<<<<<< HEAD
-=======
 if grep -q "^CONFIG_OF=y" $KCONFIG_CONFIG ; then
 	# Only some architectures with OF support have this target
 	if grep -q dtbs_install "${srctree}/arch/$SRCARCH/Makefile"; then
@@ -215,7 +157,6 @@ if grep -q "^CONFIG_OF=y" $KCONFIG_CONFIG ; then
 	fi
 fi
 
->>>>>>> v4.9.227
 if grep -q '^CONFIG_MODULES=y' $KCONFIG_CONFIG ; then
 	INSTALL_MOD_PATH="$tmpdir" $MAKE KBUILD_SRC= modules_install
 	rm -f "$tmpdir/lib/modules/$version/build"
@@ -235,15 +176,12 @@ if grep -q '^CONFIG_MODULES=y' $KCONFIG_CONFIG ; then
 			# then add a link to those
 			$OBJCOPY --add-gnu-debuglink=$dbg_dir/usr/lib/debug/$module $tmpdir/$module
 		done
-<<<<<<< HEAD
-=======
 
 		# resign stripped modules
 		MODULE_SIG_ALL="$(grep -s '^CONFIG_MODULE_SIG_ALL=y' $KCONFIG_CONFIG || true)"
 		if [ -n "$MODULE_SIG_ALL" ]; then
 			INSTALL_MOD_PATH="$tmpdir" $MAKE KBUILD_SRC= modules_sign
 		fi
->>>>>>> v4.9.227
 	fi
 fi
 
@@ -288,11 +226,7 @@ if [ -n "$DEBEMAIL" ]; then
 elif [ -n "$EMAIL" ]; then
        email=$EMAIL
 else
-<<<<<<< HEAD
-       email=$(id -nu)@$(hostname -f)
-=======
        email=$(id -nu)@$(hostname -f 2>/dev/null || hostname)
->>>>>>> v4.9.227
 fi
 if [ -n "$DEBFULLNAME" ]; then
        name=$DEBFULLNAME
@@ -303,11 +237,6 @@ else
 fi
 maintainer="$name <$email>"
 
-<<<<<<< HEAD
-# Generate a simple changelog template
-cat <<EOF > debian/changelog
-linux-upstream ($packageversion) unstable; urgency=low
-=======
 # Try to determine distribution
 if [ -n "$KDEB_CHANGELOG_DIST" ]; then
         distribution=$KDEB_CHANGELOG_DIST
@@ -323,7 +252,6 @@ fi
 # Generate a simple changelog template
 cat <<EOF > debian/changelog
 $sourcename ($packageversion) $distribution; urgency=low
->>>>>>> v4.9.227
 
   * Custom built Linux kernel.
 
@@ -337,17 +265,10 @@ This is a packacked upstream version of the Linux kernel.
 The sources may be found at most Linux ftp sites, including:
 ftp://ftp.kernel.org/pub/linux/kernel
 
-<<<<<<< HEAD
-Copyright: 1991 - 2009 Linus Torvalds and others.
-
-The git repository for mainline kernel development is at:
-git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6.git
-=======
 Copyright: 1991 - 2015 Linus Torvalds and others.
 
 The git repository for mainline kernel development is at:
 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->>>>>>> v4.9.227
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -357,14 +278,6 @@ On Debian GNU/Linux systems, the complete text of the GNU General Public
 License version 2 can be found in \`/usr/share/common-licenses/GPL-2'.
 EOF
 
-<<<<<<< HEAD
-# Generate a control file
-cat <<EOF > debian/control
-Source: linux-upstream
-Section: kernel
-Priority: optional
-Maintainer: $maintainer
-=======
 
 build_depends="bc, kmod, cpio "
 
@@ -375,7 +288,6 @@ Section: kernel
 Priority: optional
 Maintainer: $maintainer
 Build-Depends: $build_depends
->>>>>>> v4.9.227
 Standards-Version: 3.8.4
 Homepage: http://www.kernel.org/
 EOF
@@ -413,12 +325,6 @@ fi
 
 # Build kernel header package
 (cd $srctree; find . -name Makefile\* -o -name Kconfig\* -o -name \*.pl) > "$objtree/debian/hdrsrcfiles"
-<<<<<<< HEAD
-(cd $srctree; find arch/$SRCARCH/include include scripts -type f) >> "$objtree/debian/hdrsrcfiles"
-(cd $srctree; find arch/$SRCARCH -name module.lds -o -name Kbuild.platforms -o -name Platform) >> "$objtree/debian/hdrsrcfiles"
-(cd $srctree; find $(find arch/$SRCARCH -name include -o -name scripts -type d) -type f) >> "$objtree/debian/hdrsrcfiles"
-(cd $objtree; find arch/$SRCARCH/include Module.symvers include scripts -type f) >> "$objtree/debian/hdrobjfiles"
-=======
 (cd $srctree; find arch/*/include include scripts -type f -o -type l) >> "$objtree/debian/hdrsrcfiles"
 (cd $srctree; find arch/$SRCARCH -name module.lds -o -name Kbuild.platforms -o -name Platform) >> "$objtree/debian/hdrsrcfiles"
 (cd $srctree; find $(find arch/$SRCARCH -name include -o -name scripts -type d) -type f) >> "$objtree/debian/hdrsrcfiles"
@@ -429,7 +335,6 @@ fi
 if grep -q '^CONFIG_GCC_PLUGINS=y' $KCONFIG_CONFIG ; then
 	(cd $objtree; find scripts/gcc-plugins -name \*.so -o -name gcc-common.h) >> "$objtree/debian/hdrobjfiles"
 fi
->>>>>>> v4.9.227
 destdir=$kernel_headers_dir/usr/src/linux-headers-$version
 mkdir -p "$destdir"
 (cd $srctree; tar -c -f - -T -) < "$objtree/debian/hdrsrcfiles" | (cd $destdir; tar -xf -)
@@ -509,8 +414,6 @@ EOF
 	create_package "$dbg_packagename" "$dbg_dir"
 fi
 
-<<<<<<< HEAD
-=======
 if [ "x$1" = "xdeb-pkg" ]
 then
     cat <<EOF > debian/rules
@@ -540,5 +443,4 @@ else
 	dpkg-genchanges -b > ../${sourcename}_${packageversion}_${debarch}.changes
 fi
 
->>>>>>> v4.9.227
 exit 0

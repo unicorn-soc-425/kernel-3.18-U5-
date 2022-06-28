@@ -21,11 +21,8 @@
 # They are linked as C++ code to the executable qconf
 
 __hostprogs := $(sort $(hostprogs-y) $(hostprogs-m))
-<<<<<<< HEAD
-=======
 host-cshlib := $(sort $(hostlibs-y) $(hostlibs-m))
 host-cxxshlib := $(sort $(hostcxxlibs-y) $(hostcxxlibs-m))
->>>>>>> v4.9.227
 
 # C code
 # Executables compiled from a single .c file
@@ -47,13 +44,10 @@ host-cxxmulti	:= $(foreach m,$(__hostprogs),$(if $($(m)-cxxobjs),$(m)))
 # C++ Object (.o) files compiled from .cc files
 host-cxxobjs	:= $(sort $(foreach m,$(host-cxxmulti),$($(m)-cxxobjs)))
 
-<<<<<<< HEAD
-=======
 # Object (.o) files used by the shared libaries
 host-cshobjs	:= $(sort $(foreach m,$(host-cshlib),$($(m:.so=-objs))))
 host-cxxshobjs	:= $(sort $(foreach m,$(host-cxxshlib),$($(m:.so=-objs))))
 
->>>>>>> v4.9.227
 # output directory for programs/.o files
 # hostprogs-y := tools/build may have been specified.
 # Retrieve also directory of .o files from prog-objs or prog-cxxobjs notation
@@ -68,13 +62,10 @@ host-cmulti	:= $(addprefix $(obj)/,$(host-cmulti))
 host-cobjs	:= $(addprefix $(obj)/,$(host-cobjs))
 host-cxxmulti	:= $(addprefix $(obj)/,$(host-cxxmulti))
 host-cxxobjs	:= $(addprefix $(obj)/,$(host-cxxobjs))
-<<<<<<< HEAD
-=======
 host-cshlib	:= $(addprefix $(obj)/,$(host-cshlib))
 host-cxxshlib	:= $(addprefix $(obj)/,$(host-cxxshlib))
 host-cshobjs	:= $(addprefix $(obj)/,$(host-cshobjs))
 host-cxxshobjs	:= $(addprefix $(obj)/,$(host-cxxshobjs))
->>>>>>> v4.9.227
 host-objdirs    := $(addprefix $(obj)/,$(host-objdirs))
 
 obj-dirs += $(host-objdirs)
@@ -143,10 +134,6 @@ quiet_cmd_host-cxxobjs	= HOSTCXX $@
 $(host-cxxobjs): $(obj)/%.o: $(src)/%.cc FORCE
 	$(call if_changed_dep,host-cxxobjs)
 
-<<<<<<< HEAD
-targets += $(host-csingle)  $(host-cmulti) $(host-cobjs)\
-	   $(host-cxxmulti) $(host-cxxobjs)
-=======
 # Compile .c file, create position independent .o file
 # host-cshobjs -> .o
 quiet_cmd_host-cshobjs	= HOSTCC  -fPIC $@
@@ -186,4 +173,3 @@ $(call multi_depend, $(host-cxxshlib), .so, -objs)
 
 targets += $(host-csingle)  $(host-cmulti) $(host-cobjs)\
 	   $(host-cxxmulti) $(host-cxxobjs) $(host-cshlib) $(host-cshobjs) $(host-cxxshlib) $(host-cxxshobjs)
->>>>>>> v4.9.227

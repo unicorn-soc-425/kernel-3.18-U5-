@@ -326,12 +326,8 @@ static uint_t *sift_rel_mcount(uint_t *mlocp,
 		if (!mcountsym)
 			mcountsym = get_mcountsym(sym0, relp, str0);
 
-<<<<<<< HEAD
-		if (mcountsym == Elf_r_sym(relp) && !is_fake_mcount(relp)) {
-=======
 		if (mcountsym && mcountsym == Elf_r_sym(relp) &&
 				!is_fake_mcount(relp)) {
->>>>>>> v4.9.227
 			uint_t const addend =
 				_w(_w(relp->r_offset) - recval + mcount_adjust);
 			mrelp->r_offset = _w(offbase
@@ -382,11 +378,7 @@ static void nop_mcount(Elf_Shdr const *const relhdr,
 
 		if (mcountsym == Elf_r_sym(relp) && !is_fake_mcount(relp)) {
 			if (make_nop)
-<<<<<<< HEAD
-				ret = make_nop((void *)ehdr, shdr->sh_offset + relp->r_offset);
-=======
 				ret = make_nop((void *)ehdr, _w(shdr->sh_offset) + _w(relp->r_offset));
->>>>>>> v4.9.227
 			if (warn_on_notrace_sect && !once) {
 				printf("Section %s has mcount callers being ignored\n",
 				       txtname);

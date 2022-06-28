@@ -82,12 +82,7 @@
  * to date before even starting the recursive build, so it's too late
  * at this point anyway.
  *
-<<<<<<< HEAD
- * The algorithm to grep for "CONFIG_..." is bit unusual, but should
- * be fast ;-) We don't even try to really parse the header files, but
-=======
  * We don't even try to really parse the header files, but
->>>>>>> v4.9.227
  * merely grep, i.e. if CONFIG_FOO is mentioned in a comment, it will
  * be picked up as well. It's not a problem with respect to
  * correctness, since that can only give too many dependencies, thus
@@ -119,27 +114,15 @@
 #include <ctype.h>
 #include <arpa/inet.h>
 
-<<<<<<< HEAD
-#define INT_CONF ntohl(0x434f4e46)
-#define INT_ONFI ntohl(0x4f4e4649)
-#define INT_NFIG ntohl(0x4e464947)
-#define INT_FIG_ ntohl(0x4649475f)
-
-=======
 int insert_extra_deps;
->>>>>>> v4.9.227
 char *target;
 char *depfile;
 char *cmdline;
 
 static void usage(void)
 {
-<<<<<<< HEAD
-	fprintf(stderr, "Usage: fixdep <depfile> <target> <cmdline>\n");
-=======
 	fprintf(stderr, "Usage: fixdep [-e] <depfile> <target> <cmdline>\n");
 	fprintf(stderr, " -e  insert extra dependencies given on stdin\n");
->>>>>>> v4.9.227
 	exit(1);
 }
 
@@ -151,8 +134,6 @@ static void print_cmdline(void)
 	printf("cmd_%s := %s\n\n", target, cmdline);
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Print out a dependency path from a symbol name
  */
@@ -187,7 +168,6 @@ static void do_extra_deps(void)
 	}
 }
 
->>>>>>> v4.9.227
 struct item {
 	struct item	*next;
 	unsigned int	len;
@@ -242,90 +222,16 @@ static void define_config(const char *name, int len, unsigned int hash)
 }
 
 /*
-<<<<<<< HEAD
- * Clear the set of configuration strings.
- */
-static void clear_config(void)
-{
-	struct item *aux, *next;
-	unsigned int i;
-
-	for (i = 0; i < HASHSZ; i++) {
-		for (aux = hashtab[i]; aux; aux = next) {
-			next = aux->next;
-			free(aux);
-		}
-		hashtab[i] = NULL;
-	}
-}
-
-/*
-=======
->>>>>>> v4.9.227
  * Record the use of a CONFIG_* word.
  */
 static void use_config(const char *m, int slen)
 {
 	unsigned int hash = strhash(m, slen);
-<<<<<<< HEAD
-	int c, i;
-=======
->>>>>>> v4.9.227
 
 	if (is_defined_config(m, slen, hash))
 	    return;
 
 	define_config(m, slen, hash);
-<<<<<<< HEAD
-
-	printf("    $(wildcard include/config/");
-	for (i = 0; i < slen; i++) {
-		c = m[i];
-		if (c == '_')
-			c = '/';
-		else
-			c = tolower(c);
-		putchar(c);
-	}
-	printf(".h) \\\n");
-}
-
-static void parse_config_file(const char *map, size_t len)
-{
-	const int *end = (const int *) (map + len);
-	/* start at +1, so that p can never be < map */
-	const int *m   = (const int *) map + 1;
-	const char *p, *q;
-
-	for (; m < end; m++) {
-		if (*m == INT_CONF) { p = (char *) m  ; goto conf; }
-		if (*m == INT_ONFI) { p = (char *) m-1; goto conf; }
-		if (*m == INT_NFIG) { p = (char *) m-2; goto conf; }
-		if (*m == INT_FIG_) { p = (char *) m-3; goto conf; }
-		continue;
-	conf:
-		if (p > map + len - 7)
-			continue;
-		if (memcmp(p, "CONFIG_", 7))
-			continue;
-		for (q = p + 7; q < map + len; q++) {
-			if (!(isalnum(*q) || *q == '_'))
-				goto found;
-		}
-		continue;
-
-	found:
-		if (!memcmp(q - 7, "_MODULE", 7))
-			q -= 7;
-		if( (q-p-7) < 0 )
-			continue;
-		use_config(p+7, q-p-7);
-	}
-}
-
-/* test is s ends in sub */
-static int strrcmp(char *s, char *sub)
-=======
 	print_config(m, slen);
 }
 
@@ -350,7 +256,6 @@ static void parse_config_file(const char *p)
 
 /* test if s ends in sub */
 static int strrcmp(const char *s, const char *sub)
->>>>>>> v4.9.227
 {
 	int slen = strlen(s);
 	int sublen = strlen(sub);
@@ -365,11 +270,7 @@ static void do_config_file(const char *filename)
 {
 	struct stat st;
 	int fd;
-<<<<<<< HEAD
-	void *map;
-=======
 	char *map;
->>>>>>> v4.9.227
 
 	fd = open(filename, O_RDONLY);
 	if (fd < 0) {
@@ -377,33 +278,15 @@ static void do_config_file(const char *filename)
 		perror(filename);
 		exit(2);
 	}
-<<<<<<< HEAD
-	fstat(fd, &st);
-=======
 	if (fstat(fd, &st) < 0) {
 		fprintf(stderr, "fixdep: error fstat'ing config file: ");
 		perror(filename);
 		exit(2);
 	}
->>>>>>> v4.9.227
 	if (st.st_size == 0) {
 		close(fd);
 		return;
 	}
-<<<<<<< HEAD
-	map = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
-	if ((long) map == -1) {
-		perror("fixdep: mmap");
-		close(fd);
-		return;
-	}
-
-	parse_config_file(map, st.st_size);
-
-	munmap(map, st.st_size);
-
-	close(fd);
-=======
 	map = malloc(st.st_size + 1);
 	if (!map) {
 		perror("fixdep: malloc");
@@ -421,7 +304,6 @@ static void do_config_file(const char *filename)
 	parse_config_file(map);
 
 	free(map);
->>>>>>> v4.9.227
 }
 
 /*
@@ -439,11 +321,6 @@ static void parse_dep_file(void *map, size_t len)
 	int saw_any_target = 0;
 	int is_first_dep = 0;
 
-<<<<<<< HEAD
-	clear_config();
-
-=======
->>>>>>> v4.9.227
 	while (m < end) {
 		/* Skip any "white space" */
 		while (m < end && (*m == ' ' || *m == '\\' || *m == '\n'))
@@ -465,10 +342,7 @@ static void parse_dep_file(void *map, size_t len)
 
 			/* Ignore certain dependencies */
 			if (strrcmp(s, "include/generated/autoconf.h") &&
-<<<<<<< HEAD
-=======
 			    strrcmp(s, "include/generated/autoksyms.h") &&
->>>>>>> v4.9.227
 			    strrcmp(s, "arch/um/include/uml-config.h") &&
 			    strrcmp(s, "include/linux/kconfig.h") &&
 			    strrcmp(s, ".ver")) {
@@ -514,11 +388,8 @@ static void parse_dep_file(void *map, size_t len)
 		exit(1);
 	}
 
-<<<<<<< HEAD
-=======
 	do_extra_deps();
 
->>>>>>> v4.9.227
 	printf("\n%s: $(deps_%s)\n\n", target, target);
 	printf("$(deps_%s):\n", target);
 }
@@ -559,32 +430,12 @@ static void print_deps(void)
 	close(fd);
 }
 
-<<<<<<< HEAD
-static void traps(void)
-{
-	static char test[] __attribute__((aligned(sizeof(int)))) = "CONF";
-	int *p = (int *)test;
-
-	if (*p != INT_CONF) {
-		fprintf(stderr, "fixdep: sizeof(int) != 4 or wrong endianness? %#x\n",
-			*p);
-		exit(2);
-	}
-}
-
-int main(int argc, char *argv[])
-{
-	traps();
-
-	if (argc != 4)
-=======
 int main(int argc, char *argv[])
 {
 	if (argc == 5 && !strcmp(argv[1], "-e")) {
 		insert_extra_deps = 1;
 		argv++;
 	} else if (argc != 4)
->>>>>>> v4.9.227
 		usage();
 
 	depfile = argv[1];

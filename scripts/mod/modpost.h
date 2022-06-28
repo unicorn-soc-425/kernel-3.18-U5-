@@ -11,15 +11,12 @@
 
 #include "elfconfig.h"
 
-<<<<<<< HEAD
-=======
 /* On BSD-alike OSes elf.h defines these according to host's word size */
 #undef ELF_ST_BIND
 #undef ELF_ST_TYPE
 #undef ELF_R_SYM
 #undef ELF_R_TYPE
 
->>>>>>> v4.9.227
 #if KERNEL_ELFCLASS == ELFCLASS32
 
 #define Elf_Ehdr    Elf32_Ehdr

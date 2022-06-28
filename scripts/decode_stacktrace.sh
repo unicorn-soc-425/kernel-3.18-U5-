@@ -2,27 +2,14 @@
 # (c) 2014, Sasha Levin <sasha.levin@oracle.com>
 #set -x
 
-<<<<<<< HEAD
-if [[ $# != 2 ]]; then
-	echo "Usage:"
-	echo "	$0 [vmlinux] [base path]"
-=======
 if [[ $# < 2 ]]; then
 	echo "Usage:"
 	echo "	$0 [vmlinux] [base path] [modules path]"
->>>>>>> v4.9.227
 	exit 1
 fi
 
 vmlinux=$1
 basepath=$2
-<<<<<<< HEAD
-declare -A cache
-
-parse_symbol() {
-	# The structure of symbol at this point is:
-	#   [name]+[offset]/[total length]
-=======
 modpath=$3
 declare -A cache
 declare -A modcache
@@ -30,13 +17,10 @@ declare -A modcache
 parse_symbol() {
 	# The structure of symbol at this point is:
 	#   ([name]+[offset]/[total length])
->>>>>>> v4.9.227
 	#
 	# For example:
 	#   do_basic_setup+0x9c/0xbf
 
-<<<<<<< HEAD
-=======
 	if [[ $module == "" ]] ; then
 		local objfile=$vmlinux
 	elif [[ "${modcache[$module]+isset}" == "isset" ]]; then
@@ -51,7 +35,6 @@ parse_symbol() {
 	# Remove the englobing parenthesis
 	symbol=${symbol#\(}
 	symbol=${symbol%\)}
->>>>>>> v4.9.227
 
 	# Strip the symbol name so that we could look it up
 	local name=${symbol%+*}
@@ -59,19 +42,11 @@ parse_symbol() {
 	# Use 'nm vmlinux' to figure out the base address of said symbol.
 	# It's actually faster to call it every time than to load it
 	# all into bash.
-<<<<<<< HEAD
-	if [[ "${cache[$name]+isset}" == "isset" ]]; then
-		local base_addr=${cache[$name]}
-	else
-		local base_addr=$(nm "$vmlinux" | grep -i ' t ' | awk "/ $name\$/ {print \$1}" | head -n1)
-		cache["$name"]="$base_addr"
-=======
 	if [[ "${cache[$module,$name]+isset}" == "isset" ]]; then
 		local base_addr=${cache[$module,$name]}
 	else
 		local base_addr=$(nm "$objfile" | grep -i ' t ' | awk "/ $name\$/ {print \$1}" | head -n1)
 		cache[$module,$name]="$base_addr"
->>>>>>> v4.9.227
 	fi
 	# Let's start doing the math to get the exact address into the
 	# symbol. First, strip out the symbol total length.
@@ -86,21 +61,12 @@ parse_symbol() {
 	local address=$(printf "%x\n" "$expr")
 
 	# Pass it to addr2line to get filename and line number
-<<<<<<< HEAD
-        # Could get more than one result
-	if [[ "${cache[$address]+isset}" == "isset" ]]; then
-		local code=${cache[$address]}
-	else
-		local code=$(addr2line -i -e "$vmlinux" "$address")
-		cache[$address]=$code
-=======
 	# Could get more than one result
 	if [[ "${cache[$module,$address]+isset}" == "isset" ]]; then
 		local code=${cache[$module,$address]}
 	else
 		local code=$(${CROSS_COMPILE}addr2line -i -e "$objfile" "$address")
 		cache[$module,$address]=$code
->>>>>>> v4.9.227
 	fi
 
 	# addr2line doesn't return a proper error code if it fails, so
@@ -111,11 +77,7 @@ parse_symbol() {
 	fi
 
 	# Strip out the base of the path
-<<<<<<< HEAD
-	code=${code//$basepath/""}
-=======
 	code=${code#$basepath/}
->>>>>>> v4.9.227
 
 	# In the case of inlines, move everything to same line
 	code=${code//$'\n'/' '}
@@ -156,10 +118,6 @@ handle_line() {
 		fi
 	done
 
-<<<<<<< HEAD
-	# The symbol is the last element, process it
-	symbol=${words[$last]}
-=======
 	if [[ ${words[$last]} =~ \[([^]]+)\] ]]; then
 		module=${words[$last]}
 		module=${module#\[}
@@ -172,16 +130,11 @@ handle_line() {
 		module=
 	fi
 
->>>>>>> v4.9.227
 	unset words[$last]
 	parse_symbol # modifies $symbol
 
 	# Add up the line number to the symbol
-<<<<<<< HEAD
-	echo "${words[@]}" "$symbol"
-=======
 	echo "${words[@]}" "$symbol $module"
->>>>>>> v4.9.227
 }
 
 while read line; do
@@ -191,13 +144,8 @@ while read line; do
 		handle_line "$line"
 	# Is it a code line?
 	elif [[ $line == *Code:* ]]; then
-<<<<<<< HEAD
-                decode_code "$line"
-        else
-=======
 		decode_code "$line"
 	else
->>>>>>> v4.9.227
 		# Nothing special in this line, show it as is
 		echo "$line"
 	fi

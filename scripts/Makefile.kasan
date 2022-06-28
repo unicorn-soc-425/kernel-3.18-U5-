@@ -28,10 +28,7 @@ else
         CFLAGS_KASAN := $(CFLAGS_KASAN_MINIMAL)
     endif
 endif
-<<<<<<< HEAD
-=======
 
 CFLAGS_KASAN_NOSANITIZE := -fno-builtin
 
->>>>>>> v4.9.227
 endif

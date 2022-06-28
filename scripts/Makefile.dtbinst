@@ -18,20 +18,11 @@ export dtbinst-root ?= $(obj)
 
 include include/config/auto.conf
 include scripts/Kbuild.include
-<<<<<<< HEAD
-include $(srctree)/$(obj)/Makefile
-=======
 include $(src)/Makefile
->>>>>>> v4.9.227
 
 PHONY += __dtbs_install_prep
 __dtbs_install_prep:
 ifeq ("$(dtbinst-root)", "$(obj)")
-<<<<<<< HEAD
-	$(Q)if [ -d $(INSTALL_DTBS_PATH).old ]; then rm -rf $(INSTALL_DTBS_PATH).old; fi
-	$(Q)if [ -d $(INSTALL_DTBS_PATH) ]; then mv $(INSTALL_DTBS_PATH) $(INSTALL_DTBS_PATH).old; fi
-=======
->>>>>>> v4.9.227
 	$(Q)mkdir -p $(INSTALL_DTBS_PATH)
 endif
 
