@@ -1,16 +1,4 @@
 #!/bin/bash
-<<<<<<< HEAD
-
-#
-# This script requires at least spatch
-# version 1.0.0-rc11.
-#
-
-SPATCH="`which ${SPATCH:=spatch}`"
-
-trap kill_running SIGTERM SIGINT
-declare -a SPATCH_PID
-=======
 # Linux kernel coccicheck
 #
 # Read Documentation/dev-tools/coccinelle.rst
@@ -31,7 +19,6 @@ SPATCH_VERSION_NUM=$(echo $SPATCH_VERSION | ${DIR}/scripts/ld-version.sh)
 
 USE_JOBS="no"
 $SPATCH --help | grep "\-\-jobs" > /dev/null && USE_JOBS="yes"
->>>>>>> v4.9.227
 
 # The verbosity may be set by the environmental parameter V=
 # as for example with 'make V=1 coccicheck'
@@ -42,15 +29,6 @@ else
 	VERBOSE=0
 fi
 
-<<<<<<< HEAD
-if [ -z "$J" ]; then
-	NPROC=$(getconf _NPROCESSORS_ONLN)
-else
-	NPROC="$J"
-fi
-
-FLAGS="$SPFLAGS --very-quiet"
-=======
 FLAGS="--very-quiet"
 
 # You can use SPFLAGS to append extra arguments to coccicheck or override any
@@ -73,16 +51,11 @@ echo $SPFLAGS | egrep -e "--profile|--show-trying" 2>&1 > /dev/null
 if [ $? -eq 0 ]; then
 	FLAGS="--quiet"
 fi
->>>>>>> v4.9.227
 
 # spatch only allows include directories with the syntax "-I include"
 # while gcc also allows "-Iinclude" and "-include include"
 COCCIINCLUDE=${LINUXINCLUDE//-I/-I }
-<<<<<<< HEAD
-COCCIINCLUDE=${COCCIINCLUDE//-include/-I}
-=======
 COCCIINCLUDE=${COCCIINCLUDE// -include/ --include}
->>>>>>> v4.9.227
 
 if [ "$C" = "1" -o "$C" = "2" ]; then
     ONLINE=1
@@ -90,12 +63,9 @@ if [ "$C" = "1" -o "$C" = "2" ]; then
     # Take only the last argument, which is the C file to test
     shift $(( $# - 1 ))
     OPTIONS="$COCCIINCLUDE $1"
-<<<<<<< HEAD
-=======
 
     # No need to parallelize Coccinelle since this mode takes one input file.
     NPROC=1
->>>>>>> v4.9.227
 else
     ONLINE=0
     if [ "$KBUILD_EXTMOD" = "" ] ; then
@@ -103,26 +73,18 @@ else
     else
         OPTIONS="--dir $KBUILD_EXTMOD $COCCIINCLUDE"
     fi
-<<<<<<< HEAD
-=======
 
     if [ -z "$J" ]; then
         NPROC=$(getconf _NPROCESSORS_ONLN)
     else
         NPROC="$J"
     fi
->>>>>>> v4.9.227
 fi
 
 if [ "$KBUILD_EXTMOD" != "" ] ; then
     OPTIONS="--patch $srctree $OPTIONS"
 fi
 
-<<<<<<< HEAD
-if [ ! -x "$SPATCH" ]; then
-    echo 'spatch is part of the Coccinelle project and is available at http://coccinelle.lip6.fr/'
-    exit 1
-=======
 # You can override by using SPFLAGS
 if [ "$USE_JOBS" = "no" ]; then
 	trap kill_running SIGTERM SIGINT
@@ -131,7 +93,6 @@ elif [ "$NPROC" != "1" ]; then
 	# Using 0 should work as well, refer to _SC_NPROCESSORS_ONLN use on
 	# https://github.com/rdicosmo/parmap/blob/master/setcore_stubs.c
 	OPTIONS="$OPTIONS --jobs $NPROC --chunksize 1"
->>>>>>> v4.9.227
 fi
 
 if [ "$MODE" = "" ] ; then
@@ -150,11 +111,7 @@ if [ "$MODE" = "chain" ] ; then
 	echo 'All available modes will be tried (in that order): patch, report, context, org'
     fi
 elif [ "$MODE" = "report" -o "$MODE" = "org" ] ; then
-<<<<<<< HEAD
-    FLAGS="$FLAGS --no-show-diff"
-=======
     FLAGS="--no-show-diff $FLAGS"
->>>>>>> v4.9.227
 fi
 
 if [ "$ONLINE" = "0" ] ; then
@@ -164,9 +121,6 @@ if [ "$ONLINE" = "0" ] ; then
     echo ''
 fi
 
-<<<<<<< HEAD
-run_cmd() {
-=======
 run_cmd_parmap() {
 	if [ $VERBOSE -ne 0 ] ; then
 		echo "Running ($NPROC in parallel): $@"
@@ -187,7 +141,6 @@ run_cmd_parmap() {
 }
 
 run_cmd_old() {
->>>>>>> v4.9.227
 	local i
 	if [ $VERBOSE -ne 0 ] ; then
 		echo "Running ($NPROC in parallel): $@"
@@ -202,10 +155,6 @@ run_cmd_old() {
 	wait
 }
 
-<<<<<<< HEAD
-kill_running() {
-	for i in $(seq $(( NPROC - 1 )) ); do
-=======
 run_cmd() {
 	if [ "$USE_JOBS" = "yes" ]; then
 		run_cmd_parmap $@
@@ -216,7 +165,6 @@ run_cmd() {
 
 kill_running() {
 	for i in $(seq 0 $(( NPROC - 1 )) ); do
->>>>>>> v4.9.227
 		if [ $VERBOSE -eq 2 ] ; then
 			echo "Killing ${SPATCH_PID[$i]}"
 		fi
@@ -224,18 +172,13 @@ kill_running() {
 	done
 }
 
-<<<<<<< HEAD
-=======
 # You can override heuristics with SPFLAGS, these must always go last
 OPTIONS="$OPTIONS $SPFLAGS"
 
->>>>>>> v4.9.227
 coccinelle () {
     COCCI="$1"
 
     OPT=`grep "Option" $COCCI | cut -d':' -f2`
-<<<<<<< HEAD
-=======
     REQ=`grep "Requires" $COCCI | cut -d':' -f2 | sed "s| ||"`
     REQ_NUM=$(echo $REQ | ${DIR}/scripts/ld-version.sh)
     if [ "$REQ_NUM" != "0" ] ; then
@@ -246,7 +189,6 @@ coccinelle () {
 		    return
 	    fi
     fi
->>>>>>> v4.9.227
 
 #   The option '--parse-cocci' can be used to syntactically check the SmPL files.
 #
