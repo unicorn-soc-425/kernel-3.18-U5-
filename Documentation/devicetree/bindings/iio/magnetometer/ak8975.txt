@@ -8,11 +8,8 @@ Required properties:
 Optional properties:
 
   - gpios : should be device tree identifier of the magnetometer DRDY pin
-<<<<<<< HEAD
-=======
   - vdd-supply: an optional regulator that needs to be on to provide VDD
   - mount-matrix: an optional 3x3 mounting rotation matrix
->>>>>>> v4.9.227
 
 Example:
 
@@ -20,8 +17,6 @@ ak8975@0c {
         compatible = "asahi-kasei,ak8975";
         reg = <0x0c>;
         gpios = <&gpj0 7 0>;
-<<<<<<< HEAD
-=======
         vdd-supply = <&ldo_3v3_gnss>;
         mount-matrix = "-0.984807753012208",  /* x0 */
                        "0",                   /* y0 */
@@ -32,5 +27,4 @@ ak8975@0c {
                        "-0.173648177666930",  /* x2 */
                        "0",                   /* y2 */
                        "0.984807753012208";   /* z2 */
->>>>>>> v4.9.227
 };

@@ -5,8 +5,6 @@ Required properties:
 - reg: Address and length of the register set
 - #clock-cells: Should be <1>
 
-<<<<<<< HEAD
-=======
 Optional properties:
 - clocks: list of clock identifiers which are external input clocks to the
 	given clock controller. Please refer the next section to find
@@ -20,7 +18,6 @@ Input clocks for top clock controller:
 	- audio_ext
 	- enet_ext
 
->>>>>>> v4.9.227
 The clock consumer should specify the desired clock by having the clock
 ID in its "clocks" phandle cell. See include/dt-bindings/clock/vf610-clock.h
 for the full list of VF610 clock IDs.
@@ -31,11 +28,8 @@ clks: ccm@4006b000 {
 	compatible = "fsl,vf610-ccm";
 	reg = <0x4006b000 0x1000>;
 	#clock-cells = <1>;
-<<<<<<< HEAD
-=======
 	clocks = <&sxosc>, <&fxosc>;
 	clock-names = "sxosc", "fxosc";
->>>>>>> v4.9.227
 };
 
 uart1: serial@40028000 {

@@ -31,8 +31,6 @@ Example:
 		dma-requests = <127>;
 	};
 
-<<<<<<< HEAD
-=======
 * DMA router
 
 DMA routers are transparent IP blocks used to route DMA request lines from
@@ -61,7 +59,6 @@ Example:
 		ti,dma-safe-map = <0>;
 		dma-masters = <&sdma>;
 	};
->>>>>>> v4.9.227
 
 * DMA client
 

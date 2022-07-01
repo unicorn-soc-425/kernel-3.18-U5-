@@ -9,10 +9,6 @@ Required properties:
     - "renesas,intc-irqpin-r8a7778" (R-Car M1A)
     - "renesas,intc-irqpin-r8a7779" (R-Car H1)
     - "renesas,intc-irqpin-sh73a0" (SH-Mobile AG5)
-<<<<<<< HEAD
-- #interrupt-cells: has to be <2>: an interrupt index and flags, as defined in
-  interrupts.txt in this directory
-=======
 
 - reg: Base address and length of each register bank used by the external
   IRQ pins driven by the interrupt controller hardware module. The base
@@ -23,7 +19,6 @@ Required properties:
 - interrupts: Must contain a list of interrupt specifiers. For each interrupt
   provided by this irqpin controller instance, there must be one entry,
   referring to the corresponding parent interrupt.
->>>>>>> v4.9.227
 
 Optional properties:
 
@@ -33,8 +28,6 @@ Optional properties:
   if different from the default 4 bits
 - control-parent: disable and enable interrupts on the parent interrupt
   controller, needed for some broken implementations
-<<<<<<< HEAD
-=======
 - clocks: Must contain a reference to the functional clock.  This property is
   mandatory if the hardware implements a controllable functional clock for
   the irqpin controller instance.
@@ -67,4 +60,3 @@ Example
 		clocks = <&mstp2_clks R8A7740_CLK_INTCA>;
 		power-domains = <&pd_a4s>;
 	};
->>>>>>> v4.9.227

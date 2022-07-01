@@ -3,15 +3,6 @@ Bindings for a fan connected to the PWM lines
 Required properties:
 - compatible	: "pwm-fan"
 - pwms		: the PWM that is used to control the PWM fan
-<<<<<<< HEAD
-
-Example:
-	pwm-fan {
-		compatible = "pwm-fan";
-		status = "okay";
-		pwms = <&pwm 0 10000 0>;
-	};
-=======
 - cooling-levels      : PWM duty cycle values in a range from 0 to 255
 			which correspond to thermal cooling states
 
@@ -44,4 +35,3 @@ Example:
 					};
 			     };
 		};
->>>>>>> v4.9.227

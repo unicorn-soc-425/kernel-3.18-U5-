@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-* Texas Instruments Davinci I2C
-
-This file provides information, what the device node for the
-davinci i2c interface contain.
-
-Required properties:
-- compatible: "ti,davinci-i2c";
-=======
 * Texas Instruments Davinci/Keystone I2C
 
 This file provides information, what the device node for the
@@ -14,18 +5,14 @@ davinci/keystone i2c interface contains.
 
 Required properties:
 - compatible: "ti,davinci-i2c" or "ti,keystone-i2c";
->>>>>>> v4.9.227
 - reg : Offset and length of the register set for the device
 
 Recommended properties :
 - interrupts : standard interrupt property.
 - clock-frequency : desired I2C bus clock frequency in Hz.
-<<<<<<< HEAD
-=======
 - ti,has-pfunc: boolean; if defined, it indicates that SoC supports PFUNC
 	registers. PFUNC registers allow to switch I2C pins to function as
 	GPIOs, so they can by toggled manually.
->>>>>>> v4.9.227
 
 Example (enbw_cmc board):
 	i2c@1c22000 {

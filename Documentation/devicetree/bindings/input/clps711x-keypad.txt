@@ -1,11 +1,7 @@
 * Cirrus Logic CLPS711X matrix keypad device tree bindings
 
 Required Properties:
-<<<<<<< HEAD
-- compatible:    Shall contain "cirrus,clps711x-keypad".
-=======
 - compatible:    Shall contain "cirrus,ep7209-keypad".
->>>>>>> v4.9.227
 - row-gpios:     List of GPIOs used as row lines.
 - poll-interval: Poll interval time in milliseconds.
 - linux,keymap:  The definition can be found at
@@ -16,11 +12,7 @@ Optional Properties:
 
 Example:
 	keypad {
-<<<<<<< HEAD
-		compatible = "cirrus,ep7312-keypad", "cirrus,clps711x-keypad";
-=======
 		compatible = "cirrus,ep7312-keypad", "cirrus,ep7209-keypad";
->>>>>>> v4.9.227
 		autorepeat;
 		poll-interval = <120>;
 		row-gpios = <&porta 0 0>,

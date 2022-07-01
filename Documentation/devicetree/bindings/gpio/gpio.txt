@@ -13,15 +13,6 @@ properties, each containing a 'gpio-list':
 	gpio-specifier : Array of #gpio-cells specifying specific gpio
 			 (controller specific)
 
-<<<<<<< HEAD
-GPIO properties should be named "[<name>-]gpios". The exact
-meaning of each gpios property must be documented in the device tree
-binding for each device.
-
-For example, the following could be used to describe GPIO pins used
-as chip select lines; with chip selects 0, 1 and 3 populated, and chip
-select 2 left empty:
-=======
 GPIO properties should be named "[<name>-]gpios", with <name> being the purpose
 of this GPIO for the device. While a non-existent <name> is considered valid
 for compatibility reasons (resolving to the "gpios" property), it is not allowed
@@ -40,7 +31,6 @@ binding of the device.
 
 The following example could be used to describe GPIO pins used as device enable
 and bit-banged data signals:
->>>>>>> v4.9.227
 
 	gpio1: gpio1 {
 		gpio-controller
@@ -51,19 +41,12 @@ and bit-banged data signals:
 		 #gpio-cells = <1>;
 	};
 	[...]
-<<<<<<< HEAD
-	 chipsel-gpios = <&gpio1 12 0>,
-			 <&gpio1 13 0>,
-			 <0>, /* holes are permitted, means no GPIO 2 */
-			 <&gpio2 2>;
-=======
 
 	enable-gpios = <&gpio2 2>;
 	data-gpios = <&gpio1 12 0>,
 		     <&gpio1 13 0>,
 		     <&gpio1 14 0>,
 		     <&gpio1 15 0>;
->>>>>>> v4.9.227
 
 Note that gpio-specifier length is controller dependent.  In the
 above example, &gpio1 uses 2 cells to specify a gpio, while &gpio2
@@ -71,19 +54,6 @@ only uses one.
 
 gpio-specifier may encode: bank, pin position inside the bank,
 whether pin is open-drain and whether pin is logically inverted.
-<<<<<<< HEAD
-Exact meaning of each specifier cell is controller specific, and must
-be documented in the device tree binding for the device.
-
-Example of a node using GPIOs:
-
-	node {
-		gpios = <&qe_pio_e 18 0>;
-	};
-
-In this example gpio-specifier is "18 0" and encodes GPIO pin number,
-and GPIO flags as accepted by the "qe_pio_e" gpio-controller.
-=======
 
 Exact meaning of each specifier cell is controller specific, and must
 be documented in the device tree binding for the device.
@@ -109,18 +79,13 @@ Optional standard bitfield specifiers for the last cell:
 	   When used with active-low, this means open drain/collector, see:
            https://en.wikipedia.org/wiki/Open_collector
 	   When used with active-high, this means open source/emitter
->>>>>>> v4.9.227
 
 1.1) GPIO specifier best practices
 ----------------------------------
 
 A gpio-specifier should contain a flag indicating the GPIO polarity; active-
-<<<<<<< HEAD
-high or active-low. If it does, the follow best practices should be followed:
-=======
 high or active-low. If it does, the following best practices should be
 followed:
->>>>>>> v4.9.227
 
 The gpio-specifier's polarity flag should represent the physical level at the
 GPIO controller that achieves (or represents, for inputs) a logically asserted
@@ -166,8 +131,6 @@ Every GPIO controller node must contain both an empty "gpio-controller"
 property, and a #gpio-cells integer property, which indicates the number of
 cells in a gpio-specifier.
 
-<<<<<<< HEAD
-=======
 Some system-on-chips (SoCs) use the concept of GPIO banks. A GPIO bank is an
 instance of a hardware IP core on a silicon die, usually exposed to the
 programmer as a coherent range of I/O addresses. Usually each such bank is
@@ -241,7 +204,6 @@ configuration.
 Optional properties:
 - line-name:  The GPIO label name. If not present the node name is used.
 
->>>>>>> v4.9.227
 Example of two SOC GPIO banks defined as gpio-controller nodes:
 
 	qe_pio_a: gpio-controller@1400 {
@@ -249,8 +211,6 @@ Example of two SOC GPIO banks defined as gpio-controller nodes:
 		reg = <0x1400 0x18>;
 		gpio-controller;
 		#gpio-cells = <2>;
-<<<<<<< HEAD
-=======
 
 		line_b {
 			gpio-hog;
@@ -258,7 +218,6 @@ Example of two SOC GPIO banks defined as gpio-controller nodes:
 			output-low;
 			line-name = "foo-bar-gpio";
 		};
->>>>>>> v4.9.227
 	};
 
 	qe_pio_e: gpio-controller@1460 {
@@ -284,11 +243,7 @@ contains information structures as follows:
 	numeric-gpio-range ::=
 			<pinctrl-phandle> <gpio-base> <pinctrl-base> <count>
 	named-gpio-range ::= <pinctrl-phandle> <gpio-base> '<0 0>'
-<<<<<<< HEAD
-	gpio-phandle : phandle to pin controller node.
-=======
 	pinctrl-phandle : phandle to pin controller node
->>>>>>> v4.9.227
 	gpio-base : Base GPIO ID in the GPIO controller
 	pinctrl-base : Base pinctrl pin ID in the pin controller
 	count : The number of GPIOs/pins in this range

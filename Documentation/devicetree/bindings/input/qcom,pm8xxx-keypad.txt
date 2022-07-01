@@ -33,18 +33,11 @@ PROPERTIES
 	Value type: <bool>
 	Definition: don't enable autorepeat feature.
 
-<<<<<<< HEAD
-- linux,keypad-wakeup:
-	Usage: optional
-	Value type: <bool>
-	Definition: use any event on keypad as wakeup event.
-=======
 - wakeup-source:
 	Usage: optional
 	Value type: <bool>
 	Definition: use any event on keypad as wakeup event.
 		    (Legacy property supported: "linux,keypad-wakeup")
->>>>>>> v4.9.227
 
 - keypad,num-rows:
 	Usage: required

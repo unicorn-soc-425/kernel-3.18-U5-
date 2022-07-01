@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-* Texas Instruments tsc2005 touchscreen controller
-
-Required properties:
- - compatible		      : "ti,tsc2005"
- - reg			      : SPI device address
- - spi-max-frequency	      : Maximal SPI speed
- - interrupts		      : IRQ specifier
- - reset-gpios		      : GPIO specifier
- - vio-supply                 : Regulator specifier
-
-Optional properties:
-=======
 * Texas Instruments tsc2004 and tsc2005 touchscreen controllers
 
 Required properties:
@@ -23,7 +10,6 @@ Required properties:
 Optional properties:
  - vio-supply		      : Regulator specifier
  - reset-gpios		      : GPIO specifier for the controller reset line
->>>>>>> v4.9.227
  - ti,x-plate-ohms	      : integer, resistance of the touchscreen's X plates
 				in ohm (defaults to 280)
  - ti,esd-recovery-timeout-ms : integer, if the touchscreen does not respond after
@@ -33,8 +19,6 @@ Optional properties:
 
 Example:
 
-<<<<<<< HEAD
-=======
 &i2c3 {
 	tsc2004@48 {
 		compatible = "ti,tsc2004";
@@ -56,7 +40,6 @@ Example:
 	};
 }
 
->>>>>>> v4.9.227
 &mcspi1 {
 	tsc2005@0 {
 		compatible = "ti,tsc2005";
@@ -71,13 +54,8 @@ Example:
 		touchscreen-fuzz-x = <4>;
 		touchscreen-fuzz-y = <7>;
 		touchscreen-fuzz-pressure = <2>;
-<<<<<<< HEAD
-		touchscreen-max-x = <4096>;
-		touchscreen-max-y = <4096>;
-=======
 		touchscreen-size-x = <4096>;
 		touchscreen-size-y = <4096>;
->>>>>>> v4.9.227
 		touchscreen-max-pressure = <2048>;
 
 		ti,x-plate-ohms = <280>;

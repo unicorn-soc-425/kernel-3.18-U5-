@@ -19,12 +19,8 @@ Required Properties:
 
 Optional Properties:
 - linux,no-autorepeat:	do no enable autorepeat feature.
-<<<<<<< HEAD
-- linux,wakeup:		use any event on keypad as wakeup event.
-=======
 - wakeup-source:	use any event on keypad as wakeup event.
 			(Legacy property supported: "linux,wakeup")
->>>>>>> v4.9.227
 - debounce-delay-ms:	debounce interval in milliseconds
 - col-scan-delay-us:	delay, measured in microseconds, that is needed
 			before we can scan keypad after activating column gpio

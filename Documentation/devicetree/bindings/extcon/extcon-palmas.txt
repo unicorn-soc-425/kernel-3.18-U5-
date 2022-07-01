@@ -10,16 +10,11 @@ Required Properties:
 
 Optional Properties:
  - ti,wakeup : To enable the wakeup comparator in probe
-<<<<<<< HEAD
- - ti,enable-id-detection: Perform ID detection.
- - ti,enable-vbus-detection: Perform VBUS detection.
-=======
  - ti,enable-id-detection: Perform ID detection. If id-gpio is specified
 		it performs id-detection using GPIO else using OTG core.
  - ti,enable-vbus-detection: Perform VBUS detection.
  - id-gpio: gpio for GPIO ID detection. See gpio binding.
  - debounce-delay-ms: debounce delay for GPIO ID pin in milliseconds.
->>>>>>> v4.9.227
 
 palmas-usb {
        compatible = "ti,twl6035-usb", "ti,palmas-usb";

@@ -11,8 +11,6 @@ Required properties:
 - clock-names: Must contain "adc", matching entry in the clocks property.
 - vref-supply: The regulator supply ADC reference voltage.
 
-<<<<<<< HEAD
-=======
 Recommended properties:
 - fsl,adck-max-frequency: Maximum frequencies according to datasheets operating
   requirements. Three values are required, depending on conversion mode:
@@ -25,7 +23,6 @@ Recommended properties:
   operating requirements. A safe default across a wide range of R_as and
   C_as as well as conversion modes is 1000ns.
 
->>>>>>> v4.9.227
 Example:
 adc0: adc@4003b000 {
 	compatible = "fsl,vf610-adc";
@@ -33,10 +30,7 @@ adc0: adc@4003b000 {
 	interrupts = <0 53 0x04>;
 	clocks = <&clks VF610_CLK_ADC0>;
 	clock-names = "adc";
-<<<<<<< HEAD
-=======
 	fsl,adck-max-frequency = <30000000>, <40000000>,
 				<20000000>;
->>>>>>> v4.9.227
 	vref-supply = <&reg_vcc_3v3_mcu>;
 };

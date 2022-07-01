@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-TI EDMA
-=======
 Texas Instruments eDMA
 
 The eDMA3 consists of two components: Channel controller (CC) and Transfer
@@ -115,7 +112,6 @@ mcasp0: mcasp@48038000 {
 ------------------------------------------------------------------------------
 DEPRECATED binding, new DTS files must use the ti,edma3-tpcc/ti,edma3-tptc
 binding.
->>>>>>> v4.9.227
 
 Required properties:
 - compatible : "ti,edma3"

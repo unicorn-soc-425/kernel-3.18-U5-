@@ -10,21 +10,14 @@ Required properties:
 	"renesas,i2c-r8a7792"
 	"renesas,i2c-r8a7793"
 	"renesas,i2c-r8a7794"
-<<<<<<< HEAD
-=======
 	"renesas,i2c-r8a7795"
 	"renesas,i2c-r8a7796"
->>>>>>> v4.9.227
 - reg: physical base address of the controller and length of memory mapped
   region.
 - interrupts: interrupt specifier.
 
 Optional properties:
 - clock-frequency: desired I2C bus clock frequency in Hz. The absence of this
-<<<<<<< HEAD
-  propoerty indicates the default frequency 100 kHz.
-- clocks: clock specifier.
-=======
   property indicates the default frequency 100 kHz.
 - clocks: clock specifier.
 - dmas: Must contain a list of two references to DMA specifiers, one for
@@ -34,7 +27,6 @@ Optional properties:
 - i2c-scl-falling-time-ns: see i2c.txt
 - i2c-scl-internal-delay-ns: see i2c.txt
 - i2c-scl-rising-time-ns: see i2c.txt
->>>>>>> v4.9.227
 
 Examples :
 

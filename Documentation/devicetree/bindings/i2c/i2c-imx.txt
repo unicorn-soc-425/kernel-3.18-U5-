@@ -7,12 +7,6 @@ Required properties:
   - "fsl,vf610-i2c" for I2C compatible with the one integrated on Vybrid vf610 SoC
 - reg : Should contain I2C/HS-I2C registers location and length
 - interrupts : Should contain I2C/HS-I2C interrupt
-<<<<<<< HEAD
-
-Optional properties:
-- clock-frequency : Constains desired I2C/HS-I2C bus clock frequency in Hz.
-  The absence of the propoerty indicates the default frequency 100 kHz.
-=======
 - clocks : Should contain the I2C/HS-I2C clock specifier
 
 Optional properties:
@@ -24,7 +18,6 @@ Optional properties:
 - sda-gpios: specify the gpio related to SDA pin
 - pinctrl: add extra pinctrl to configure i2c pins to gpio function for i2c
   bus recovery, call it "gpio" state
->>>>>>> v4.9.227
 
 Examples:
 
@@ -40,8 +33,6 @@ i2c@70038000 { /* HS-I2C on i.MX51 */
 	interrupts = <64>;
 	clock-frequency = <400000>;
 };
-<<<<<<< HEAD
-=======
 
 i2c0: i2c@40066000 { /* i2c0 on vf610 */
 	compatible = "fsl,vf610-i2c";
@@ -56,4 +47,3 @@ i2c0: i2c@40066000 { /* i2c0 on vf610 */
 	scl-gpios = <&gpio5 26 GPIO_ACTIVE_HIGH>;
 	sda-gpios = <&gpio5 27 GPIO_ACTIVE_HIGH>;
 };
->>>>>>> v4.9.227

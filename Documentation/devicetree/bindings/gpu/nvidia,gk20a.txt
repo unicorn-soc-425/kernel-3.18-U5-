@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-NVIDIA GK20A Graphics Processing Unit
-
-Required properties:
-- compatible: "nvidia,<chip>-<gpu>"
-  Currently recognized values:
-  - nvidia,tegra124-gk20a
-=======
 NVIDIA Tegra Graphics Processing Units
 
 Required properties:
@@ -13,7 +5,6 @@ Required properties:
   Currently recognized values:
   - nvidia,gk20a
   - nvidia,gm20b
->>>>>>> v4.9.227
 - reg: Physical base address and length of the controller's registers.
   Must contain two entries:
   - first entry for bar0
@@ -29,29 +20,20 @@ Required properties:
 - clock-names: Must include the following entries:
   - gpu
   - pwr
-<<<<<<< HEAD
-=======
 If the compatible string is "nvidia,gm20b", then the following clock
 is also required:
   - ref
->>>>>>> v4.9.227
 - resets: Must contain an entry for each entry in reset-names.
   See ../reset/reset.txt for details.
 - reset-names: Must include the following entries:
   - gpu
 
-<<<<<<< HEAD
-Example:
-
-	gpu@0,57000000 {
-=======
 Optional properties:
 - iommus: A reference to the IOMMU. See ../iommu/iommu.txt for details.
 
 Example for GK20A:
 
 	gpu@57000000 {
->>>>>>> v4.9.227
 		compatible = "nvidia,gk20a";
 		reg = <0x0 0x57000000 0x0 0x01000000>,
 		      <0x0 0x58000000 0x0 0x01000000>;
@@ -64,8 +46,6 @@ Example for GK20A:
 		clock-names = "gpu", "pwr";
 		resets = <&tegra_car 184>;
 		reset-names = "gpu";
-<<<<<<< HEAD
-=======
 		iommus = <&mc TEGRA_SWGROUP_GPU>;
 		status = "disabled";
 	};
@@ -86,6 +66,5 @@ Example for GM20B:
 		resets = <&tegra_car 184>;
 		reset-names = "gpu";
 		iommus = <&mc TEGRA_SWGROUP_GPU>;
->>>>>>> v4.9.227
 		status = "disabled";
 	};
